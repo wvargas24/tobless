@@ -1,4 +1,15 @@
 {
+  "name": "to-bless-backend",
+  "version": "1.0.0",
+  "description": "API de gestión de Usuarios con Node.js, Express y MongoDB",
+  "main": "server.js",
+  "scripts": {
+    "dev": "NODE_ENV=development nodemon ./src/server.js",
+    "start": "NODE_ENV=production node ./src/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
     "express-validator": "^7.2.1",

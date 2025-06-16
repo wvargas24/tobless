@@ -4,9 +4,13 @@ import dotenv from 'dotenv';
 import logger from './logger.js';
 dotenv.config();
 
+// URL de conexión a MongoDB
+const env = process.env.NODE_ENV || 'production'; // Por defecto será 'production'
+const MONGO_URI = env === 'production' ? process.env.MONGO_URI_PROD : process.env.MONGO_URI_DEV;
+
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI, {
+    const conn = await mongoose.connect(MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
