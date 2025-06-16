@@ -6,3 +6,5 @@ node_modules/
 
 # Archivos de log (si los configuras para guardar en archivos)
 *.log
+
+package-lock.json
