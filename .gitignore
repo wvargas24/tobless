@@ -8,3 +8,9 @@ node_modules/
 *.log
 
 package-lock.json
+
+ Angular specific files/folders to ignore
+/frontend/node_modules
+/frontend/dist
+/frontend/.angular/cache
+/frontend/coverage
