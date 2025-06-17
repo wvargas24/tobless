@@ -1,23 +1,35 @@
 {
   "name": "to-bless-backend",
   "version": "1.0.0",
-  "description": "API de gestión de Usuarios con Node.js, Express y MongoDB",
-  "main": "server.js",
+  "description": "API de gestión de Usuarios y Coworking con Node.js, Express y MongoDB",
+  "main": "./src/server.js",
   "scripts": {
     "dev": "NODE_ENV=development nodemon ./src/server.js",
     "start": "NODE_ENV=production node ./src/server.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "coworking",
+    "api",
+    "nodejs",
+    "express",
+    "mongodb"
+  ],
+  "author": "Wuilly Vargas", 
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
     "express-validator": "^7.2.1",
-    "winston": "^3.17.0"
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.5.1",
+    "winston": "^3.13.0" 
   },
   "devDependencies": {
     "chai": "^5.2.0",
     "chai-http": "^5.1.2",
-    "mocha": "^11.6.0"
+    "mocha": "^10.7.0", 
+    "nodemon": "^3.1.0"
   }
 }

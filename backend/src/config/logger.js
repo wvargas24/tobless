@@ -1,8 +1,5 @@
-import winston from 'winston';
-import dotenv from 'dotenv';
-
-// Load environment variables (assuming dotenv is configured in server.js)
-dotenv.config();
+const winston = require('winston');
+// Environment variables are assumed to be loaded in server.js
 
 const levels = {
   error: 0,
@@ -43,4 +40,4 @@ const logger = winston.createLogger({
   transports,
 });
 
-export default logger;
+module.exports = logger;

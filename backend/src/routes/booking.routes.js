@@ -1,57 +1,55 @@
-import express from 'express';
+const express = require('express');
 const router = express.Router();
 
-import { check, validationResult } from 'express-validator';
-import {
+const {
   createBooking,
   getBookings,
   getBookingById,
   updateBooking,
-  deleteBooking
-} from '../controllers/booking.controller.js';
+  deleteBooking,
+} = require('../controllers/booking.controller');
 
-import { // Usa import aquí
-  protect
-} from '../middlewares/authMiddleware.js';
+const { protect } = require('../middlewares/authMiddleware');
+// No necesitamos authorizeRoles aquí a menos que quieras restringir el acceso a reservas a roles específicos
 
-const handleValidationErrors = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({
-      errors: errors.array()
-    });
-  }
-  next();
+
+const { check, validationResult } = require('express-validator'); // Importar express-validator
+
+// Validation middleware for booking creation and update
+const bookingValidationRules = () => {
+  return [
+    check('user', 'User ID is required').not().isEmpty().optional({ checkFalsy: true }),
+    check('membership', 'Membership ID is required').not().isEmpty().optional({ checkFalsy: true }),
+    check('startDate', 'Start date is required and must be a valid date').isISO8601().toDate().optional({ checkFalsy: true }),
+    check('endDate', 'End date is required and must be a valid date').isISO8601().toDate().optional({ checkFalsy: true }),
+    check('status', 'Status must be one of active, cancelled, or completed').isIn(['active', 'cancelled', 'completed']).optional({ checkFalsy: true }),
+  ];
 };
 
+// Middleware to handle validation errors (Assuming you are using the same validate function as in membership routes)
+// You might want to centralize this or copy the function here if needed.
+const validate = (req, res, next) => {
+  const errors = validationResult(req);
+  if (errors.isEmpty()) {
+    return next();
+  }
+  const extractedErrors = [];
+  errors.array().map(err => extractedErrors.push({ [err.param]: err.msg }));
+
+  return res.status(400).json({
+    errors: extractedErrors,
+  });
+};
+
+
 router.route('/')
-  .post(
-    protect,
-    [
-      check('user', 'User is required').notEmpty(),
-      check('membership', 'Membership is required').notEmpty(),
-      check('startDate', 'Start date is required and must be a valid date').isISO8601().toDate(),
-      check('endDate', 'End date is required and must be a valid date').isISO8601().toDate(),
-    ],
-    handleValidationErrors,
-    createBooking
-  ) // Aplicar protect a la ruta POST
-  .get(protect, getBookings);   // Aplicar protect a la ruta GET
+  .post(protect, bookingValidationRules(), validate, createBooking) // Protected
+  .get(protect, getBookings); // Protected
 
 router
   .route('/:id')
-  .get(protect, getBookingById) // Aplicar protect a la ruta GET por ID
-  .put(
-    protect,
-    [
-      check('user', 'User must be a valid ID').optional().notEmpty(),
-      check('membership', 'Membership must be a valid ID').optional().notEmpty(),
-      check('startDate', 'Start date must be a valid date').optional().isISO8601().toDate(),
-      check('endDate', 'End date must be a valid date').optional().isISO8601().toDate(),
-    ],
-    handleValidationErrors,
-    updateBooking
-  )   // Aplicar protect a la ruta PUT por ID
-  .delete(protect, deleteBooking); // Aplicar protect a la ruta DELETE por ID
+  .get(protect, getBookingById) // Protected
+  .put(protect, bookingValidationRules(), validate, updateBooking) // Protected
+  .delete(protect, deleteBooking); // Protected
 
-export default router; // Usa export default aquí
+module.exports = router;

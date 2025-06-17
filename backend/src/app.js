@@ -1,13 +1,13 @@
-import express from 'express';
-import cors from 'cors'; // Asegúrate de tener cors instalado
+const express = require('express');
+const cors = require('cors'); // Asegúrate de tener cors instalado
 
-// Importar rutas usando rutas relativas
-import authRoutes from './routes/auth.routes.js';
-import membershipRoutes from './routes/membership.routes.js';
-import bookingRoutes from './routes/booking.routes.js';
+// Importar rutas usando require
+const authRoutes = require('./routes/auth.routes');
+const membershipRoutes = require('./routes/membership.routes');
+const bookingRoutes = require('./routes/booking.routes');
 
-// Importar middlewares usando rutas relativas
-import { errorHandler } from './middlewares/errorMiddleware.js'; // Asegúrate de la extensión .js
+// Importar middleware de error
+const { errorHandler } = require('./middlewares/errorMiddleware');
 
 const app = express(); // Initialize express app
 
@@ -28,4 +28,4 @@ app.use('/api/bookings', bookingRoutes);
 // Middleware de manejo de errores (colocar al final después de las rutas)
 app.use(errorHandler);
 
-export default app; // Exportar la aplicación Express
+module.exports = app; // Exportar la aplicación Express

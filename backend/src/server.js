@@ -1,11 +1,10 @@
-import dotenv from 'dotenv';
-dotenv.config(); // Cargar variables de entorno al principio
+require('dotenv').config(); // Cargar variables de entorno al principio
 
-import app from './app.js'; // Importar la aplicación Express desde app.js
-import connectDB from './config/db.js'; // Importar la función de conexión a la base de datos
-import logger from './config/logger.js'; // Importar el logger
+const app = require('./app'); // Importar la aplicación Express desde app.js
+const connectDB = require('./config/db'); // Importar la función de conexión a la base de datos
+const logger = require('./config/logger'); // Importar el logger
 
-const PORT = process.env.PORT || 3000; // Usar el puerto de las variables de entorno
+const PORT = process.env.PORT || 5000; // Usar el puerto de las variables de entorno
 
 // Conectar a la base de datos y luego iniciar el servidor
 connectDB()

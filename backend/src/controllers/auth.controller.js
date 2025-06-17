@@ -1,6 +1,8 @@
-import User from '../models/User.js';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+const User = require('../models/User'); // Importar el modelo de usuario
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const logger = require('../config/logger'); // Importar el logger
+
 
 // Generate JWT
 const generateToken = (id) => {
@@ -16,7 +18,7 @@ const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Basic validation
+    // Basic validation (more robust validation is in routes)
     if (!name || !email || !password) {
       return res.status(400).json({
         message: 'Please enter all fields'
@@ -58,7 +60,7 @@ const registerUser = async (req, res) => {
     }
 
   } catch (err) {
-    console.error(err.message);
+    logger.error('Error in registerUser:', err);
     res.status(500).send('Server error');
   }
 };
@@ -92,12 +94,12 @@ const loginUser = async (req, res) => {
     }
 
   } catch (err) {
-    console.error(err.message);
+    logger.error('Error in loginUser:', err);
     res.status(500).send('Server error');
   }
 };
 
-export {
+module.exports = {
   registerUser,
   loginUser
 };
