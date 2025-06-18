@@ -15,7 +15,7 @@ export class LoginComponent {
     email: string = '';
     password: string = '';
     rememberMe: boolean = false;
-    private apiUrl = `${environment.apiUrl}/auth/login`;
+    private API_URL = `${environment.API_URL}/auth/login`;
 
     constructor(
         public layoutService: LayoutService,
@@ -30,7 +30,7 @@ export class LoginComponent {
             password: this.password
         };
 
-        this.http.post<{ token: string, name: string, email: string }>(this.apiUrl, loginData)
+        this.http.post<{ token: string, name: string, email: string }>(this.API_URL, loginData)
             .subscribe({
                 next: (response) => {
                     const decodedToken: any = jwtDecode(response.token);
