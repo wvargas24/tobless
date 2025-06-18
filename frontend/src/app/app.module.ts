@@ -4,6 +4,10 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AppLayoutModule } from './layout/app.layout.module';
 
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
+import { AuthInterceptor } from './auth/auth.interceptor'
+
 @NgModule({
     declarations: [
         AppComponent
@@ -11,9 +15,11 @@ import { AppLayoutModule } from './layout/app.layout.module';
     imports: [
         AppRoutingModule,
         AppLayoutModule,
+        HttpClientModule
     ],
     providers: [
-        { provide: LocationStrategy, useClass: HashLocationStrategy }
+        { provide: LocationStrategy, useClass: HashLocationStrategy },
+        { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
     ],
     bootstrap: [AppComponent]
 })
