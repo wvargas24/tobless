@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { ExtraOptions, RouterModule, Routes } from '@angular/router';
 import { AppLayoutComponent } from './layout/app.layout.component';
-import { AuthGuard } from './auth/auth.guard';
+import { AuthGuard } from './auth/guards/auth.guard';
 
 const routerOptions: ExtraOptions = {
     anchorScrolling: 'enabled'
@@ -13,9 +13,17 @@ const routes: Routes = [
         loadChildren: () => import('./demo/components/landing/landing.module').then(m => m.LandingModule)
     },
     {
-        path: '', component: AppLayoutComponent, // This path will now handle all other authenticated routes
+        path: '', component: AppLayoutComponent,
         children: [
-            { path: 'dashboard', loadChildren: () => import('./demo/components/dashboards/dashboards.module').then(m => m.DashboardsModule), canActivate: [AuthGuard] },
+            {
+                path: 'dashboard',
+                data: {
+                    breadcrumb: 'Dashboard',
+                    expectedRole: 'admin'
+                },
+                loadChildren: () => import('./demo/components/dashboards/dashboards.module').then(m => m.DashboardsModule),
+                canActivate: [AuthGuard]
+            },
             { path: 'uikit', data: { breadcrumb: 'UI Kit' }, loadChildren: () => import('./demo/components/uikit/uikit.module').then(m => m.UIkitModule), canActivate: [AuthGuard] },
             { path: 'utilities', data: { breadcrumb: 'Utilities' }, loadChildren: () => import('./demo/components/utilities/utilities.module').then(m => m.UtilitiesModule), canActivate: [AuthGuard] },
             { path: 'pages', data: { breadcrumb: 'Pages' }, loadChildren: () => import('./demo/components/pages/pages.module').then(m => m.PagesModule), canActivate: [AuthGuard] },

@@ -6,7 +6,7 @@ import { AppLayoutModule } from './layout/app.layout.module';
 
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
-import { AuthInterceptor } from './auth/auth.interceptor'
+import { AuthInterceptor } from './auth/guards/auth.interceptor'
 
 @NgModule({
     declarations: [

@@ -36,32 +36,28 @@
             </li>
 
             <li #profile class="profile-item topbar-item ">
-                <a pStyleClass="@next" enterFromClass="ng-hidden" enterActiveClass="px-scalein" leaveToClass="ng-hidden" leaveActiveClass="px-fadeout" [hideOnOutsideClick]="true" pRipple class="cursor-pointer">
-                    <img *ngIf="validImage; else avatarPlaceholder" class="border-circle" [src]="user.image" (error)="imageFailed()" alt="User Avatar">
-
-                    <ng-template #avatarPlaceholder>
-                        <p-avatar [label]="initialsUser" styleClass="mr-2" size="large" shape="circle"></p-avatar>
-                    </ng-template>
+                <a *ngIf="user" pStyleClass="@next" enterFromClass="ng-hidden" enterActiveClass="px-scalein" leaveToClass="ng-hidden" leaveActiveClass="px-fadeout" [hideOnOutsideClick]="true" pRipple
+                   class="cursor-pointer">
+                    <p-avatar [label]="initialsUser" styleClass="mr-2" size="normal" shape="circle"></p-avatar>
                 </a>
 
-                <ul class="topbar-menu active-topbar-menu p-4 w-15rem z-5 ng-hidden border-round">
+                <ul *ngIf="user" class="topbar-menu active-topbar-menu p-4 w-15rem z-5 ng-hidden border-round">
                     <li role="menuitem" class="m-0 mb-3">
-                        <a href="#" class="flex align-items-center hover:text-primary-500 transition-duration-200" pStyleClass="@grandparent" enterFromClass="ng-hidden" enterActiveClass="px-scalein"
-                           leaveToClass="ng-hidden" leaveActiveClass="px-fadeout">
-                            <i class="pi pi-fw pi-lock mr-2"></i>
-                            <span>Privacy</span>
-                        </a>
+                        <span class="font-bold block">{{ user.name }}</span>
+                        <span class="text-sm block">{{ user.email }}</span>
                     </li>
+                    <li class="m-0">
+                        <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
+                    </li>
+
                     <li role="menuitem" class="m-0 mb-3">
-                        <a href="#" class="flex align-items-center hover:text-primary-500 transition-duration-200" pStyleClass="@grandparent" enterFromClass="ng-hidden" enterActiveClass="px-scalein"
-                           leaveToClass="ng-hidden" leaveActiveClass="px-fadeout">
-                            <i class="pi pi-fw pi-cog mr-2"></i>
-                            <span>Settings</span>
+                        <a routerLink="/profile" class="flex align-items-center hover:text-primary-500 transition-duration-200">
+                            <i class="pi pi-fw pi-user mr-2"></i>
+                            <span>Profile</span>
                         </a>
                     </li>
                     <li role="menuitem" class="m-0">
-                        <a href="javascript:void(0)" (click)="logout()" class="flex align-items-center hover:text-primary-500 transition-duration-200" pStyleClass="@grandparent" enterFromClass="ng-hidden"
-                           enterActiveClass="px-scalein" leaveToClass="ng-hidden" leaveActiveClass="px-fadeout">
+                        <a (click)="logout()" class="flex align-items-center hover:text-primary-500 transition-duration-200 cursor-pointer">
                             <i class="pi pi-fw pi-sign-out mr-2"></i>
                             <span>Logout</span>
                         </a>

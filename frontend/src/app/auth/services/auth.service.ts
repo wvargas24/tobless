@@ -30,7 +30,7 @@ export class AuthService {
                         id: decodedToken.sub,
                         name: decodedToken.name,
                         email: decodedToken.email,
-                        roles: decodedToken.roles || []
+                        role: decodedToken.role
                     };
                     this.currentUserSubject.next(user);
                 } else {
@@ -46,7 +46,12 @@ export class AuthService {
         return this.http.post<AuthResponse>(`${this.API_URL}/login`, { email, password }).pipe(
             tap(response => {
                 const decodedToken: any = jwtDecode(response.token);
-                const user: User = { id: decodedToken.sub, name: decodedToken.name, email: decodedToken.email, roles: decodedToken.roles || [] };
+                const user: User = {
+                    id: decodedToken.sub,
+                    name: decodedToken.name,
+                    email: decodedToken.email,
+                    role: decodedToken.role
+                };
                 localStorage.setItem('token', response.token);
                 this.currentUserSubject.next(user);
             }),
