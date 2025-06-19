@@ -1,62 +1,47 @@
-const User = require('../models/User'); // Importar el modelo de usuario
+// Archivo completo: controllers/authController.js
+
+const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const logger = require('../config/logger'); // Importar el logger
+const logger = require('../config/logger');
 
+const generateToken = (user) => {
+  const payload = {
+    sub: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role
+  };
 
-// Generate JWT
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: '30d', // Token expires in 30 days
+  return jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: '30d',
   });
 };
 
 // @desc    Register new user
-// @route   POST /api/auth/register
-// @access  Public
 const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Basic validation (more robust validation is in routes)
     if (!name || !email || !password) {
-      return res.status(400).json({
-        message: 'Please enter all fields'
-      });
+      return res.status(400).json({ message: 'Please enter all fields' });
     }
 
-    // Check for existing user
-    let user = await User.findOne({
-      email
-    });
+    let user = await User.findOne({ email });
 
     if (user) {
-      return res.status(400).json({
-        message: 'User already exists'
-      });
+      return res.status(400).json({ message: 'User already exists' });
     }
 
-    // Create user
-    user = new User({
-      name,
-      email,
-      password, // Password will be hashed by the pre-save hook in the model
-    });
+    user = new User({ name, email, password });
+    await user.save(); // El rol por defecto 'user' se asignará aquí gracias al modelo
 
-    await user.save();
-
-    // If user is created successfully, generate token
     if (user) {
       res.status(201).json({
-        _id: user.id,
-        name: user.name,
-        email: user.email,
-        token: generateToken(user._id),
+        token: generateToken(user),
       });
     } else {
-      res.status(400).json({
-        message: 'Invalid user data'
-      });
+      res.status(400).json({ message: 'Invalid user data' });
     }
 
   } catch (err) {
@@ -66,31 +51,17 @@ const registerUser = async (req, res) => {
 };
 
 // @desc    Auth user & get token
-// @route   POST /api/auth/login
-// @access  Public
 const loginUser = async (req, res) => {
   try {
-    const {
-      email,
-      password
-    } = req.body;
-
-    // Check for user email
-    const user = await User.findOne({
-      email
-    });
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
 
     if (user && (await bcrypt.compare(password, user.password))) {
       res.json({
-        _id: user.id,
-        name: user.name,
-        email: user.email,
-        token: generateToken(user._id),
+        token: generateToken(user),
       });
     } else {
-      res.status(400).json({
-        message: 'Invalid credentials'
-      });
+      res.status(400).json({ message: 'Invalid credentials' });
     }
 
   } catch (err) {
