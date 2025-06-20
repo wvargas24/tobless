@@ -5,6 +5,7 @@ const cors = require('cors'); // Asegúrate de tener cors instalado
 const authRoutes = require('./routes/auth.routes');
 const membershipRoutes = require('./routes/membership.routes');
 const bookingRoutes = require('./routes/booking.routes');
+const userRoutes = require('./routes/user.routes');
 
 // Importar middleware de error
 const { errorHandler } = require('./middlewares/errorMiddleware');
@@ -24,8 +25,9 @@ app.get('/', (req, res) => res.send('API Running'));
 app.use('/api/auth', authRoutes);
 app.use('/api/memberships', membershipRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/users', userRoutes);
 
-// Middleware de manejo de errores (colocar al final después de las rutas)
+// Middleware de manejo de errores
 app.use(errorHandler);
 
 module.exports = app; // Exportar la aplicación Express
