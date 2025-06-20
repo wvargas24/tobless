@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 // Importamos el controlador que maneja la lógica de suscripción
-const { subscribeToMembership } = require('../controllers/userController');
+const { subscribeToMembership } = require('../controllers/user.controller');
 
 // Importamos los middlewares que necesitamos
 const { protect } = require('../middleware/authMiddleware'); // Para asegurar que el usuario esté logueado
