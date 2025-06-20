@@ -4,7 +4,7 @@ const router = express.Router();
 const { subscribeToMembership } = require('../controllers/user.controller');
 
 // Importamos los middlewares que necesitamos
-const { protect } = require('../middleware/authMiddleware'); // Para asegurar que el usuario esté logueado
+const { protect } = require('../middlewares/authMiddleware'); // Para asegurar que el usuario esté logueado
 const { check, validationResult } = require('express-validator'); // Para validar los datos de entrada
 
 const validate = (req, res, next) => {
