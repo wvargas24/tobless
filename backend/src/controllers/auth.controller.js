@@ -10,7 +10,9 @@ const generateToken = (user) => {
     sub: user.id,
     name: user.name,
     email: user.email,
-    role: user.role
+    role: user.role,
+    membershipStatus: user.membershipStatus,
+    membershipEndDate: user.membershipEndDate,
   };
 
   return jwt.sign(payload, process.env.JWT_SECRET, {
@@ -57,13 +59,20 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (user && (await bcrypt.compare(password, user.password))) {
+      if (user.membershipStatus === 'active' && user.membershipEndDate < new Date()) {
+        console.log(`Membership for user ${user.email} has expired. Updating status.`);
+        user.membershipStatus = 'expired';
+        await user.save(); // Guardamos el cambio en la BD
+      }
+
+      // Generamos el token con la información actualizada
       res.json({
         token: generateToken(user),
       });
+
     } else {
       res.status(400).json({ message: 'Invalid credentials' });
     }
-
   } catch (err) {
     logger.error('Error in loginUser:', err);
     res.status(500).send('Server error');
