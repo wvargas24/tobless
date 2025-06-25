@@ -20,7 +20,12 @@ const membershipSchema = mongoose.Schema({
   amenities: {
     type: [String],
     default: []
-  }
+  },
+  allowedResourceTypes: {
+    type: [String],
+    enum: ['sala_reuniones', 'oficina_privada', 'escritorio_flexible', 'cabina_telefonica'],
+    default: [],
+  },
 }, {
   timestamps: true,
 });

@@ -13,6 +13,8 @@ const PERMISSIONS = {
     MEMBERSHIPS_ASSIGN: 'memberships:assign',
     MEMBERSHIPS_MANAGE_TYPES: 'memberships:manage_types',
     BOOKINGS_CREATE: 'bookings:create',
+    BOOKINGS_MANAGE: 'bookings:manage',
+    BOOKINGS_VIEW_ALL: 'bookings:view_all',
     RESOURCES_MANAGE: 'resources:manage',
 };
 
@@ -23,16 +25,25 @@ ROLE_PERMISSIONS.set(ROLES.ADMIN, [
     PERMISSIONS.USERS_CREATE_WITH_ROLE,
     PERMISSIONS.MEMBERSHIPS_MANAGE_TYPES,
     PERMISSIONS.RESOURCES_MANAGE,
+    PERMISSIONS.BOOKINGS_MANAGE,
+    PERMISSIONS.BOOKINGS_VIEW_ALL,
     'users:view_all',
     'memberships:assign',
 ]);
 ROLE_PERMISSIONS.set(ROLES.MANAGER, [
     PERMISSIONS.RESOURCES_MANAGE,
+    PERMISSIONS.BOOKINGS_MANAGE,
+    PERMISSIONS.BOOKINGS_VIEW_ALL,
     'users:create',
     'users:view_all',
     'memberships:assign'
 ]);
-ROLE_PERMISSIONS.set(ROLES.RECEPTIONIST, ['users:create', 'memberships:assign']);
+ROLE_PERMISSIONS.set(ROLES.RECEPTIONIST, [
+    PERMISSIONS.BOOKINGS_VIEW_ALL,
+    'users:create',
+    'memberships:assign'
+]);
+
 ROLE_PERMISSIONS.set(ROLES.USER, [PERMISSIONS.BOOKINGS_CREATE]);
 ROLE_PERMISSIONS.set(ROLES.BARISTA, []);
 

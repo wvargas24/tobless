@@ -3,17 +3,17 @@ const router = express.Router();
 
 const {
   createBooking,
-  getBookings,
+  getMyBookings,
   getBookingById,
   updateBooking,
   deleteBooking,
+  getAllBookings,
 } = require('../controllers/booking.controller');
 
 const { protect } = require('../middlewares/authMiddleware');
-// No necesitamos authorizeRoles aquí a menos que quieras restringir el acceso a reservas a roles específicos
-
-
-const { check, validationResult } = require('express-validator'); // Importar express-validator
+const { checkPermission } = require('../middlewares/permissionMiddleware');
+const { PERMISSIONS } = require('../config/permissions');
+const { check, validationResult } = require('express-validator');
 
 // Validation middleware for booking creation and update
 const bookingValidationRules = () => {
@@ -42,14 +42,40 @@ const validate = (req, res, next) => {
 };
 
 
+// Ruta para crear una nueva reserva
 router.route('/')
-  .post(protect, bookingValidationRules(), validate, createBooking) // Protected
-  .get(protect, getBookings); // Protected
+  // Obtener TODAS las reservas (protegido para el personal)
+  .get(
+    protect,
+    checkPermission(PERMISSIONS.BOOKINGS_VIEW_ALL),
+    getAllBookings
+  )
+  .post(
+    protect,
+    checkPermission(PERMISSIONS.BOOKINGS_CREATE),
+    bookingValidationRules(),
+    validate,
+    createBooking
+  );
 
-router
-  .route('/:id')
-  .get(protect, getBookingById) // Protected
-  .put(protect, bookingValidationRules(), validate, updateBooking) // Protected
-  .delete(protect, deleteBooking); // Protected
+// Ruta para obtener las reservas del usuario logueado
+router.route('/mybookings')
+  .get(protect, getMyBookings);
+
+router.route('/:id')
+  // Obtener una reserva por ID (protegido, la lógica de quién puede verla está en el controlador)
+  .get(protect, getBookingById)
+  // Actualizar una reserva (solo admin/manager)
+  .put(
+    protect,
+    checkPermission(PERMISSIONS.BOOKINGS_MANAGE),
+    updateBooking
+  )
+  // Eliminar una reserva (solo admin/manager)
+  .delete(
+    protect,
+    checkPermission(PERMISSIONS.BOOKINGS_MANAGE),
+    deleteBooking
+  );
 
 module.exports = router;
