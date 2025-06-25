@@ -8,6 +8,7 @@ const bookingRoutes = require('./routes/booking.routes');
 const userRoutes = require('./routes/user.routes');
 const staffRoutes = require('./routes/staff.routes');
 const adminRoutes = require('./routes/admin.routes');
+const resourceRoutes = require('./routes/resource.routes');
 
 // Importar middleware de error
 const { errorHandler } = require('./middlewares/errorMiddleware');
@@ -30,6 +31,7 @@ app.use('/api/bookings', bookingRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/staff', staffRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/resources', resourceRoutes);
 
 // Middleware de manejo de errores
 app.use(errorHandler);
