@@ -16,17 +16,9 @@
                 <p class="text-600 my-4">{{ membership.description }}</p>
 
                 <ul class="list-none p-0 m-0">
-                    <li class="flex align-items-center mb-2">
+                    <li *ngFor="let amenity of membership.amenities" class="flex align-items-center mb-2">
                         <i class="pi pi-check-circle text-green-500 mr-2"></i>
-                        <span>Acceso a Internet de alta velocidad</span>
-                    </li>
-                    <li class="flex align-items-center mb-2">
-                        <i class="pi pi-check-circle text-green-500 mr-2"></i>
-                        <span>Café y té de cortesía</span>
-                    </li>
-                    <li class="flex align-items-center">
-                        <i class="pi pi-check-circle text-green-500 mr-2"></i>
-                        <span>Duración: {{ membership.duration }} días</span>
+                        <span>{{ amenity }}</span>
                     </li>
                 </ul>
 

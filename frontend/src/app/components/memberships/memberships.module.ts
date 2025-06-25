@@ -21,6 +21,7 @@ import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { InputTextareaModule } from 'primeng/inputtextarea';
+import { ChipsModule } from 'primeng/chips';
 
 @NgModule({
     declarations: [
@@ -45,7 +46,8 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
         DialogModule,
         InputNumberModule,
         ConfirmDialogModule,
-        InputTextareaModule
+        InputTextareaModule,
+        ChipsModule
     ]
 })
 export class MembershipsModule { }
