@@ -1,0 +1,40 @@
+<div class="card">
+    <div class="text-center">
+        <h2 class="text-3xl font-bold">Nuestros Planes de Membresía</h2>
+        <p class="text-lg text-600">Elige el plan que mejor se adapte a tus necesidades.</p>
+    </div>
+
+    <div class="grid mt-4">
+        <div *ngFor="let membership of memberships" class="col-12 md:col-6 lg:col-4 p-3">
+
+            <p-card [header]="membership.name" [style]="{'height': '100%'}">
+
+                <div class="text-center">
+                    <h3 class="text-4xl font-bold text-primary">${{ membership.price }}<span class="text-lg text-600">/mes</span></h3>
+                </div>
+
+                <p class="text-600 my-4">{{ membership.description }}</p>
+
+                <ul class="list-none p-0 m-0">
+                    <li class="flex align-items-center mb-2">
+                        <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                        <span>Acceso a Internet de alta velocidad</span>
+                    </li>
+                    <li class="flex align-items-center mb-2">
+                        <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                        <span>Café y té de cortesía</span>
+                    </li>
+                    <li class="flex align-items-center">
+                        <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                        <span>Duración: {{ membership.duration }} días</span>
+                    </li>
+                </ul>
+
+                <ng-template pTemplate="footer">
+                    <button pButton label="Seleccionar Plan" icon="pi pi-check" class="w-full mt-4"></button>
+                </ng-template>
+            </p-card>
+
+        </div>
+    </div>
+</div>

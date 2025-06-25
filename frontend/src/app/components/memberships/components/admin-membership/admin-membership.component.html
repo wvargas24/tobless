@@ -1,0 +1,63 @@
+<p-toast></p-toast>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+
+<div class="card">
+    <p-toolbar styleClass="mb-4">
+        <ng-template pTemplate="left">
+            <button pButton pRipple label="Nuevo Plan" icon="pi pi-plus" class="p-button-success" (click)="openNew()"></button>
+        </ng-template>
+    </p-toolbar>
+
+    <p-table [value]="memberships" [rows]="10" [paginator]="true" responsiveLayout="scroll">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Duración (días)</th>
+                <th>Acciones</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-membership>
+            <tr>
+                <td>{{membership.name}}</td>
+                <td>{{membership.price | currency:'USD'}}</td>
+                <td>{{membership.duration}}</td>
+                <td>
+                    <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="editMembership(membership)"></button>
+                    <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteMembership(membership)"></button>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-dialog [(visible)]="membershipDialog" [style]="{width: '450px'}" header="Detalles de la Membresía" [modal]="true" class="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="field">
+            <label for="name">Nombre</label>
+            <input type="text" pInputText id="name" [(ngModel)]="membership.name" required autofocus />
+            <small class="p-error" *ngIf="submitted && !membership.name">El nombre es obligatorio.</small>
+        </div>
+        <div class="field">
+            <label for="description">Descripción</label>
+            <textarea id="description" pInputTextarea [(ngModel)]="membership.description" rows="3" cols="20"></textarea>
+        </div>
+        <div class="formgrid grid">
+            <div class="field col">
+                <label for="price">Precio</label>
+                <p-inputNumber id="price" [(ngModel)]="membership.price" mode="currency" currency="USD" locale="en-US"></p-inputNumber>
+                <small class="p-error" *ngIf="submitted && !membership.price">El precio es obligatorio.</small>
+            </div>
+            <div class="field col">
+                <label for="duration">Duración (días)</label>
+                <p-inputNumber id="duration" [(ngModel)]="membership.duration"></p-inputNumber>
+                <small class="p-error" *ngIf="submitted && !membership.duration">La duración es obligatoria.</small>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+        <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-text" (click)="saveMembership()"></button>
+    </ng-template>
+</p-dialog>

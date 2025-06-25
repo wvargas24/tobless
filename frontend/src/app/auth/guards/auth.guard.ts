@@ -1,8 +1,6 @@
-// src/auth/guards/auth.guard.ts
-
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
-import { AuthService } from '../services/auth.service'; // ¡Importante! Inyectaremos nuestro servicio
+import { AuthService } from '../services/auth.service';
 
 @Injectable({
     providedIn: 'root'
@@ -10,7 +8,7 @@ import { AuthService } from '../services/auth.service'; // ¡Importante! Inyecta
 export class AuthGuard implements CanActivate {
 
     constructor(
-        private authService: AuthService, // 1. Inyectamos nuestro AuthService
+        private authService: AuthService,
         private router: Router
     ) { }
 
@@ -18,39 +16,34 @@ export class AuthGuard implements CanActivate {
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot
     ): boolean {
-        // Obtenemos el usuario actual desde nuestro servicio.
-        // Esto es más seguro porque el servicio ya ha validado la expiración del token.
         const currentUser = this.authService.currentUserValue;
-
-        // --- LÓGICA PRINCIPAL ---
 
         // A. ¿Hay un usuario autenticado?
         if (currentUser) {
-            // Sí, hay un usuario. Ahora revisemos el rol.
+            // --- LÓGICA MEJORADA ---
 
-            // B. ¿La ruta que intentamos activar requiere un rol específico?
-            //    Esto lo leemos de la propiedad 'data' en la configuración de la ruta.
-            const expectedRole = route.data['expectedRole'];
+            // B. Leemos la lista de roles esperados de la ruta.
+            const expectedRoles = route.data['expectedRoles'] as Array<string>;
 
-            // Si la ruta NO requiere un rol, y el usuario está logueado, damos acceso.
-            if (!expectedRole) {
+            // C. Si la ruta NO define una lista de roles, significa que cualquier
+            //    usuario autenticado puede entrar.
+            if (!expectedRoles || expectedRoles.length === 0) {
                 return true;
             }
 
-            // Si la ruta SÍ requiere un rol, comprobamos si el usuario lo tiene.
-            if (currentUser.role === expectedRole) {
-                // El rol coincide, damos acceso.
-                return true;
+            // D. Si la ruta SÍ define roles, verificamos si el rol del usuario
+            //    está en la lista de roles permitidos.
+            if (expectedRoles.includes(currentUser.role)) {
+                return true; // ¡Acceso permitido!
             } else {
-                // El rol no coincide. No damos acceso y redirigimos.
-                console.error(`Acceso denegado. Se requiere el rol: '${expectedRole}', pero el usuario tiene el rol: '${currentUser.role}'`);
-                this.router.navigate(['/auth/access']); // Redirigimos a la página de "Acceso Denegado"
+                // El rol del usuario no está en la lista. Acceso denegado.
+                console.error(`Acceso denegado. Se requiere uno de los siguientes roles: [${expectedRoles.join(', ')}], pero el usuario tiene el rol: '${currentUser.role}'`);
+                this.router.navigate(['/auth/access']);
                 return false;
             }
         }
 
-        // C. No hay un usuario autenticado.
-        // Redirigimos a la página de login.
+        // E. No hay un usuario autenticado. Redirigir al login.
         console.log('Usuario no autenticado. Redirigiendo al login...');
         this.router.navigate(['/auth/login']);
         return false;
