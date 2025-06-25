@@ -17,7 +17,7 @@ const routes: Routes = [
         children: [
             {
                 path: 'dashboard',
-                data: { breadcrumb: 'Dashboard', expectedRoles: ['admin', 'manager'] },
+                data: { breadcrumb: 'Dashboard', expectedRoles: ['admin', 'manager', 'user'] },
                 loadChildren: () => import('./demo/components/dashboards/dashboards.module').then(m => m.DashboardsModule),
                 canActivate: [AuthGuard]
             },
@@ -32,6 +32,13 @@ const routes: Routes = [
                 loadChildren: () => import('./components/resources/resources.module').then(m => m.ResourcesModule),
                 canActivate: [AuthGuard],
             },
+            {
+                path: 'bookings',
+                data: { breadcrumb: 'Reservas' },
+                loadChildren: () => import('./components/bookings/bookings.module').then(m => m.BookingsModule),
+                canActivate: [AuthGuard]
+            },
+            // ---------------------------------------------
             { path: 'uikit', data: { breadcrumb: 'UI Kit', expectedRoles: ['admin', 'manager', 'receptionist'] }, loadChildren: () => import('./demo/components/uikit/uikit.module').then(m => m.UIkitModule), canActivate: [AuthGuard] },
             { path: 'utilities', data: { breadcrumb: 'Utilities', expectedRoles: ['admin', 'manager', 'receptionist'] }, loadChildren: () => import('./demo/components/utilities/utilities.module').then(m => m.UtilitiesModule), canActivate: [AuthGuard] },
             { path: 'pages', data: { breadcrumb: 'Pages', expectedRoles: ['admin', 'manager', 'receptionist'] }, loadChildren: () => import('./demo/components/pages/pages.module').then(m => m.PagesModule), canActivate: [AuthGuard] },
