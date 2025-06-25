@@ -17,6 +17,10 @@ const membershipSchema = mongoose.Schema({
     type: Number, // Duration in days
     required: [true, 'Please add a duration in days'],
   },
+  amenities: {
+    type: [String],
+    default: []
+  }
 }, {
   timestamps: true,
 });
