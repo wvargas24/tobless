@@ -1,0 +1,67 @@
+<p>admin-resource works!</p>
+<p-toast></p-toast>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+
+<div class="card">
+    <p-toolbar styleClass="mb-4">
+        <ng-template pTemplate="left">
+            <button pButton pRipple label="Nuevo Recurso" icon="pi pi-plus" class="p-button-success" (click)="openNew()"></button>
+        </ng-template>
+    </p-toolbar>
+
+    <p-table [value]="resources" responsiveLayout="scroll">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Capacidad</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-resource>
+            <tr>
+                <td>{{resource.name}}</td>
+                <td>{{resource.type}}</td>
+                <td>{{resource.capacity}}</td>
+                <td>
+                    <p-tag [value]="resource.isActive ? 'Activo' : 'Inactivo'" [severity]="resource.isActive ? 'success' : 'danger'"></p-tag>
+                </td>
+                <td>
+                    <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="editResource(resource)"></button>
+                    <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteResource(resource)"></button>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-dialog [(visible)]="resourceDialog" [style]="{width: '500px'}" header="Detalles del Recurso" [modal]="true" class="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="field">
+            <label for="name">Nombre del Recurso</label>
+            <input type="text" pInputText id="name" [(ngModel)]="resource.name" required autofocus />
+        </div>
+        <div class="field">
+            <label for="type">Tipo</label>
+            <p-dropdown id="type" [options]="resourceTypes" [(ngModel)]="resource.type" placeholder="Selecciona un tipo"></p-dropdown>
+        </div>
+        <div class="field">
+            <label for="capacity">Capacidad</label>
+            <p-inputNumber id="capacity" [(ngModel)]="resource.capacity"></p-inputNumber>
+        </div>
+        <div class="field">
+            <label for="description">Descripción</label>
+            <textarea id="description" pInputTextarea [(ngModel)]="resource.description" rows="3"></textarea>
+        </div>
+        <div class="field">
+            <label for="amenities">Amenidades del Recurso</label>
+            <p-chips id="amenities" [(ngModel)]="resource.amenities" separator=","></p-chips>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+        <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-text" (click)="saveResource()"></button>
+    </ng-template>
+</p-dialog>

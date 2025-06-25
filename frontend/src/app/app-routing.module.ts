@@ -21,16 +21,17 @@ const routes: Routes = [
                 loadChildren: () => import('./demo/components/dashboards/dashboards.module').then(m => m.DashboardsModule),
                 canActivate: [AuthGuard]
             },
-            // --- INICIO DE LA CORRECCIÓN ---
-            // Movemos la ruta de memberships aquí dentro
             {
                 path: 'memberships',
-                data: { breadcrumb: 'Membresías' }, // <-- Le añadimos un breadcrumb
+                data: { breadcrumb: 'Membresías' },
                 loadChildren: () => import('./components/memberships/memberships.module').then(m => m.MembershipsModule)
-                // Nota: No ponemos AuthGuard aquí para que la lista sea pública,
-                // pero las rutas *dentro* de memberships (como 'onboarding') sí lo tienen.
             },
-            // --- FIN DE LA CORRECCIÓN ---
+            {
+                path: 'resources',
+                data: { breadcrumb: 'Recursos', expectedRoles: ['admin', 'manager'] },
+                loadChildren: () => import('./components/resources/resources.module').then(m => m.ResourcesModule),
+                canActivate: [AuthGuard],
+            },
             { path: 'uikit', data: { breadcrumb: 'UI Kit', expectedRoles: ['admin', 'manager', 'receptionist'] }, loadChildren: () => import('./demo/components/uikit/uikit.module').then(m => m.UIkitModule), canActivate: [AuthGuard] },
             { path: 'utilities', data: { breadcrumb: 'Utilities', expectedRoles: ['admin', 'manager', 'receptionist'] }, loadChildren: () => import('./demo/components/utilities/utilities.module').then(m => m.UtilitiesModule), canActivate: [AuthGuard] },
             { path: 'pages', data: { breadcrumb: 'Pages', expectedRoles: ['admin', 'manager', 'receptionist'] }, loadChildren: () => import('./demo/components/pages/pages.module').then(m => m.PagesModule), canActivate: [AuthGuard] },
@@ -43,7 +44,6 @@ const routes: Routes = [
     },
     { path: 'auth', data: { breadcrumb: 'Auth' }, loadChildren: () => import('./components/auth/auth.module').then(m => m.AuthModule) },
     { path: 'notfound', loadChildren: () => import('./demo/components/notfound/notfound.module').then(m => m.NotfoundModule) },
-    // La ruta de 'memberships' ya no está aquí
     { path: '**', redirectTo: '/notfound' }
 ];
 

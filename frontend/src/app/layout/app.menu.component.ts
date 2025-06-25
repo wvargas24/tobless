@@ -89,12 +89,20 @@ export class AppMenuComponent implements OnInit, OnDestroy {
             visible: true
         };
 
+        const resourcesMenu = {
+            label: 'Recursos',
+            icon: 'pi pi-fw pi-box',
+            routerLink: ['/resources/admin'],
+            visible: ['admin', 'manager'].includes(user.role)
+        };
+
 
         // 5. Devolvemos el array final del menú.
         //    Filtramos los elementos que no sean visibles para no enviar objetos vacíos.
         return [
             dashboardMenu,
             membershipsMenu,
+            resourcesMenu,
             bookingsMenu
         ].filter(item => item.visible);
     }
