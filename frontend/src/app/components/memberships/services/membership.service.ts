@@ -11,6 +11,7 @@ export interface Membership {
     price: number;
     duration: number; // Duración en días
     amenities: string[];
+    allowedResourceTypes: string[];
 }
 export interface OnboardingData {
     name: string;

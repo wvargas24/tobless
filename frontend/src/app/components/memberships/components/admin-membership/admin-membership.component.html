@@ -43,6 +43,12 @@
             <textarea id="description" pInputTextarea [(ngModel)]="membership.description" rows="3" cols="20"></textarea>
         </div>
         <div class="field">
+            <label for="allowedResourceTypes">Tipos de Recursos Permitidos</label>
+            <p-multiSelect id="allowedResourceTypes" [options]="availableResourceTypes" [(ngModel)]="membership.allowedResourceTypes" placeholder="Selecciona los tipos permitidos" optionLabel="label" optionValue="value"
+                           display="chip">
+            </p-multiSelect>
+        </div>
+        <div class="field">
             <label for="amenities">Amenidades Incluidas</label>
             <p-chips id="amenities" [(ngModel)]="membership.amenities" separator="," placeholder="Escribe una amenidad y presiona Enter"></p-chips>
             <small>Escribe una amenidad y presiona Enter para añadirla a la lista.</small>

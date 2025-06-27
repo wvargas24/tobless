@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Membership, MembershipService } from '../../services/membership.service';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService, SelectItem } from 'primeng/api';
 
 @Component({
     selector: 'app-admin-membership',
@@ -16,6 +16,8 @@ export class AdminMembershipComponent implements OnInit {
     // Objeto para manejar la membresía que se está creando o editando
     membership: Partial<Membership> = {};
 
+    availableResourceTypes: SelectItem[] = [];
+
     constructor(
         private membershipService: MembershipService,
         private messageService: MessageService,
@@ -24,6 +26,14 @@ export class AdminMembershipComponent implements OnInit {
 
     ngOnInit(): void {
         this.loadMemberships();
+
+        // Llenamos la lista de tipos de recursos disponibles
+        this.availableResourceTypes = [
+            { label: 'Sala de Reuniones', value: 'sala_reuniones' },
+            { label: 'Oficina Privada', value: 'oficina_privada' },
+            { label: 'Escritorio Flexible', value: 'escritorio_flexible' },
+            { label: 'Cabina Telefónica', value: 'cabina_telefonica' }
+        ];
     }
 
     loadMemberships(): void {
