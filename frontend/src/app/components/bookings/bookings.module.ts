@@ -14,6 +14,7 @@ import { ToastModule } from 'primeng/toast';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TagModule } from 'primeng/tag';
+import { ToolbarModule } from 'primeng/toolbar';
 
 @NgModule({
     declarations: [
@@ -31,7 +32,8 @@ import { TagModule } from 'primeng/tag';
         ToastModule,
         ButtonModule,
         ConfirmDialogModule,
-        TagModule
+        TagModule,
+        ToolbarModule
     ]
 })
 export class BookingsModule { }

@@ -61,7 +61,7 @@ export class AppMenuComponent implements OnInit, OnDestroy {
                     icon: 'pi pi-fw pi-eye',
                     routerLink: ['/memberships'],
                     // Visible para todo el personal
-                    visible: true
+                    visible: user.role === 'user'
                 },
                 {
                     label: 'Registrar Miembro',
@@ -97,12 +97,12 @@ export class AppMenuComponent implements OnInit, OnDestroy {
                 {
                     label: 'Recursos',
                     icon: 'pi pi-fw pi-box',
-                    routerLink: ['/resources/admin']
+                    routerLink: ['/resources']
                 },
                 {
                     label: 'Tipos de Recurso',
                     icon: 'pi pi-fw pi-tags',
-                    routerLink: ['/resourcetypes'] // Apunta a la raíz del nuevo módulo
+                    routerLink: ['/resourcetypes']
                 }
             ]
         };

@@ -5,12 +5,10 @@ import { AuthGuard } from 'src/app/auth/guards/auth.guard';
 
 const routes: Routes = [
     {
-        path: 'admin',
+        path: '',
         component: AdminResourceComponent,
         canActivate: [AuthGuard],
-    },
-    // Si no se especifica 'admin', redirigimos ahí por defecto
-    { path: '', redirectTo: 'admin', pathMatch: 'full' }
+    }
 ];
 
 @NgModule({

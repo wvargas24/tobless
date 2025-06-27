@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CalendarOptions, EventInput } from '@fullcalendar/core'; // Importar tipos de FullCalendar
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -32,7 +32,9 @@ export class BookingCalendarComponent implements OnInit {
         private authService: AuthService,
         private messageService: MessageService, // 4. Inyectar los nuevos servicios
         private resourceService: ResourceService,
-        private confirmationService: ConfirmationService
+        private confirmationService: ConfirmationService,
+        private zone: NgZone,
+        private cdr: ChangeDetectorRef
     ) { }
 
     ngOnInit(): void {
@@ -101,8 +103,10 @@ export class BookingCalendarComponent implements OnInit {
     handleEventClick(clickInfo: any): void {
         const bookingId = clickInfo.event.id;
         this.bookingService.getBookingById(bookingId).subscribe(booking => {
+            console.log('Booking details:', booking);
             this.selectedBooking = booking;
-            this.viewBookingDialog = true; // Abrimos el nuevo diálogo
+            this.viewBookingDialog = true;
+            this.cdr.detectChanges(); // Aseguramos que los cambios se detecten
         });
     }
 
@@ -155,5 +159,10 @@ export class BookingCalendarComponent implements OnInit {
 
     getColorForStatus(status: string): string {
         return status === 'confirmada' ? '#22c55e' : '#ef4444'; // verde para confirmada, rojo para cancelada
+    }
+
+    openNewBookingDialog(): void {
+        this.newBooking = {};
+        this.bookingDialog = true;
     }
 }

@@ -1,6 +1,11 @@
 <p-toast></p-toast>
 <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
 <div class="card">
+    <p-toolbar styleClass="mb-4">
+        <ng-template pTemplate="left">
+            <button pButton pRipple label="Agregar Reserva" icon="pi pi-plus" class="p-button-success" (click)="openNewBookingDialog()"></button>
+        </ng-template>
+    </p-toolbar>
     <h3>Calendario de Reservas</h3>
     <full-calendar [options]="calendarOptions"></full-calendar>
 </div>
@@ -15,11 +20,11 @@
         <div class="formgrid grid">
             <div class="field col">
                 <label for="startTime">Inicio</label>
-                <p-calendar id="startTime" [(ngModel)]="newBooking.startTime" [showTime]="true" hourFormat="12" [disabled]="true"></p-calendar>
+                <p-calendar id="startTime" [(ngModel)]="newBooking.startTime" [showTime]="true" hourFormat="12"></p-calendar>
             </div>
             <div class="field col">
                 <label for="endTime">Fin</label>
-                <p-calendar id="endTime" [(ngModel)]="newBooking.endTime" [showTime]="true" hourFormat="12" [disabled]="true"></p-calendar>
+                <p-calendar id="endTime" [(ngModel)]="newBooking.endTime" [showTime]="true" hourFormat="12"></p-calendar>
             </div>
         </div>
         <div class="field">
@@ -34,7 +39,7 @@
     </ng-template>
 </p-dialog>
 
-<p-dialog [(visible)]="viewBookingDialog" [style]="{width: '500px'}" header="Detalles de la Reserva" [modal]="true" (onHide)="selectedBooking = null">
+<p-dialog [(visible)]="viewBookingDialog" [style]="{width: '500px'}" header="Detalles de la Reserva" [modal]="false" (onHide)="selectedBooking = null">
     <ng-template pTemplate="content" *ngIf="selectedBooking">
         <div class="p-fluid">
             <div class="field">
@@ -43,7 +48,7 @@
             </div>
             <div class="field">
                 <label>Tipo de Recurso</label>
-                <!-- <p><strong>{{ selectedBooking.resource.type.name }}</strong></p> -->
+                <p><strong>{{ selectedBooking.resource.type }}</strong></p>
             </div>
             <div class="field">
                 <label>Reservado por</label>
