@@ -5,14 +5,14 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { Booking, BookingService } from '../../services/booking.service';
 import { AuthService } from 'src/app/auth/services/auth.service';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { Resource, ResourceService } from 'src/app/components/resources/services/resource.service';
-
+import { User } from 'src/app/auth/models/user.model';
 
 @Component({
     selector: 'app-booking-calendar',
     templateUrl: './booking-calendar.component.html',
-    providers: [MessageService]
+    providers: [MessageService, ConfirmationService]
 })
 export class BookingCalendarComponent implements OnInit {
 
@@ -23,15 +23,20 @@ export class BookingCalendarComponent implements OnInit {
     resources: Resource[] = []; // Para llenar el dropdown
     newBooking: { resourceId?: string, startTime?: Date, endTime?: Date, notes?: string } = {};
 
+    viewBookingDialog: boolean = false;
+    selectedBooking: Booking | null = null;
+    currentUser: User | null = null;
 
     constructor(
         private bookingService: BookingService,
         private authService: AuthService,
         private messageService: MessageService, // 4. Inyectar los nuevos servicios
-        private resourceService: ResourceService
+        private resourceService: ResourceService,
+        private confirmationService: ConfirmationService
     ) { }
 
     ngOnInit(): void {
+        this.currentUser = this.authService.currentUserValue;
         this.initCalendar();
         this.loadBookings();
         this.loadResources();
@@ -94,8 +99,11 @@ export class BookingCalendarComponent implements OnInit {
     }
 
     handleEventClick(clickInfo: any): void {
-        alert('Has hecho clic en la reserva: ' + clickInfo.event.title + ' (ID: ' + clickInfo.event.id + ')');
-        // En el futuro, aquí podríamos abrir un diálogo para ver/editar/cancelar
+        const bookingId = clickInfo.event.id;
+        this.bookingService.getBookingById(bookingId).subscribe(booking => {
+            this.selectedBooking = booking;
+            this.viewBookingDialog = true; // Abrimos el nuevo diálogo
+        });
     }
 
     hideDialog(): void {
@@ -117,6 +125,30 @@ export class BookingCalendarComponent implements OnInit {
             },
             error: (err) => {
                 this.messageService.add({ severity: 'error', summary: 'Error al Crear', detail: err.error.message || 'No se pudo crear la reserva' });
+            }
+        });
+    }
+
+    cancelBooking(): void {
+        if (!this.selectedBooking) return;
+
+        this.confirmationService.confirm({
+            message: '¿Estás seguro de que quieres cancelar esta reserva?',
+            header: 'Confirmar Cancelación',
+            icon: 'pi pi-exclamation-triangle',
+            acceptLabel: 'Sí, cancelar',
+            rejectLabel: 'No',
+            accept: () => {
+                this.bookingService.cancelBooking(this.selectedBooking!._id).subscribe({
+                    next: () => {
+                        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Reserva cancelada' });
+                        this.viewBookingDialog = false;
+                        this.loadBookings(); // Recargamos para que el calendario se actualice
+                    },
+                    error: (err) => {
+                        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.message || 'No se pudo cancelar' });
+                    }
+                });
             }
         });
     }

@@ -9,7 +9,7 @@ import { ResourceType } from '../../resourcetypes/services/resource-type.service
 export interface Resource {
     _id: string;
     name: string;
-    type: string | ResourceType;
+    type: ResourceType | string;
     capacity: number;
     description?: string;
     amenities?: string[];

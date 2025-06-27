@@ -12,6 +12,8 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
 import { CalendarModule } from 'primeng/calendar';
 import { ToastModule } from 'primeng/toast';
 import { ButtonModule } from 'primeng/button';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { TagModule } from 'primeng/tag';
 
 @NgModule({
     declarations: [
@@ -21,14 +23,15 @@ import { ButtonModule } from 'primeng/button';
         CommonModule,
         FormsModule,
         BookingsRoutingModule,
-        // --- MÓDULOS AÑADIDOS ---
         FullCalendarModule,
         DialogModule,
         DropdownModule,
         InputTextareaModule,
         CalendarModule,
         ToastModule,
-        ButtonModule
+        ButtonModule,
+        ConfirmDialogModule,
+        TagModule
     ]
 })
 export class BookingsModule { }
