@@ -52,7 +52,68 @@ const subscribeToMembership = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+// @desc    Obtener el perfil del usuario logueado
+// @route   GET /api/users/me
+const getMyProfile = async (req, res, next) => {
+    try {
+        // El middleware 'protect' ya nos da el usuario en req.user
+        // Lo buscamos de nuevo para obtener la información más actualizada
+        // y poblamos la información de su membresía.
+        const user = await User.findById(req.user.id).select('-password').populate('membership');
+
+        if (!user) {
+            res.status(404);
+            throw new Error('User not found');
+        }
+
+        res.json(user);
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Actualizar el perfil del usuario logueado
+// @route   PUT /api/users/me
+const updateMyProfile = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.user.id);
+
+        if (user) {
+            // Actualizamos solo los campos que el usuario puede cambiar
+            user.name = req.body.name || user.name;
+            user.email = req.body.email || user.email; // Podrías querer validar si el nuevo email ya existe
+            user.phone = req.body.phone ?? user.phone;
+            user.bio = req.body.bio ?? user.bio;
+            user.profilePictureUrl = req.body.profilePictureUrl ?? user.profilePictureUrl;
+
+            // Si el usuario envía una nueva contraseña, la actualizamos
+            if (req.body.password) {
+                user.password = req.body.password; // El hook 'pre-save' se encargará de hashearla
+            }
+
+            const updatedUser = await user.save();
+
+            // Devolvemos los datos actualizados (sin la contraseña)
+            res.json({
+                _id: updatedUser._id,
+                name: updatedUser.name,
+                email: updatedUser.email,
+                role: updatedUser.role,
+                phone: updatedUser.phone,
+                bio: updatedUser.bio,
+                profilePictureUrl: updatedUser.profilePictureUrl
+            });
+        } else {
+            res.status(404);
+            throw new Error('User not found');
+        }
+    } catch (error) {
+        next(error);
+    }
+};
 
 module.exports = {
     subscribeToMembership,
+    getMyProfile,
+    updateMyProfile
 };

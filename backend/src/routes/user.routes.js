@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 // Importamos el controlador que maneja la lógica de suscripción
-const { subscribeToMembership } = require('../controllers/user.controller');
+const { subscribeToMembership, getMyProfile, updateMyProfile } = require('../controllers/user.controller');
 
 // Importamos los middlewares que necesitamos
 const { protect } = require('../middlewares/authMiddleware'); // Para asegurar que el usuario esté logueado
@@ -41,5 +41,8 @@ router
         subscribeToMembership         // D. Si todo lo anterior pasa, se ejecuta el controlador final.
     );
 
+router.route('/me')
+    .get(protect, getMyProfile)
+    .put(protect, updateMyProfile);
 
 module.exports = router;

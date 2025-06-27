@@ -21,6 +21,22 @@ const userSchema = mongoose.Schema(
       enum: ['user', 'admin', 'manager', 'receptionist', 'barista'],
       default: 'user',
     },
+    phone: {
+      type: String,
+      default: ''
+    },
+    profilePictureUrl: {
+      type: String,
+      default: '' // Guardaremos la URL a una imagen, no el archivo en sí
+    },
+    bio: {
+      type: String,
+      default: ''
+    },
+    isActive: { // Para "soft delete" o desactivar usuarios
+      type: Boolean,
+      default: true
+    },
     membership: {
       type: mongoose.Schema.Types.ObjectId, // Referencia al ID de un documento de Membership
       ref: 'Membership', // Le dice a Mongoose que este ID corresponde al modelo 'Membership'

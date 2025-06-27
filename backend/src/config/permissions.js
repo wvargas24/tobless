@@ -16,6 +16,8 @@ const PERMISSIONS = {
     BOOKINGS_MANAGE: 'bookings:manage',
     BOOKINGS_VIEW_ALL: 'bookings:view_all',
     RESOURCES_MANAGE: 'resources:manage',
+    USERS_EDIT: 'users:edit', // Para editar cualquier usuario
+    USERS_DELETE: 'users:delete'
 };
 
 const ROLE_PERMISSIONS = new Map();
@@ -28,6 +30,8 @@ ROLE_PERMISSIONS.set(ROLES.ADMIN, [
     PERMISSIONS.BOOKINGS_MANAGE,
     PERMISSIONS.BOOKINGS_VIEW_ALL,
     PERMISSIONS.BOOKINGS_CREATE,
+    PERMISSIONS.USERS_EDIT,
+    PERMISSIONS.USERS_DELETE,
     'users:view_all',
     'memberships:assign',
 ]);

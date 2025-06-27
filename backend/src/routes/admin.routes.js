@@ -1,7 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-const { createUser } = require('../controllers/admin.controller');
+const { createUser,
+    getAllUsers,
+    getUserById,
+    updateUser,
+    deleteUser } = require('../controllers/admin.controller');
 const { protect } = require('../middlewares/authMiddleware');
 const { checkPermission } = require('../middlewares/permissionMiddleware');
 const { PERMISSIONS } = require('../config/permissions');
@@ -25,14 +29,36 @@ const createUserValidationRules = () => {
 };
 
 // @route   POST /api/admin/users
-router
-    .route('/users')
+router.route('/users')
     .post(
-        protect,                                          // 1. Usuario logueado
-        checkPermission(PERMISSIONS.USERS_CREATE_WITH_ROLE), // 2. Tiene el permiso específico
-        createUserValidationRules(),                      // 3. Reglas de validación
-        validate,                                         // 4. Ejecuta validación
-        createUser                                        // 5. Ejecuta controlador
+        protect,
+        checkPermission(PERMISSIONS.USERS_CREATE_WITH_ROLE),
+        createUserValidationRules(),
+        validate,
+        createUser
+    )
+    .get(
+        protect,
+        checkPermission('users:view_all'), // Usamos el string del permiso
+        getAllUsers
+    );
+
+// Rutas para un usuario específico por ID
+router.route('/users/:id')
+    .get(
+        protect,
+        checkPermission('users:view_all'),
+        getUserById
+    )
+    .put(
+        protect,
+        checkPermission(PERMISSIONS.USERS_EDIT),
+        updateUser
+    )
+    .delete(
+        protect,
+        checkPermission(PERMISSIONS.USERS_DELETE),
+        deleteUser
     );
 
 module.exports = router;
