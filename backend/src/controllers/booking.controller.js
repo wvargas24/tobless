@@ -86,7 +86,10 @@ const getAllBookings = async (req, res, next) => {
     // Por ahora, obtenemos todas las reservas.
     const bookings = await Booking.find({})
       .populate('user', 'name email') // Traemos el nombre y email del usuario
-      .populate('resource', 'name type') // y el nombre y tipo del recurso
+      .populate({
+        path: 'resource',
+        populate: { path: 'type', select: 'name' }
+      }) // y el nombre y tipo del recurso
       .sort({ startTime: -1 }); // Ordenamos por fecha de inicio, las más nuevas primero
 
     res.json(bookings);
@@ -102,7 +105,11 @@ const getAllBookings = async (req, res, next) => {
 // @access  Private
 const getMyBookings = async (req, res, next) => {
   try {
-    const bookings = await Booking.find({ user: req.user._id }).populate('resource', 'name type');
+    const bookings = await Booking.find({ user: req.user._id }).populate('resource', 'name type')
+      .populate({
+        path: 'resource',
+        populate: { path: 'type', select: 'name' }
+      });
     res.json(bookings);
   } catch (error) {
     next(error);
