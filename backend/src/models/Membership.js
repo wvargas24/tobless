@@ -21,11 +21,10 @@ const membershipSchema = mongoose.Schema({
     type: [String],
     default: []
   },
-  allowedResourceTypes: {
-    type: [String],
-    enum: ['sala_reuniones', 'oficina_privada', 'escritorio_flexible', 'cabina_telefonica'],
-    default: [],
-  },
+  allowedResourceTypes: [{ // Es un array de referencias
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ResourceType',
+  }],
 }, {
   timestamps: true,
 });

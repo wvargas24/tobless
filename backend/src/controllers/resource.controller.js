@@ -21,7 +21,8 @@ const createResource = async (req, res, next) => {
 const getAllResources = async (req, res, next) => {
     try {
         // Mostramos solo los recursos activos
-        const resources = await Resource.find({ isActive: true });
+        const resources = await Resource.find({ isActive: true })
+            .populate('type', 'name'); // Poblamos el campo 'type' con el nombre del tipo de recurso
         res.json(resources);
     } catch (error) {
         logger.error('Error fetching resources:', error);

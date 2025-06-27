@@ -7,10 +7,9 @@ const resourceSchema = mongoose.Schema({
         trim: true,
     },
     type: {
-        type: String,
-        required: true,
-        enum: ['sala_reuniones', 'oficina_privada', 'escritorio_flexible', 'cabina_telefonica'],
-        default: 'escritorio_flexible',
+        type: mongoose.Schema.Types.ObjectId, // Ahora es una referencia
+        ref: 'ResourceType',                  // Apunta a nuestro nuevo modelo
+        required: [true, 'El tipo de recurso es obligatorio.'],
     },
     capacity: {
         type: Number,

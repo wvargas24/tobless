@@ -33,8 +33,13 @@ const createBooking = async (req, res, next) => {
     }
 
     // 3. ¿La membresía permite reservar este TIPO de recurso?
-    if (!userMembershipPlan.allowedResourceTypes.includes(resource.type)) {
-      res.status(403); throw new Error(`Tu membresía no permite reservar recursos de tipo '${resource.type}'`);
+    const allowedTypesAsString = userMembershipPlan.allowedResourceTypes.map(id => id.toString());
+
+    if (!allowedTypesAsString.includes(resource.type.toString())) {
+      // Obtenemos el nombre del tipo para el mensaje de error
+      const resourceTypeDoc = await ResourceType.findById(resource.type);
+      res.status(403);
+      throw new Error(`Tu membresía no permite reservar recursos de tipo '${resourceTypeDoc.name}'`);
     }
 
     // 4. ¿El recurso ya está reservado en ese horario? (Prevención de doble reserva)
