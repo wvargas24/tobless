@@ -15,7 +15,7 @@ const validate = (req, res, next) => {
 
 const resourceValidationRules = () => [
     check('name', 'El nombre es obligatorio').not().isEmpty(),
-    check('type', 'El tipo de recurso es obligatorio').isIn(['sala_reuniones', 'oficina_privada', 'escritorio_flexible', 'cabina_telefonica']),
+    check('type', 'El tipo de recurso es obligatorio y debe ser un ID válido').isMongoId(),
 ];
 
 router.route('/')
@@ -32,7 +32,7 @@ router.route('/:id')
     .put(
         protect,
         checkPermission(PERMISSIONS.RESOURCES_MANAGE), // Solo admin/manager
-        resourceValidationRules(),
+        check('type', 'Invalid Resource Type ID').optional().isMongoId(),
         validate,
         updateResource
     )
