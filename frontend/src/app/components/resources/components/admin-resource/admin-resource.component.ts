@@ -52,6 +52,9 @@ export class AdminResourceComponent implements OnInit {
 
     editResource(resource: Resource): void {
         this.resource = { ...resource };
+        if (this.resource.type && typeof this.resource.type === 'object') {
+            this.resource.type = (this.resource.type as ResourceType)._id;
+        }
         this.resourceDialog = true;
     }
 

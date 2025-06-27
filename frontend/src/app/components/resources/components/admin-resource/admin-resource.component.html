@@ -12,18 +12,24 @@
     <p-table [value]="resources" responsiveLayout="scroll">
         <ng-template pTemplate="header">
             <tr>
-                <th>Nombre</th>
-                <th>Tipo</th>
+                <th pSortableColumn="name">Nombre <p-sortIcon field="name"></p-sortIcon></th>
+                <th pSortableColumn="type.name">Tipo <p-sortIcon field="type.name"></p-sortIcon></th>
                 <th>Capacidad</th>
+                <th>Amenidades</th>
                 <th>Estado</th>
-                <th>Acciones</th>
+                <th style="width: 8rem">Acciones</th>
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-resource>
             <tr>
                 <td>{{resource.name}}</td>
-                <td>{{resource.type}}</td>
+                <td>{{resource.type?.name}}</td>
                 <td>{{resource.capacity}}</td>
+                <td>
+                    <div class="flex flex-wrap gap-1">
+                        <p-chip *ngFor="let amenity of resource.amenities" [label]="amenity" styleClass="text-xs"></p-chip>
+                    </div>
+                </td>
                 <td>
                     <p-tag [value]="resource.isActive ? 'Activo' : 'Inactivo'" [severity]="resource.isActive ? 'success' : 'danger'"></p-tag>
                 </td>

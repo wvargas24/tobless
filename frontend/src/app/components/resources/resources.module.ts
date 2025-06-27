@@ -18,6 +18,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { ChipsModule } from 'primeng/chips';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TagModule } from 'primeng/tag';
+import { ChipModule } from 'primeng/chip';
 
 @NgModule({
     declarations: [
@@ -39,7 +40,8 @@ import { TagModule } from 'primeng/tag';
         InputNumberModule,
         ChipsModule,
         ConfirmDialogModule,
-        TagModule
+        TagModule,
+        ChipModule
     ]
 })
 export class ResourcesModule { }
