@@ -10,7 +10,9 @@ import { UserService } from '../../services/user.service';
 })
 export class UserListComponent implements OnInit {
 
-    users: User[] = [];
+    customers: User[] = [];
+    staff: User[] = [];
+
     userDialog: boolean = false;
     submitted: boolean = false;
     user: Partial<User> = {};
@@ -35,11 +37,14 @@ export class UserListComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
-        this.loadUsers();
+        this.loadAllUsers();
     }
 
-    loadUsers(): void {
-        this.userService.getUsers().subscribe(data => this.users = data);
+    loadAllUsers(): void {
+        // Obtenemos la lista de clientes
+        this.userService.getUsers('customer').subscribe(data => this.customers = data);
+        // Obtenemos la lista del personal
+        this.userService.getUsers('staff').subscribe(data => this.staff = data);
     }
 
     editUser(user: User): void {
@@ -55,7 +60,7 @@ export class UserListComponent implements OnInit {
             accept: () => {
                 this.userService.deactivateUser(user.id).subscribe(() => {
                     this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Usuario desactivado' });
-                    this.loadUsers();
+                    this.loadAllUsers();
                 });
             }
         });
@@ -75,7 +80,7 @@ export class UserListComponent implements OnInit {
         this.userService.updateUser(this.user.id, this.user).subscribe({
             next: () => {
                 this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Usuario actualizado' });
-                this.loadUsers();
+                this.loadAllUsers();
             },
             error: (err) => {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.message || 'No se pudo actualizar' });

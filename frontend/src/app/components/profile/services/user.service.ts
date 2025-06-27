@@ -14,8 +14,17 @@ export class UserService {
     constructor(private http: HttpClient) { }
 
     // Obtiene todos los usuarios (para el admin)
-    getUsers(): Observable<User[]> {
-        return this.http.get<User[]>(this.adminApiUrl);
+    getUsers(type?: 'customer' | 'staff'): Observable<User[]> {
+        let url = this.adminApiUrl;
+        if (type) {
+            url += `?type=${type}`;
+        }
+        return this.http.get<User[]>(url);
+    }
+
+    // Crea un nuevo usuario
+    createUser(userData: Partial<User>): Observable<User> {
+        return this.http.post<User>(this.adminApiUrl, userData);
     }
 
     // Actualiza un usuario por su ID (para el admin)

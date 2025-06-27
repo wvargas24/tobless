@@ -40,84 +40,97 @@ export class AppMenuComponent implements OnInit, OnDestroy {
             return [];
         }
 
-        // --- Definimos la estructura de nuestro nuevo menú ---
-
         const dashboardMenu = {
             label: 'Dashboard',
             icon: 'pi pi-home',
             routerLink: ['/dashboard'],
-            // Usamos la propiedad 'visible' para controlar el acceso por rol
-            visible: ['admin', 'manager', 'receptionist'].includes(user.role)
-        };
-
-        const membershipsMenu = {
-            label: 'Membresías',
-            icon: 'pi pi-fw pi-id-card',
-            // Este elemento principal es visible para todo el personal
-            visible: ['admin', 'manager', 'receptionist'].includes(user.role),
-            items: [
-                {
-                    label: 'Ver Planes',
-                    icon: 'pi pi-fw pi-eye',
-                    routerLink: ['/memberships'],
-                    // Visible para todo el personal
-                    visible: user.role === 'user'
-                },
-                {
-                    label: 'Registrar Miembro',
-                    icon: 'pi pi-fw pi-user-plus',
-                    routerLink: ['/memberships/onboarding'],
-                    // Visible para todo el personal (admin, manager, receptionist)
-                    visible: true
-                },
-                {
-                    label: 'Administrar Planes',
-                    icon: 'pi pi-fw pi-cog',
-                    routerLink: ['/memberships/admin'], // Suponiendo una futura ruta
-                    // Visible solo para el admin
-                    visible: user.role === 'admin'
-                }
-            ]
+            visible: ['admin', 'manager'].includes(user.role)
         };
 
         const bookingsMenu = {
             label: 'Reservas',
             icon: 'pi pi-fw pi-calendar',
-            routerLink: ['/bookings'], // Suponiendo una futura ruta
-            visible: true
+            routerLink: ['/bookings'],
+            visible: true // Visible para todos los usuarios logueados
         };
 
-        const managementMenu = {
-            label: 'Gestión',
+        const publicMembershipsMenu = {
+            label: 'Planes y Precios',
+            icon: 'pi pi-fw pi-eye',
+            routerLink: ['/memberships'],
+            // Este enlace es para que un cliente vea los planes, no para gestionarlos.
+            visible: user.role === 'user'
+        };
+
+        // --- SECCIÓN DE GESTIÓN DE MEMBRESÍAS (Para Staff) ---
+        const membershipsManagementMenu = {
+            label: 'Membresías',
+            icon: 'pi pi-fw pi-id-card',
+            visible: ['admin', 'manager', 'receptionist'].includes(user.role),
+            items: [
+                {
+                    label: 'Registrar Miembro',
+                    icon: 'pi pi-fw pi-user-plus',
+                    routerLink: ['/memberships/onboarding'],
+                    visible: true
+                },
+                {
+                    label: 'Administrar Planes',
+                    icon: 'pi pi-fw pi-cog',
+                    routerLink: ['/memberships/admin'],
+                    visible: user.role === 'admin'
+                }
+            ]
+        };
+
+        // --- SECCIÓN DE GESTIÓN DE RECURSOS (Para Admin/Manager) ---
+        const resourcesManagementMenu = {
+            label: 'Recursos',
             icon: 'pi pi-fw pi-server',
             visible: ['admin', 'manager'].includes(user.role),
             items: [
                 {
-                    label: 'Recursos',
+                    label: 'Gestionar Recursos',
                     icon: 'pi pi-fw pi-box',
                     routerLink: ['/resources']
                 },
                 {
-                    label: 'Tipos de Recurso',
+                    label: 'Gestionar Tipos',
                     icon: 'pi pi-fw pi-tags',
                     routerLink: ['/resourcetypes']
                 }
             ]
         };
 
-        const usersMenu = {
+        // --- SECCIÓN DE GESTIÓN DE USUARIOS (Para Admin/Manager) ---
+        const usersManagementMenu = {
             label: 'Usuarios',
             icon: 'pi pi-fw pi-users',
-            routerLink: ['/profile/list'], // Suponiendo una futura ruta
-            visible: ['admin', 'manager'].includes(user.role)
+            visible: ['admin', 'manager'].includes(user.role),
+            items: [
+                {
+                    label: 'Lista de Usuarios',
+                    icon: 'pi pi-fw pi-list',
+                    routerLink: ['/profile/list'],
+                    visible: true // Visible para admin y manager
+                },
+                {
+                    label: 'Crear Usuario',
+                    icon: 'pi pi-fw pi-user-plus',
+                    routerLink: ['/profile/create'],
+                    visible: user.role === 'admin' // Visible solo para admin
+                }
+            ]
         };
 
+        // Devolvemos el array final del menú con todos los items de primer nivel
         return [
             dashboardMenu,
-            membershipsMenu,
-            managementMenu,
             bookingsMenu,
-            usersMenu
+            publicMembershipsMenu,
+            membershipsManagementMenu,
+            resourcesManagementMenu,
+            usersManagementMenu
         ].filter(item => item.visible);
     }
 }

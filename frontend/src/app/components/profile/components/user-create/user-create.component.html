@@ -1,0 +1,33 @@
+<p-toast></p-toast>
+<div class="card">
+    <span class="text-900 text-xl font-bold mb-4 block">Crear Nuevo Usuario</span>
+    <div class="grid formgrid p-fluid">
+        <div class="field mb-4 col-12 md:col-6">
+            <label for="name" class="font-medium text-900">Nombre Completo</label>
+            <input id="name" type="text" pInputText [(ngModel)]="newUser.name" required>
+        </div>
+        <div class="field mb-4 col-12 md:col-6">
+            <label for="email" class="font-medium text-900">Email</label>
+            <input id="email" type="email" pInputText [(ngModel)]="newUser.email" required>
+        </div>
+        <div class="field mb-4 col-12 md:col-6">
+            <label for="password" class="font-medium text-900">Contraseña</label>
+            <p-password id="password" [(ngModel)]="newUser.password" [toggleMask]="true" [feedback]="true" required></p-password>
+        </div>
+        <div class="field mb-4 col-12 md:col-6">
+            <label for="role" class="font-medium text-900">Rol</label>
+            <p-dropdown id="role" [options]="roles" [(ngModel)]="newUser.role" placeholder="Selecciona un rol" [required]="true"></p-dropdown>
+        </div>
+        <div class="field mb-4 col-12 md:col-6">
+            <label for="phone" class="font-medium text-900">Teléfono</label>
+            <input id="phone" type="text" pInputText [(ngModel)]="newUser.phone">
+        </div>
+        <div class="field mb-4 col-12">
+            <label for="bio" class="font-medium text-900">Biografía</label>
+            <textarea id="bio" type="text" pInputTextarea rows="5" [(ngModel)]="newUser.bio"></textarea>
+        </div>
+        <div class="col-12">
+            <button pButton pRipple label="Crear Usuario" class="w-auto mt-3" (click)="createUser()"></button>
+        </div>
+    </div>
+</div>

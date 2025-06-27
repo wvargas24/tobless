@@ -13,6 +13,7 @@ export interface User {
     updatedAt?: Date;
     lastLogin?: Date;
     isActive?: boolean;
+    password?: string;
     newPassword?: string;
 }
 
