@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { createResource, getAllResources, updateResource, deleteResource } = require('../controllers/resource.controller');
+const { createResource, getAllResources, updateResource, deleteResource, getBookableResources } = require('../controllers/resource.controller');
 const { protect } = require('../middlewares/authMiddleware');
 const { checkPermission } = require('../middlewares/permissionMiddleware');
 const { PERMISSIONS } = require('../config/permissions');
@@ -27,6 +27,9 @@ router.route('/')
         validate,
         createResource
     );
+
+router.route('/bookable')
+    .get(protect, getBookableResources);
 
 router.route('/:id')
     .put(

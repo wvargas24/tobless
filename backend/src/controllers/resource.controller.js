@@ -68,9 +68,39 @@ const deleteResource = async (req, res, next) => {
     }
 };
 
+// @desc    Obtener solo los recursos que el usuario logueado puede reservar
+// @route   GET /api/resources/bookable
+// @access  Private
+const getBookableResources = async (req, res, next) => {
+    try {
+        // 1. Obtenemos el usuario y su plan de membresía poblado
+        const user = await User.findById(req.user.id).populate('membership');
+
+        if (!user || user.membershipStatus !== 'active' || !user.membership) {
+            // Si no tiene membresía activa, no puede reservar nada.
+            return res.json([]);
+        }
+
+        // 2. Obtenemos la lista de IDs de los tipos de recurso permitidos por su membresía
+        const allowedTypes = user.membership.allowedResourceTypes;
+
+        // 3. Buscamos todos los recursos activos cuyo 'type' esté en la lista de permitidos
+        const resources = await Resource.find({
+            isActive: true,
+            type: { $in: allowedTypes }
+        }).populate('type', 'name');
+
+        res.json(resources);
+    } catch (error) {
+        logger.error('Error fetching bookable resources:', error);
+        next(error);
+    }
+};
+
 module.exports = {
     createResource,
     getAllResources,
     updateResource,
     deleteResource,
+    getBookableResources,
 };

@@ -4,6 +4,7 @@ const Booking = require('../models/Booking');
 const Resource = require('../models/Resource');
 const User = require('../models/User');
 const Membership = require('../models/Membership');
+const ResourceType = require('../models/ResourceType');
 const logger = require('../config/logger');
 
 // @desc    Crear una nueva reserva
