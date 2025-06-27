@@ -7,7 +7,7 @@ const logger = require('../config/logger'); // Importar el logger
 // @access  Private (Admin)
 const createMembership = async (req, res) => {
   try {
-    const { name, description, price, duration, amenities } = req.body;
+    const { name, description, price, duration, amenities, allowedResourceTypes } = req.body;
 
     // Basic validation (more robust validation is in routes)
     if (!name || !price || !duration) {
@@ -20,6 +20,7 @@ const createMembership = async (req, res) => {
       price,
       duration,
       amenities: amenities || [],
+      allowedResourceTypes: allowedResourceTypes || []
     });
 
     const createdMembership = await membership.save();
@@ -67,7 +68,7 @@ const getMembershipById = async (req, res) => {
 // @access  Private (Admin)
 const updateMembership = async (req, res) => {
   try {
-    const { name, description, price, duration, amenities } = req.body;
+    const { name, description, price, duration, amenities, allowedResourceTypes } = req.body;
     const membership = await Membership.findById(req.params.id);
 
     if (membership) {
@@ -75,6 +76,7 @@ const updateMembership = async (req, res) => {
       membership.description = description || membership.description;
       membership.price = price || membership.price;
       membership.duration = duration || membership.duration;
+      membership.allowedResourceTypes = allowedResourceTypes ?? membership.allowedResourceTypes;
       // Si se envía un array de amenidades, lo actualizamos
       if (amenities) {
         membership.amenities = amenities;
