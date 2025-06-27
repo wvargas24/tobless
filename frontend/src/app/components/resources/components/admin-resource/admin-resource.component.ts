@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ConfirmationService, MessageService, SelectItem } from 'primeng/api';
 import { Resource, ResourceService } from '../../services/resource.service';
+import { ResourceType, ResourceTypeService } from 'src/app/components/resourcetypes/services/resource-type.service';
 
 @Component({
     selector: 'app-admin-resource',
@@ -15,25 +16,32 @@ export class AdminResourceComponent implements OnInit {
     resource: Partial<Resource> = {};
 
     // Opciones para el dropdown del tipo de recurso
-    resourceTypes: SelectItem[] = [
-        { label: 'Sala de Reuniones', value: 'sala_reuniones' },
-        { label: 'Oficina Privada', value: 'oficina_privada' },
-        { label: 'Escritorio Flexible', value: 'escritorio_flexible' },
-        { label: 'Cabina Telefónica', value: 'cabina_telefonica' }
-    ];
+    resourceTypes: SelectItem[] = [];
 
     constructor(
         private resourceService: ResourceService,
         private messageService: MessageService,
-        private confirmationService: ConfirmationService
+        private confirmationService: ConfirmationService,
+        private resourceTypeService: ResourceTypeService
     ) { }
 
     ngOnInit(): void {
         this.loadResources();
+        this.loadResourceTypes();
     }
 
     loadResources(): void {
         this.resourceService.getResources().subscribe(data => this.resources = data);
+    }
+
+    loadResourceTypes(): void {
+        // Ya no es una lista quemada, ¡ahora viene de la API!
+        this.resourceTypeService.getResourceTypes().subscribe(types => {
+            this.resourceTypes = types.map(type => ({
+                label: type.name, // Usamos el nombre del tipo
+                value: type._id  // Usamos su ID como valor
+            }));
+        });
     }
 
     openNew(): void {

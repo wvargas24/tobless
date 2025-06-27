@@ -89,11 +89,22 @@ export class AppMenuComponent implements OnInit, OnDestroy {
             visible: true
         };
 
-        const resourcesMenu = {
-            label: 'Recursos',
-            icon: 'pi pi-fw pi-box',
-            routerLink: ['/resources/admin'],
-            visible: ['admin', 'manager'].includes(user.role)
+        const managementMenu = {
+            label: 'Gestión',
+            icon: 'pi pi-fw pi-server',
+            visible: ['admin', 'manager'].includes(user.role),
+            items: [
+                {
+                    label: 'Recursos',
+                    icon: 'pi pi-fw pi-box',
+                    routerLink: ['/resources/admin']
+                },
+                {
+                    label: 'Tipos de Recurso',
+                    icon: 'pi pi-fw pi-tags',
+                    routerLink: ['/resourcetypes'] // Apunta a la raíz del nuevo módulo
+                }
+            ]
         };
 
 
@@ -102,7 +113,7 @@ export class AppMenuComponent implements OnInit, OnDestroy {
         return [
             dashboardMenu,
             membershipsMenu,
-            resourcesMenu,
+            managementMenu,
             bookingsMenu
         ].filter(item => item.visible);
     }

@@ -3,11 +3,13 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
+import { ResourceType } from '../../resourcetypes/services/resource-type.service';
+
 // Interfaz que define la estructura de un Recurso
 export interface Resource {
     _id: string;
     name: string;
-    type: 'sala_reuniones' | 'oficina_privada' | 'escritorio_flexible' | 'cabina_telefonica';
+    type: string | ResourceType;
     capacity: number;
     description?: string;
     amenities?: string[];

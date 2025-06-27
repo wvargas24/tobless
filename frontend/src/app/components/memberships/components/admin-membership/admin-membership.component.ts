@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Membership, MembershipService } from '../../services/membership.service';
 import { ConfirmationService, MessageService, SelectItem } from 'primeng/api';
+import { ResourceType, ResourceTypeService } from 'src/app/components/resourcetypes/services/resource-type.service';
 
 @Component({
     selector: 'app-admin-membership',
@@ -21,23 +22,28 @@ export class AdminMembershipComponent implements OnInit {
     constructor(
         private membershipService: MembershipService,
         private messageService: MessageService,
-        private confirmationService: ConfirmationService
+        private confirmationService: ConfirmationService,
+        private resourceTypeService: ResourceTypeService
     ) { }
 
     ngOnInit(): void {
         this.loadMemberships();
 
         // Llenamos la lista de tipos de recursos disponibles
-        this.availableResourceTypes = [
-            { label: 'Sala de Reuniones', value: 'sala_reuniones' },
-            { label: 'Oficina Privada', value: 'oficina_privada' },
-            { label: 'Escritorio Flexible', value: 'escritorio_flexible' },
-            { label: 'Cabina Telefónica', value: 'cabina_telefonica' }
-        ];
+        this.loadResourceTypes();
     }
 
     loadMemberships(): void {
         this.membershipService.getMemberships().subscribe(data => this.memberships = data);
+    }
+
+    loadResourceTypes(): void {
+        this.resourceTypeService.getResourceTypes().subscribe(types => {
+            this.availableResourceTypes = types.map(type => ({
+                label: type.name, // Usamos el nombre del tipo
+                value: type._id  // Usamos su ID como valor
+            }));
+        });
     }
 
     openNew(): void {
