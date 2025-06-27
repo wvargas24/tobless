@@ -1,4 +1,5 @@
 const Resource = require('../models/Resource');
+const User = require('../models/User');
 const logger = require('../config/logger');
 
 // @desc    Crear un nuevo recurso
