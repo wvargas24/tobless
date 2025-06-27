@@ -77,7 +77,7 @@
 
     <ng-template pTemplate="footer">
         <button pButton pRipple label="Cerrar" icon="pi pi-times" class="p-button-text" (click)="viewBookingDialog = false"></button>
-        <button pButton pRipple label="Cancelar Reserva" icon="pi pi-trash" class="p-button-danger" *ngIf="selectedBooking && currentUser?.id === selectedBooking.user._id && selectedBooking.status === 'confirmada'"
+        <button pButton pRipple label="Cancelar Reserva" icon="pi pi-trash" class="p-button-danger" *ngIf="selectedBooking && currentUser?._id === selectedBooking.user._id && selectedBooking.status === 'confirmada'"
                 (click)="cancelBooking()"></button>
     </ng-template>
 </p-dialog>

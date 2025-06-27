@@ -58,3 +58,44 @@
         </p-tabPanel>
     </p-tabView>
 </div>
+
+<p-dialog [(visible)]="userDialog" [style]="{width: '500px'}" header="Editar Detalles del Usuario" [modal]="true" class="p-fluid">
+    <ng-template pTemplate="content">
+
+        <div class="field">
+            <label for="name">Nombre Completo</label>
+            <input type="text" pInputText id="name" [(ngModel)]="user.name" required autofocus />
+            <small class="p-error" *ngIf="submitted && !user.name">El nombre es obligatorio.</small>
+        </div>
+
+        <div class="field">
+            <label for="email">Email</label>
+            <input type="email" pInputText id="email" [(ngModel)]="user.email" required />
+            <small class="p-error" *ngIf="submitted && !user.email">El email es obligatorio.</small>
+        </div>
+
+        <div class="field" *ngIf="user.role === 'user'">
+            <label for="membership">Membresía</label>
+            <p-dropdown id="membership" [options]="memberships" [(ngModel)]="user.membership" placeholder="Asigna una membresía" [showClear]="true">
+            </p-dropdown>
+        </div>
+
+        <div class="field">
+            <label for="role">Rol</label>
+            <p-dropdown id="role" [options]="roles" [(ngModel)]="user.role" placeholder="Selecciona un rol"></p-dropdown>
+        </div>
+
+        <div class="field">
+            <label for="status">Estado de la Cuenta</label>
+            <p-dropdown id="status" [options]="statuses" [(ngModel)]="user.isActive" placeholder="Selecciona un estado"></p-dropdown>
+        </div>
+
+
+
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+        <button pButton pRipple label="Guardar Cambios" icon="pi pi-check" class="" (click)="saveUser()"></button>
+    </ng-template>
+</p-dialog>

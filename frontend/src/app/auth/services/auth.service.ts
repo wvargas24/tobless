@@ -29,7 +29,7 @@ export class AuthService {
                 const currentTime = Date.now() / 1000;
                 if (decodedToken.exp > currentTime) {
                     const user: User = {
-                        id: decodedToken.sub,
+                        _id: decodedToken.sub,
                         name: decodedToken.name,
                         email: decodedToken.email,
                         role: decodedToken.role
@@ -49,7 +49,7 @@ export class AuthService {
             tap(response => {
                 const decodedToken: any = jwtDecode(response.token);
                 const user: User = {
-                    id: decodedToken.sub,
+                    _id: decodedToken.sub,
                     name: decodedToken.name,
                     email: decodedToken.email,
                     role: decodedToken.role

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ConfirmationService, MessageService, SelectItem } from 'primeng/api';
 import { User } from 'src/app/auth/models/user.model';
 import { UserService } from '../../services/user.service';
+import { Membership, MembershipService } from 'src/app/components/memberships/services/membership.service'; // 1. Importar
 
 @Component({
     selector: 'app-user-list',
@@ -30,14 +31,18 @@ export class UserListComponent implements OnInit {
         { label: 'Inactivo', value: false }
     ];
 
+    memberships: SelectItem[] = [];
+
     constructor(
         private userService: UserService,
         private messageService: MessageService,
-        private confirmationService: ConfirmationService
+        private confirmationService: ConfirmationService,
+        private membershipService: MembershipService
     ) { }
 
     ngOnInit(): void {
         this.loadAllUsers();
+        this.loadMemberships();
     }
 
     loadAllUsers(): void {
@@ -47,8 +52,14 @@ export class UserListComponent implements OnInit {
         this.userService.getUsers('staff').subscribe(data => this.staff = data);
     }
 
+    loadMemberships(): void {
+        this.membershipService.getMemberships().subscribe(data => {
+            this.memberships = data.map(m => ({ label: m.name, value: m._id }));
+        });
+    }
+
     editUser(user: User): void {
-        this.user = { ...user };
+        this.user = { ...user, membership: (user.membership as any)?._id };
         this.userDialog = true;
     }
 
@@ -58,7 +69,7 @@ export class UserListComponent implements OnInit {
             header: 'Confirmar Desactivación',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
-                this.userService.deactivateUser(user.id).subscribe(() => {
+                this.userService.deactivateUser(user._id).subscribe(() => {
                     this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Usuario desactivado' });
                     this.loadAllUsers();
                 });
@@ -73,11 +84,13 @@ export class UserListComponent implements OnInit {
 
     saveUser(): void {
         this.submitted = true;
-        if (!this.user.name?.trim() || !this.user.id) {
+        console.log('Guardando usuario:', this.user);
+        if (!this.user.name?.trim() || !this.user._id) {
+            console.warn('Nombre o ID del usuario no proporcionados');
             return;
         }
 
-        this.userService.updateUser(this.user.id, this.user).subscribe({
+        this.userService.updateUser(this.user._id, this.user).subscribe({
             next: () => {
                 this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Usuario actualizado' });
                 this.loadAllUsers();
