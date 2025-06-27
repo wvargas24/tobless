@@ -78,7 +78,9 @@ export class BookingCalendarComponent implements OnInit {
     }
 
     loadResources(): void {
-        this.resourceService.getResources().subscribe(data => this.resources = data);
+        this.resourceService.getBookableResources().subscribe(data => {
+            this.resources = data;
+        });
     }
 
     handleDateSelect(selectInfo: any): void {

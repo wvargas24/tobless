@@ -29,6 +29,10 @@ export class ResourceService {
         return this.http.get<Resource[]>(this.apiUrl);
     }
 
+    getBookableResources(): Observable<Resource[]> {
+        return this.http.get<Resource[]>(`${this.apiUrl}/bookable`);
+    }
+
     createResource(resource: Omit<Resource, '_id'>): Observable<Resource> {
         return this.http.post<Resource>(this.apiUrl, resource);
     }
