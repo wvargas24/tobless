@@ -52,7 +52,21 @@ const createUser = async (req, res, next) => {
 // @route   GET /api/admin/users
 const getAllUsers = async (req, res, next) => {
     try {
-        const users = await User.find({}).select('-password').populate('membership', 'name');
+        // 1. Creamos un objeto de filtro vacío
+        const filter = {};
+
+        // 2. Revisamos si nos llega un query param 'type'
+        if (req.query.type === 'customer') {
+            // Si piden clientes, filtramos por el rol 'user'
+            filter.role = 'user';
+        } else if (req.query.type === 'staff') {
+            // Si piden personal, filtramos por todos los roles que NO son 'user'
+            filter.role = { $ne: 'user' };
+        }
+        // Si no llega el query param 'type', el filtro queda vacío y trae a todos (comportamiento anterior)
+
+        // 3. Aplicamos el filtro en la consulta
+        const users = await User.find(filter).select('-password').populate('membership', 'name');
         res.json(users);
     } catch (error) {
         next(error);
