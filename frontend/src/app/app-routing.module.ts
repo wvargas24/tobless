@@ -48,7 +48,12 @@ const routes: Routes = [
             { path: 'uikit', data: { breadcrumb: 'UI Kit', expectedRoles: ['admin', 'manager', 'receptionist'] }, loadChildren: () => import('./demo/components/uikit/uikit.module').then(m => m.UIkitModule), canActivate: [AuthGuard] },
             { path: 'utilities', data: { breadcrumb: 'Utilities', expectedRoles: ['admin', 'manager', 'receptionist'] }, loadChildren: () => import('./demo/components/utilities/utilities.module').then(m => m.UtilitiesModule), canActivate: [AuthGuard] },
             { path: 'pages', data: { breadcrumb: 'Pages', expectedRoles: ['admin', 'manager', 'receptionist'] }, loadChildren: () => import('./demo/components/pages/pages.module').then(m => m.PagesModule), canActivate: [AuthGuard] },
-            { path: 'profile', data: { breadcrumb: 'User Management', expectedRoles: ['admin', 'manager', 'receptionist'] }, loadChildren: () => import('./demo/components/profile/profile.module').then(m => m.ProfileModule), canActivate: [AuthGuard] },
+            {
+                path: 'profile',
+                data: { breadcrumb: 'Mi Perfil' },
+                loadChildren: () => import('./components/profile/profile.module').then(m => m.ProfileModule), // <-- RUTA NUEVA Y CORRECTA
+                canActivate: [AuthGuard]
+            },
             { path: 'documentation', data: { breadcrumb: 'Documentation', expectedRoles: ['admin', 'manager', 'receptionist'] }, loadChildren: () => import('./demo/components/documentation/documentation.module').then(m => m.DocumentationModule), canActivate: [AuthGuard] },
             { path: 'blocks', data: { breadcrumb: 'Prime Blocks', expectedRoles: ['admin', 'manager', 'receptionist'] }, loadChildren: () => import('./demo/components/primeblocks/primeblocks.module').then(m => m.PrimeBlocksModule), canActivate: [AuthGuard] },
             { path: 'ecommerce', data: { breadcrumb: 'E-Commerce', expectedRoles: ['admin', 'manager', 'receptionist'] }, loadChildren: () => import('./demo/components/ecommerce/ecommerce.module').then(m => m.EcommerceModule), canActivate: [AuthGuard] },

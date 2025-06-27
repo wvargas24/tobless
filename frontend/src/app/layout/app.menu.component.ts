@@ -80,12 +80,10 @@ export class AppMenuComponent implements OnInit, OnDestroy {
             ]
         };
 
-        // ... Aquí podrías añadir más secciones del menú de la misma forma ...
         const bookingsMenu = {
             label: 'Reservas',
             icon: 'pi pi-fw pi-calendar',
             routerLink: ['/bookings'], // Suponiendo una futura ruta
-            // Visible para todos los roles, incluyendo 'user'
             visible: true
         };
 
@@ -107,14 +105,19 @@ export class AppMenuComponent implements OnInit, OnDestroy {
             ]
         };
 
+        const usersMenu = {
+            label: 'Usuarios',
+            icon: 'pi pi-fw pi-users',
+            routerLink: ['/profile/list'], // Suponiendo una futura ruta
+            visible: ['admin', 'manager'].includes(user.role)
+        };
 
-        // 5. Devolvemos el array final del menú.
-        //    Filtramos los elementos que no sean visibles para no enviar objetos vacíos.
         return [
             dashboardMenu,
             membershipsMenu,
             managementMenu,
-            bookingsMenu
+            bookingsMenu,
+            usersMenu
         ].filter(item => item.visible);
     }
 }
