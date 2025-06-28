@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Membership, MembershipService } from '../../services/membership.service';
 import { ConfirmationService, MessageService, SelectItem } from 'primeng/api';
 import { ResourceType, ResourceTypeService } from 'src/app/components/resourcetypes/services/resource-type.service';
+import { Table } from 'primeng/table';
 
 @Component({
     selector: 'app-admin-membership',
@@ -102,5 +103,9 @@ export class AdminMembershipComponent implements OnInit {
 
         this.membershipDialog = false;
         this.membership = {};
+    }
+
+    onGlobalFilter(table: Table, event: Event) {
+        table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
     }
 }

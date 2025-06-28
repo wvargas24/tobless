@@ -3,6 +3,8 @@ import { ConfirmationService, MessageService, SelectItem } from 'primeng/api';
 import { User } from 'src/app/auth/models/user.model';
 import { UserService } from '../../services/user.service';
 import { Membership, MembershipService } from 'src/app/components/memberships/services/membership.service'; // 1. Importar
+import { Router } from '@angular/router'; // 1. Importar Router
+import { Table } from 'primeng/table';
 
 @Component({
     selector: 'app-user-list',
@@ -37,7 +39,8 @@ export class UserListComponent implements OnInit {
         private userService: UserService,
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
-        private membershipService: MembershipService
+        private membershipService: MembershipService,
+        private router: Router
     ) { }
 
     ngOnInit(): void {
@@ -101,5 +104,13 @@ export class UserListComponent implements OnInit {
         });
 
         this.userDialog = false;
+    }
+
+    onGlobalFilter(table: Table, event: Event) {
+        table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+    }
+
+    navigateToCreateUser(): void {
+        this.router.navigate(['/profile/create']);
     }
 }

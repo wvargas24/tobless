@@ -34,7 +34,7 @@ const routes: Routes = [
             },
             {
                 path: 'resourcetypes',
-                data: { breadcrumb: 'Tipos de Recurso', expectedRoles: ['admin', 'manager'] },
+                data: { breadcrumb: 'Recursos', expectedRoles: ['admin', 'manager'] },
                 loadChildren: () => import('./components/resourcetypes/resourcetypes.module').then(m => m.ResourcetypesModule),
                 canActivate: [AuthGuard]
             },

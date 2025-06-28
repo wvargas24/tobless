@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ConfirmationService, MessageService, SelectItem } from 'primeng/api';
 import { Resource, ResourceService } from '../../services/resource.service';
 import { ResourceType, ResourceTypeService } from 'src/app/components/resourcetypes/services/resource-type.service';
+import { Table } from 'primeng/table';
 
 @Component({
     selector: 'app-admin-resource',
@@ -95,5 +96,9 @@ export class AdminResourceComponent implements OnInit {
 
         this.resourceDialog = false;
         this.resource = {};
+    }
+
+    onGlobalFilter(table: Table, event: Event) {
+        table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
     }
 }

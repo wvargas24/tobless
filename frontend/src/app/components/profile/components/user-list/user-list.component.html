@@ -6,13 +6,23 @@
 
     <p-tabView>
         <p-tabPanel header="Clientes">
-            <p-table [value]="customers" [rows]="10" [paginator]="true" responsiveLayout="scroll">
+            <p-table #dtCustomers [value]="customers" [rows]="10" [paginator]="true" responsiveLayout="scroll" [globalFilterFields]="['name','email','membership.name']">
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-wrap gap-2 align-items-center justify-content-between">
+                        <span class="p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" (input)="onGlobalFilter(dtCustomers, $event)" placeholder="Buscar cliente..." />
+                        </span>
+                        <button pButton label="Crear Usuario" icon="pi pi-user-plus" class="p-button-outlined w-full sm:w-auto flex-order-0 sm:flex-order-1" (click)="navigateToCreateUser()"></button>
+                    </div>
+                </ng-template>
+
                 <ng-template pTemplate="header">
                     <tr>
-                        <th>Nombre</th>
-                        <th>Email</th>
-                        <th>Membresía</th>
-                        <th>Estado Cuenta</th>
+                        <th pSortableColumn="name">Nombre <p-sortIcon field="name"></p-sortIcon></th>
+                        <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
+                        <th pSortableColumn="membership.name">Membresía <p-sortIcon field="membership.name"></p-sortIcon></th>
+                        <th pSortableColumn="isActive">Estado <p-sortIcon field="isActive"></p-sortIcon></th>
                         <th>Acciones</th>
                     </tr>
                 </ng-template>
@@ -32,13 +42,22 @@
         </p-tabPanel>
 
         <p-tabPanel header="Personal">
-            <p-table [value]="staff" [rows]="10" [paginator]="true" responsiveLayout="scroll">
+            <p-table #dtStaff [value]="staff" [rows]="10" [paginator]="true" responsiveLayout="scroll" [globalFilterFields]="['name','email','role']">
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-wrap gap-2 align-items-center justify-content-between">
+                        <span class="p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" (input)="onGlobalFilter(dtStaff, $event)" placeholder="Buscar personal..." />
+                        </span>
+                        <button pButton label="Crear Usuario" icon="pi pi-user-plus" class="p-button-outlined w-full sm:w-auto flex-order-0 sm:flex-order-1" (click)="navigateToCreateUser()"></button>
+                    </div>
+                </ng-template>
                 <ng-template pTemplate="header">
                     <tr>
-                        <th>Nombre</th>
-                        <th>Email</th>
-                        <th>Rol</th>
-                        <th>Estado Cuenta</th>
+                        <th pSortableColumn="name">Nombre <p-sortIcon field="name"></p-sortIcon></th>
+                        <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
+                        <th pSortableColumn="role">Rol <p-sortIcon field="role"></p-sortIcon></th>
+                        <th pSortableColumn="isActive">Estado <p-sortIcon field="isActive"></p-sortIcon></th>
                         <th>Acciones</th>
                     </tr>
                 </ng-template>
@@ -58,44 +77,3 @@
         </p-tabPanel>
     </p-tabView>
 </div>
-
-<p-dialog [(visible)]="userDialog" [style]="{width: '500px'}" header="Editar Detalles del Usuario" [modal]="true" class="p-fluid">
-    <ng-template pTemplate="content">
-
-        <div class="field">
-            <label for="name">Nombre Completo</label>
-            <input type="text" pInputText id="name" [(ngModel)]="user.name" required autofocus />
-            <small class="p-error" *ngIf="submitted && !user.name">El nombre es obligatorio.</small>
-        </div>
-
-        <div class="field">
-            <label for="email">Email</label>
-            <input type="email" pInputText id="email" [(ngModel)]="user.email" required />
-            <small class="p-error" *ngIf="submitted && !user.email">El email es obligatorio.</small>
-        </div>
-
-        <div class="field" *ngIf="user.role === 'user'">
-            <label for="membership">Membresía</label>
-            <p-dropdown id="membership" [options]="memberships" [(ngModel)]="user.membership" placeholder="Asigna una membresía" [showClear]="true">
-            </p-dropdown>
-        </div>
-
-        <div class="field">
-            <label for="role">Rol</label>
-            <p-dropdown id="role" [options]="roles" [(ngModel)]="user.role" placeholder="Selecciona un rol"></p-dropdown>
-        </div>
-
-        <div class="field">
-            <label for="status">Estado de la Cuenta</label>
-            <p-dropdown id="status" [options]="statuses" [(ngModel)]="user.isActive" placeholder="Selecciona un estado"></p-dropdown>
-        </div>
-
-
-
-    </ng-template>
-
-    <ng-template pTemplate="footer">
-        <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
-        <button pButton pRipple label="Guardar Cambios" icon="pi pi-check" class="" (click)="saveUser()"></button>
-    </ng-template>
-</p-dialog>

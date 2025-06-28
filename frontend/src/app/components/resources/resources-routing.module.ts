@@ -8,6 +8,9 @@ const routes: Routes = [
         path: '',
         component: AdminResourceComponent,
         canActivate: [AuthGuard],
+        data: {
+            breadcrumb: 'Administrar Recursos', // Opcional, para el breadcrumb
+        }
     }
 ];
 

@@ -2,23 +2,29 @@
 <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
 
 <div class="card">
-    <p-toolbar styleClass="mb-4">
-        <ng-template pTemplate="left">
-            <button pButton pRipple label="Nuevo Recurso" icon="pi pi-plus" class="p-button-success" (click)="openNew()"></button>
-        </ng-template>
-    </p-toolbar>
+    <p-table #dtResources [value]="resources" responsiveLayout="scroll" [paginator]="true" [rows]="10" [globalFilterFields]="['name','type.name','description','amenities']">
 
-    <p-table [value]="resources" responsiveLayout="scroll">
+        <ng-template pTemplate="caption">
+            <div class="flex flex-wrap gap-2 align-items-center justify-content-between">
+                <span class="p-input-icon-left">
+                    <i class="pi pi-search"></i>
+                    <input pInputText type="text" (input)="onGlobalFilter(dtResources, $event)" placeholder="Buscar recurso..." />
+                </span>
+                <button pButton pRipple label="Nuevo Recurso" icon="pi pi-plus" class="p-button-outlined w-full sm:w-auto flex-order-0 sm:flex-order-1" (click)="openNew()"></button>
+            </div>
+        </ng-template>
+
         <ng-template pTemplate="header">
             <tr>
                 <th pSortableColumn="name">Nombre <p-sortIcon field="name"></p-sortIcon></th>
                 <th pSortableColumn="type.name">Tipo <p-sortIcon field="type.name"></p-sortIcon></th>
-                <th>Capacidad</th>
+                <th pSortableColumn="capacity">Capacidad <p-sortIcon field="capacity"></p-sortIcon></th>
                 <th>Amenidades</th>
-                <th>Estado</th>
+                <th pSortableColumn="isActive">Estado <p-sortIcon field="isActive"></p-sortIcon></th>
                 <th style="width: 8rem">Acciones</th>
             </tr>
         </ng-template>
+
         <ng-template pTemplate="body" let-resource>
             <tr>
                 <td>{{resource.name}}</td>

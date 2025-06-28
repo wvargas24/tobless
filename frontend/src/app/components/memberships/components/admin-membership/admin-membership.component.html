@@ -2,21 +2,27 @@
 <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
 
 <div class="card">
-    <p-toolbar styleClass="mb-4">
-        <ng-template pTemplate="left">
-            <button pButton pRipple label="Nuevo Plan" icon="pi pi-plus" class="p-button-success" (click)="openNew()"></button>
-        </ng-template>
-    </p-toolbar>
+    <p-table #dt [value]="memberships" [rows]="10" [paginator]="true" responsiveLayout="scroll" [globalFilterFields]="['name','price','duration']">
 
-    <p-table [value]="memberships" [rows]="10" [paginator]="true" responsiveLayout="scroll">
+        <ng-template pTemplate="caption">
+            <div class="flex flex-wrap gap-2 align-items-center justify-content-between">
+                <span class="p-input-icon-left">
+                    <i class="pi pi-search"></i>
+                    <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Buscar plan..." />
+                </span>
+                <button pButton pRipple label="Nuevo Plan" icon="pi pi-plus" class="p-button-outlined w-full sm:w-auto flex-order-0 sm:flex-order-1" (click)="openNew()"></button>
+            </div>
+        </ng-template>
+
         <ng-template pTemplate="header">
             <tr>
-                <th>Nombre</th>
-                <th>Precio</th>
-                <th>Duración (días)</th>
+                <th pSortableColumn="name">Nombre <p-sortIcon field="name"></p-sortIcon></th>
+                <th pSortableColumn="price">Precio <p-sortIcon field="price"></p-sortIcon></th>
+                <th pSortableColumn="duration">Duración (días) <p-sortIcon field="duration"></p-sortIcon></th>
                 <th>Acciones</th>
             </tr>
         </ng-template>
+
         <ng-template pTemplate="body" let-membership>
             <tr>
                 <td>{{membership.name}}</td>
