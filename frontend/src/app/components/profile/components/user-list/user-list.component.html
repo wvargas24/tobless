@@ -65,7 +65,7 @@
                     <tr>
                         <td>{{employee.name}}</td>
                         <td>{{employee.email}}</td>
-                        <td><p-tag [value]="employee.role" severity="primary"></p-tag></td>
+                        <td><p-tag [value]="employee.role" severity="info"></p-tag></td>
                         <td><p-tag [value]="employee.isActive ? 'Activo' : 'Inactivo'" [severity]="employee.isActive ? 'success' : 'danger'"></p-tag></td>
                         <td>
                             <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="editUser(employee)"></button>

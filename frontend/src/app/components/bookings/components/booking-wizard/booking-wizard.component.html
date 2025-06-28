@@ -1,0 +1,21 @@
+<div class="card">
+    <p-stepper [(activeIndex)]="activeIndex">
+        <p-stepperPanel [header]="steps[0].label">
+            <ng-template pTemplate="content">
+                <app-step-resource-selection (resourceSelected)="onResourceSelected($event)"></app-step-resource-selection>
+            </ng-template>
+        </p-stepperPanel>
+
+        <p-stepperPanel [header]="steps[1].label">
+            <ng-template pTemplate="content">
+                <p>Has seleccionado: <strong>{{ bookingState.resource?.name }}</strong></p>
+                <p>Ahora, por favor, elige la fecha y hora.</p>
+            </ng-template>
+        </p-stepperPanel>
+
+        <p-stepperPanel [header]="steps[2].label">
+            <ng-template pTemplate="content">
+            </ng-template>
+        </p-stepperPanel>
+    </p-stepper>
+</div>

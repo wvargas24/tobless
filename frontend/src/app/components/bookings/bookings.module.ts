@@ -2,9 +2,13 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BookingsRoutingModule } from './bookings-routing.module';
-import { BookingCalendarComponent } from './components/booking-calendar/booking-calendar.component';
 
-// Módulos de PrimeNG y FullCalendar
+// --- COMPONENTES DEL MÓDULO ---
+import { BookingCalendarComponent } from './components/booking-calendar/booking-calendar.component';
+import { BookingWizardComponent } from './components/booking-wizard/booking-wizard.component'; // 1. Importar
+import { StepResourceSelectionComponent } from './components/step-resource-selection/step-resource-selection.component'; // 2. Importar
+
+// --- MÓDULOS DE PRIMENG Y FULLCALENDAR ---
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
@@ -15,10 +19,14 @@ import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
+import { StepperModule } from 'primeng/stepper';
+import { CardModule } from 'primeng/card';
 
 @NgModule({
     declarations: [
-        BookingCalendarComponent
+        BookingCalendarComponent,
+        BookingWizardComponent,
+        StepResourceSelectionComponent,
     ],
     imports: [
         CommonModule,
@@ -33,7 +41,9 @@ import { ToolbarModule } from 'primeng/toolbar';
         ButtonModule,
         ConfirmDialogModule,
         TagModule,
-        ToolbarModule
+        ToolbarModule,
+        StepperModule,
+        CardModule,
     ]
 })
 export class BookingsModule { }
