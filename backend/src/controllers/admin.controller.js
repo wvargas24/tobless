@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const logger = require('../config/logger');
 const { ROLES } = require('../config/permissions');
+const Membership = require('../models/Membership');
 
 // @desc    Admin creates a new user with a specific role
 // @route   POST /api/admin/users
@@ -107,8 +108,31 @@ const updateUser = async (req, res, next) => {
             if (req.body.password) {
                 user.password = req.body.password;
             }
-            user.membership = req.body.membershipId ?? user.membership;
-            user.membershipStatus = req.body.membershipStatus ?? user.membershipStatus;
+            // Usamos 'req.body.membership' en lugar de 'membershipId'
+            if (req.body.membership && user.membership?.toString() !== req.body.membership) {
+                const membershipPlan = await Membership.findById(req.body.membership);
+                if (!membershipPlan) {
+                    res.status(404);
+                    throw new Error('El plan de membresía a asignar no fue encontrado');
+                }
+
+                const currentDate = new Date();
+                const endDate = new Date();
+                endDate.setDate(currentDate.getDate() + membershipPlan.duration);
+
+                // Asignamos todos los datos de la nueva membresía
+                user.membership = req.body.membership;
+                user.membershipStatus = 'active';
+                user.membershipStartDate = currentDate;
+                user.membershipEndDate = endDate;
+
+            } else if (req.body.membership === null || req.body.membership === '') {
+                // Si el admin quiere quitar la membresía
+                user.membership = undefined;
+                user.membershipStatus = null;
+                user.membershipStartDate = undefined;
+                user.membershipEndDate = undefined;
+            }
 
             const updatedUser = await user.save();
             res.json(updatedUser);
