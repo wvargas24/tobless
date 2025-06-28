@@ -149,6 +149,28 @@ const getBookingById = async (req, res, next) => {
   }
 };
 
+// @desc    Obtener la disponibilidad de un recurso (solo fechas)
+// @route   GET /api/bookings/availability/:resourceId
+// @access  Private (Cualquier usuario logueado)
+const getBookingAvailability = async (req, res, next) => {
+  try {
+    const { resourceId } = req.params;
+
+    // Buscamos las reservas confirmadas para ese recurso
+    const bookings = await Booking.find({
+      resource: resourceId,
+      status: 'confirmada'
+    })
+      // ¡La clave! Seleccionamos solo los campos que necesitamos y nada más.
+      .select('startTime endTime -_id');
+
+    res.json(bookings);
+  } catch (error) {
+    logger.error('Error fetching booking availability:', error);
+    next(error);
+  }
+};
+
 // @desc    Actualizar una reserva
 // @route   PUT /api/bookings/:id
 // @access  Private (Admin, Manager)
@@ -220,4 +242,5 @@ module.exports = {
   updateBooking,
   deleteBooking,
   getAllBookings,
+  getBookingAvailability
 };

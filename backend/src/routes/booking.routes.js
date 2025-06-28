@@ -8,6 +8,7 @@ const {
   updateBooking,
   deleteBooking,
   getAllBookings,
+  getBookingAvailability,
 } = require('../controllers/booking.controller');
 
 const { protect } = require('../middlewares/authMiddleware');
@@ -41,6 +42,8 @@ const validate = (req, res, next) => {
   });
 };
 
+router.route('/availability/:resourceId')
+  .get(protect, getBookingAvailability);
 
 // Ruta para crear una nueva reserva
 router.route('/')
