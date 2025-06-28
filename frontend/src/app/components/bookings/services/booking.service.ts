@@ -48,4 +48,9 @@ export class BookingService {
     cancelBooking(id: string): Observable<any> {
         return this.http.put<any>(`${this.apiUrl}/${id}/cancel`, {});
     }
+
+    // Obtiene las reservas para un único recurso, filtrando en el backend.
+    getBookingsForResource(resourceId: string): Observable<Booking[]> {
+        return this.http.get<Booking[]>(`${this.apiUrl}?resourceId=${resourceId}`);
+    }
 }

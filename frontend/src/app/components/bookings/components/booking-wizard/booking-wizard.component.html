@@ -1,20 +1,42 @@
+<p-toast></p-toast>
 <div class="card">
-    <p-stepper [(activeIndex)]="activeIndex">
+    <p-stepper>
         <p-stepperPanel [header]="steps[0].label">
-            <ng-template pTemplate="content">
+            <ng-template pTemplate="content" let-nextCallback="nextCallback" let-index="index">
                 <app-step-resource-selection (resourceSelected)="onResourceSelected($event)"></app-step-resource-selection>
+
+                <div class="flex pt-4 justify-content-end">
+                    <p-button label="Siguiente" icon="pi pi-arrow-right" iconPos="right" (click)="nextCallback.emit()" [disabled]="!bookingState.resource" />
+                </div>
             </ng-template>
         </p-stepperPanel>
 
         <p-stepperPanel [header]="steps[1].label">
-            <ng-template pTemplate="content">
-                <p>Has seleccionado: <strong>{{ bookingState.resource?.name }}</strong></p>
-                <p>Ahora, por favor, elige la fecha y hora.</p>
+            <ng-template pTemplate="content" let-prevCallback="prevCallback" let-nextCallback="nextCallback">
+
+                <app-step-date-time-selection *ngIf="bookingState.resource" [resource]="bookingState.resource" (dateTimeSelected)="onDateTimeSelected($event)" (stepValid)="onStep2ValidityChange($event)">
+                </app-step-date-time-selection>
+
+                <div class="flex pt-4 justify-content-between">
+                    <p-button label="Atrás" icon="pi pi-arrow-left" (click)="prevCallback.emit()" />
+                    <p-button label="Siguiente" icon="pi pi-arrow-right" iconPos="right" (click)="nextCallback.emit()" [disabled]="!isStep2Valid" />
+                </div>
             </ng-template>
         </p-stepperPanel>
 
         <p-stepperPanel [header]="steps[2].label">
-            <ng-template pTemplate="content">
+            <ng-template pTemplate="content" let-prevCallback="prevCallback" let-index="index">
+                <div class="flex flex-column h-12rem">
+                    <div class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium">
+                        <div class="text-center">
+                            <p>Aquí irá el resumen de la reserva para confirmar.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex pt-4 justify-content-between">
+                    <p-button label="Atrás" icon="pi pi-arrow-left" (click)="prevCallback.emit()" />
+                    <p-button label="Confirmar Reserva" icon="pi pi-check" (click)="confirmBooking()" />
+                </div>
             </ng-template>
         </p-stepperPanel>
     </p-stepper>

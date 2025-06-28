@@ -1,1 +1,39 @@
-<p>step-resource-selection works!</p>
+<div class="text-center">
+    <h2 class="text-3xl font-bold mb-2">Selecciona un Espacio</h2>
+    <p class="text-lg text-600">Elige el recurso que deseas reservar para continuar.</p>
+</div>
+
+<div class="grid mt-4">
+    <div *ngFor="let resource of resources" class="col-12 md:col-6 lg:col-4 p-3">
+
+        <p-card [header]="resource.name" [subheader]="getResourceTypeName(resource)" [style]="{'height': '100%'}" [ngClass]="{'border-primary-500 border-2': resource._id === selectedResourceId}">
+
+            <p class="text-600 my-3">{{ resource.description }}</p>
+
+            <div class="flex align-items-center mb-3">
+                <i class="pi pi-users mr-2"></i>
+                <span>Capacidad: {{ resource.capacity }} persona(s)</span>
+            </div>
+
+            <div *ngIf="resource.amenities && resource.amenities.length > 0">
+                <hr class="my-3 surface-border">
+                <div class="flex flex-wrap gap-1">
+                    <p-chip *ngFor="let amenity of resource.amenities" [label]="amenity" styleClass="text-xs"></p-chip>
+                </div>
+            </div>
+
+            <ng-template pTemplate="footer">
+                <button pButton pRipple [label]="resource._id === selectedResourceId ? 'Seleccionado' : 'Seleccionar'" [icon]="resource._id === selectedResourceId ? 'pi pi-check-circle' : 'pi pi-check'"
+                        class="w-full mt-4" [ngClass]="{
+        'p-button-success': resource._id === selectedResourceId,
+        'p-button-outlined': resource._id !== selectedResourceId
+    }" (click)="selectResource(resource)"></button>
+            </ng-template>
+        </p-card>
+
+    </div>
+
+    <div *ngIf="!resources || resources.length === 0" class="col-12 text-center">
+        <p>No se encontraron recursos disponibles para reservar con tu membresía actual.</p>
+    </div>
+</div>

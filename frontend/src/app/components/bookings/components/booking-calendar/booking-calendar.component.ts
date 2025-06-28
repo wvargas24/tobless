@@ -156,7 +156,7 @@ export class BookingCalendarComponent implements OnInit {
         });
     }
 
-    getColorForStatus(status: string): string {
+    getColorForStatus(status: string): "success" | "secondary" | "info" | "warning" | "danger" | "contrast" | undefined {
         return status === 'confirmada' ? 'success' : 'danger';
     }
 

@@ -1,0 +1,40 @@
+<div *ngIf="resource">
+    <div class="text-center mb-5">
+        <h3 class="text-2xl font-bold">Disponibilidad para: {{ resource.name }}</h3>
+    </div>
+
+    <div class="grid">
+        <div class="col-12 md:col-7">
+            <h4 class="text-xl font-medium mb-2">1. Selecciona el día de tu reserva</h4>
+            <p class="text-600 mt-0 mb-4">Los bloques de color gris oscuro indican los horarios ya ocupados.</p>
+            <full-calendar [options]="calendarOptions"></full-calendar>
+        </div>
+
+        <div class="col-12 md:col-5">
+            <div *ngIf="selectedDate; else selectDayPrompt">
+                <h4 class="text-xl font-medium mb-2">2. Elige la hora</h4>
+                <p class="text-600 mt-0 mb-4">Día seleccionado: <strong>{{ selectedDate | date:'fullDate':'':'es' }}</strong></p>
+
+                <div class="formgrid grid">
+                    <div class="field col-6">
+                        <label for="startTime">Hora de Inicio</label>
+                        <p-calendar id="startTime" [(ngModel)]="startTime" [timeOnly]="true" hourFormat="12" [minDate]="minTime" [maxDate]="maxTime" (onSelect)="onTimeChange()" (onInput)="onTimeChange()">
+                        </p-calendar>
+                    </div>
+                    <div class="field col-6">
+                        <label for="endTime">Hora de Fin</label>
+                        <p-calendar id="endTime" [(ngModel)]="endTime" [timeOnly]="true" hourFormat="12" [minDate]="minTime" [maxDate]="maxTime" (onSelect)="onTimeChange()" (onInput)="onTimeChange()">
+                        </p-calendar>
+                    </div>
+                </div>
+            </div>
+
+            <ng-template #selectDayPrompt>
+                <h4 class="text-xl font-medium mb-2">2. Elige la hora</h4>
+                <div class="flex align-items-center justify-content-center border-round bg-gray-100" style="height: 150px;">
+                    <p class="text-gray-500 font-medium">Por favor, selecciona un día en el calendario.</p>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+</div>

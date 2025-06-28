@@ -5,8 +5,9 @@ import { BookingsRoutingModule } from './bookings-routing.module';
 
 // --- COMPONENTES DEL MÓDULO ---
 import { BookingCalendarComponent } from './components/booking-calendar/booking-calendar.component';
-import { BookingWizardComponent } from './components/booking-wizard/booking-wizard.component'; // 1. Importar
-import { StepResourceSelectionComponent } from './components/step-resource-selection/step-resource-selection.component'; // 2. Importar
+import { BookingWizardComponent } from './components/booking-wizard/booking-wizard.component';
+import { StepResourceSelectionComponent } from './components/step-resource-selection/step-resource-selection.component';
+import { StepDateTimeSelectionComponent } from './components/step-date-time-selection/step-date-time-selection.component';
 
 // --- MÓDULOS DE PRIMENG Y FULLCALENDAR ---
 import { FullCalendarModule } from '@fullcalendar/angular';
@@ -21,12 +22,14 @@ import { TagModule } from 'primeng/tag';
 import { ToolbarModule } from 'primeng/toolbar';
 import { StepperModule } from 'primeng/stepper';
 import { CardModule } from 'primeng/card';
+import { ChipModule } from 'primeng/chip';
 
 @NgModule({
     declarations: [
         BookingCalendarComponent,
         BookingWizardComponent,
         StepResourceSelectionComponent,
+        StepDateTimeSelectionComponent,
     ],
     imports: [
         CommonModule,
@@ -44,6 +47,7 @@ import { CardModule } from 'primeng/card';
         ToolbarModule,
         StepperModule,
         CardModule,
+        ChipModule,
     ]
 })
 export class BookingsModule { }
