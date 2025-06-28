@@ -82,19 +82,28 @@ const createBooking = async (req, res, next) => {
 // @access  Private (Admin, Manager, Receptionist)
 const getAllBookings = async (req, res, next) => {
   try {
-    // En un futuro, aquí se podrían añadir filtros por fecha, usuario, etc.
-    // Por ahora, obtenemos todas las reservas.
-    const bookings = await Booking.find({})
-      .populate('user', 'name email') // Traemos el nombre y email del usuario
+    const filter = {};
+
+    // Si en la URL viene un query param ?resourceId=...
+    if (req.query.resourceId) {
+      filter.resource = req.query.resourceId;
+    }
+
+    // Si el rol no es de personal, filtramos por su propio ID
+    if (!['admin', 'manager', 'receptionist'].includes(req.user.role)) {
+      filter.user = req.user._id;
+    }
+
+    const bookings = await Booking.find(filter)
+      .populate('user', 'name email')
       .populate({
         path: 'resource',
         populate: { path: 'type', select: 'name' }
-      }) // y el nombre y tipo del recurso
-      .sort({ startTime: -1 }); // Ordenamos por fecha de inicio, las más nuevas primero
+      })
+      .sort({ startTime: -1 });
 
     res.json(bookings);
   } catch (error) {
-    logger.error('Error fetching all bookings:', error);
     next(error);
   }
 };
