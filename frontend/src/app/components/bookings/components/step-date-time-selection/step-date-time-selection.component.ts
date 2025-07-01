@@ -1,8 +1,9 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { CalendarOptions } from '@fullcalendar/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ChangeDetectorRef } from '@angular/core';
+import { CalendarOptions, DateSelectArg } from '@fullcalendar/core'; // Importamos DateSelectArg
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
-import { Booking, BookingService } from '../../services/booking.service';
+import interactionPlugin from '@fullcalendar/interaction';
+import { AvailabilitySlot, BookingService } from '../../services/booking.service';
 import { Resource } from 'src/app/components/resources/services/resource.service';
 
 @Component({
@@ -17,26 +18,26 @@ export class StepDateTimeSelectionComponent implements OnInit, OnChanges {
 
     calendarOptions!: CalendarOptions;
 
-    selectedDate: Date | null = null;
+    // Ya no necesitamos 'selectedDate'. startTime y endTime contendrán la fecha completa.
     startTime: Date | null = null;
     endTime: Date | null = null;
 
     minTime!: Date;
     maxTime!: Date;
 
-    constructor(private bookingService: BookingService) { }
+    constructor(
+        private bookingService: BookingService,
+        private cdr: ChangeDetectorRef
+    ) { }
 
     ngOnInit(): void {
-        // Definimos el horario de apertura de 8am a 8pm
         this.minTime = new Date();
         this.minTime.setHours(8, 0, 0, 0);
         this.maxTime = new Date();
         this.maxTime.setHours(20, 0, 0, 0);
-
         this.initCalendar();
     }
 
-    // Usamos ngOnChanges para reaccionar cuando el componente padre nos pasa el recurso
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['resource'] && changes['resource'].currentValue) {
             this.loadBookingsForResource();
@@ -45,55 +46,58 @@ export class StepDateTimeSelectionComponent implements OnInit, OnChanges {
 
     initCalendar(): void {
         this.calendarOptions = {
-            plugins: [dayGridPlugin, timeGridPlugin],
-            initialView: 'dayGridMonth',
+            plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+            initialView: 'timeGridWeek', // La vista de semana es mejor para seleccionar horas
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
                 right: 'dayGridMonth,timeGridWeek'
             },
             locale: 'es',
-            dateClick: this.handleDateClick.bind(this),
-            allDaySlot: false
+            allDaySlot: false,
+            selectable: true, // Habilitamos la selección de rangos
+            selectMirror: true, // Muestra un "placeholder" mientras arrastras
+            select: this.handleDateSelect.bind(this), // <-- USAMOS 'select' EN LUGAR DE 'dateClick'
         };
     }
 
     loadBookingsForResource(): void {
         if (!this.resource) return;
-
-        this.bookingService.getBookingsForResource(this.resource._id).subscribe(bookings => {
-            const events = bookings.map(booking => ({
+        this.bookingService.getBookingsForResource(this.resource._id).subscribe(slots => {
+            const events = slots.map((slot: AvailabilitySlot) => ({
                 title: 'Ocupado',
-                start: booking.startTime,
-                end: booking.endTime,
-                backgroundColor: '#64748B', // Un color neutral para los eventos existentes
-                borderColor: '#64748B'
+                start: slot.startTime,
+                end: slot.endTime,
+                backgroundColor: '#64748B',
+                borderColor: '#64748B',
+                editable: false,
             }));
-            // Actualizamos el calendario con los eventos de este recurso
             this.calendarOptions = { ...this.calendarOptions, events };
         });
     }
 
-    handleDateClick(arg: any): void {
-        this.selectedDate = arg.date;
-        // Reseteamos las horas cada vez que se selecciona un nuevo día
-        this.startTime = null;
-        this.endTime = null;
-        this.stepValid.emit(false); // Deshabilitamos el botón "Siguiente"
+    // REEMPLAZAMOS handleDateClick con handleDateSelect
+    handleDateSelect(selectInfo: DateSelectArg): void {
+        // El evento 'select' ya nos da la fecha/hora de inicio y fin
+        this.startTime = selectInfo.start;
+        this.endTime = selectInfo.end;
+
+        // Validamos y emitimos inmediatamente
+        this.onTimeChange();
+        this.cdr.detectChanges();
+
+        // Limpiamos la selección visual del calendario
+        const calendarApi = selectInfo.view.calendar;
+        // calendarApi.unselect();
     }
 
     onTimeChange(): void {
-        if (this.selectedDate && this.startTime && this.endTime && this.endTime > this.startTime) {
-            const finalStartTime = new Date(this.selectedDate);
-            finalStartTime.setHours(this.startTime.getHours(), this.startTime.getMinutes(), 0, 0);
-
-            const finalEndTime = new Date(this.selectedDate);
-            finalEndTime.setHours(this.endTime.getHours(), this.endTime.getMinutes(), 0, 0);
-
-            this.dateTimeSelected.emit({ startTime: finalStartTime, endTime: finalEndTime });
-            this.stepValid.emit(true); // Habilitamos el botón "Siguiente"
+        // Este método ahora sirve para validar y emitir
+        if (this.startTime && this.endTime && this.endTime > this.startTime) {
+            this.dateTimeSelected.emit({ startTime: this.startTime, endTime: this.endTime });
+            this.stepValid.emit(true);
         } else {
-            this.stepValid.emit(false); // Si falta algo, el paso no es válido
+            this.stepValid.emit(false);
         }
     }
 }

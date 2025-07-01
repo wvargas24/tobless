@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MenuItem, MessageService } from 'primeng/api'; // Importamos MessageService
 import { Resource } from 'src/app/components/resources/services/resource.service';
+import { ResourceType } from 'src/app/components/resourcetypes/services/resource-type.service';
 import { BookingService } from '../../services/booking.service';
 import { Router } from '@angular/router';
 
@@ -15,6 +16,7 @@ export class BookingWizardComponent implements OnInit {
     // Modelo para los encabezados de los pasos
     steps: MenuItem[] = [];
     isStep2Valid: boolean = false;
+    submitting: boolean = false;
 
     // Objeto que guardará los datos de nuestra reserva a medida que avanzamos
     bookingState: {
@@ -56,22 +58,45 @@ export class BookingWizardComponent implements OnInit {
 
     // Futuro método para confirmar y guardar la reserva en el Paso 3
     confirmBooking(): void {
+        if (!this.bookingState.resource || !this.bookingState.startTime || !this.bookingState.endTime) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Faltan datos para completar la reserva.' });
+            return;
+        }
+
+        this.submitting = true; // Activamos el estado de carga
+
         const payload = {
-            resourceId: this.bookingState.resource?._id,
+            resourceId: this.bookingState.resource._id,
             startTime: this.bookingState.startTime,
             endTime: this.bookingState.endTime,
-            notes: this.bookingState.notes
+            notes: this.bookingState.notes || ''
         };
 
         this.bookingService.createBooking(payload).subscribe({
             next: () => {
-                this.messageService.add({ severity: 'success', summary: '¡Reserva Confirmada!', detail: 'Tu espacio ha sido reservado con éxito.' });
-                // Esperamos un par de segundos y redirigimos al calendario principal
-                setTimeout(() => this.router.navigate(['/bookings']), 2000);
+                this.messageService.add({
+                    severity: 'success',
+                    summary: '¡Reserva Confirmada!',
+                    detail: 'Tu espacio ha sido reservado con éxito. Serás redirigido.',
+                    life: 3000 // El mensaje dura 3 segundos
+                });
+
+                // Esperamos un momento para que el usuario lea el mensaje y luego lo redirigimos
+                setTimeout(() => this.router.navigate(['/bookings']), 3000);
             },
             error: (err) => {
-                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.message || 'No se pudo crear la reserva' });
+                this.messageService.add({ severity: 'error', summary: 'Error al Reservar', detail: err.error.message || 'No se pudo crear la reserva' });
+                this.submitting = false; // Reactivamos el botón si hay un error
             }
         });
+    }
+
+    getResourceTypeName(): string {
+        const type = this.bookingState.resource?.type;
+        // Verificamos si 'type' es un objeto y tiene la propiedad 'name'
+        if (type && typeof type === 'object' && 'name' in type) {
+            return (type as ResourceType).name;
+        }
+        return 'No especificado'; // Devolvemos un texto por defecto si no lo encuentra
     }
 }

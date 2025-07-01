@@ -15,6 +15,11 @@ export interface Booking {
     notes?: string;
 }
 
+export interface AvailabilitySlot {
+    startTime: string;
+    endTime: string;
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -50,7 +55,7 @@ export class BookingService {
     }
 
     // Obtiene las reservas para un único recurso, filtrando en el backend.
-    getBookingsForResource(resourceId: string): Observable<Booking[]> {
-        return this.http.get<Booking[]>(`${this.apiUrl}?resourceId=${resourceId}`);
+    getBookingsForResource(resourceId: string): Observable<AvailabilitySlot[]> {
+        return this.http.get<AvailabilitySlot[]>(`${this.apiUrl}/availability/${resourceId}`);
     }
 }

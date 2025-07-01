@@ -25,17 +25,50 @@
         </p-stepperPanel>
 
         <p-stepperPanel [header]="steps[2].label">
-            <ng-template pTemplate="content" let-prevCallback="prevCallback" let-index="index">
-                <div class="flex flex-column h-12rem">
-                    <div class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium">
-                        <div class="text-center">
-                            <p>Aquí irá el resumen de la reserva para confirmar.</p>
+            <ng-template pTemplate="content" let-prevCallback="prevCallback">
+                <div class="text-center">
+                    <h3 class="text-2xl font-bold">Confirma los Detalles de tu Reserva</h3>
+                    <p class="text-600">Por favor, revisa que toda la información sea correcta antes de confirmar.</p>
+                </div>
+
+                <p-panel header="Resumen de la Reserva" styleClass="mt-4">
+                    <div class="p-fluid grid" *ngIf="bookingState.resource && bookingState.startTime">
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label class="font-semibold">Recurso</label>
+                                <p>{{ bookingState.resource.name }}</p>
+                            </div>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label class="font-semibold">Tipo</label>
+                                <p>{{ getResourceTypeName() }}</p>
+                            </div>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label class="font-semibold">Inicio</label>
+                                <p>{{ bookingState.startTime | date:'fullDate':'':'es' }} a las {{ bookingState.startTime | date:'shortTime' }}</p>
+                            </div>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label class="font-semibold">Fin</label>
+                                <p>{{ bookingState.endTime | date:'fullDate':'':'es' }} a las {{ bookingState.endTime | date:'shortTime' }}</p>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="field">
+                                <label for="notes-confirm">Notas Adicionales (Opcional)</label>
+                                <textarea id="notes-confirm" pInputTextarea [(ngModel)]="bookingState.notes" rows="3"></textarea>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </p-panel>
+
                 <div class="flex pt-4 justify-content-between">
-                    <p-button label="Atrás" icon="pi pi-arrow-left" (click)="prevCallback.emit()" />
-                    <p-button label="Confirmar Reserva" icon="pi pi-check" (click)="confirmBooking()" />
+                    <p-button label="Atrás" icon="pi pi-arrow-left" (click)="prevCallback.emit()" [disabled]="submitting"></p-button>
+                    <p-button label="Confirmar Reserva" icon="pi pi-check" (click)="confirmBooking()" [loading]="submitting"></p-button>
                 </div>
             </ng-template>
         </p-stepperPanel>

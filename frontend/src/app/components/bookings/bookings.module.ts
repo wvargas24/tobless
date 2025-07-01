@@ -23,6 +23,7 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { StepperModule } from 'primeng/stepper';
 import { CardModule } from 'primeng/card';
 import { ChipModule } from 'primeng/chip';
+import { PanelModule } from 'primeng/panel';
 
 @NgModule({
     declarations: [
@@ -48,6 +49,7 @@ import { ChipModule } from 'primeng/chip';
         StepperModule,
         CardModule,
         ChipModule,
+        PanelModule
     ]
 })
 export class BookingsModule { }
