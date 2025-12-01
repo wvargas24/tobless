@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DashboardService, DashboardStats } from '../../service/dashboard.service';
+import { DashboardService, DashboardStats } from '../service/dashboard.service';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { User } from 'src/app/auth/models/user.model';
 
@@ -25,11 +25,11 @@ export class EcommerceDashboardComponent implements OnInit {
     loadStats() {
         this.loading = true;
         this.dashboardService.getStats().subscribe({
-            next: (data) => {
+            next: (data: DashboardStats) => { // Explicit type for data
                 this.stats = data;
                 this.loading = false;
             },
-            error: (err) => {
+            error: (err: any) => { // Explicit type for err
                 console.error('Error fetching dashboard stats', err);
                 this.loading = false;
             }
