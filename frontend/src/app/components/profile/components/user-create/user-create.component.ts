@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MessageService, SelectItem } from 'primeng/api';
 import { User } from 'src/app/auth/models/user.model';
-import { UserService } from '../../services/user.service'; // Reutilizaremos el servicio de admin
+import { UserService } from '../../services/user.service';
+import { MembershipService } from 'src/app/components/memberships/services/membership.service'; // Import MembershipService
 import { Router } from '@angular/router';
 
 @Component({
@@ -13,7 +14,7 @@ import { Router } from '@angular/router';
 export class UserCreateComponent implements OnInit {
 
     // Modelo para el nuevo usuario
-    newUser: Partial<User> = { role: 'user' }; // Rol 'user' por defecto
+    newUser: Partial<User> & { membership?: string } = { role: 'user' }; // Rol 'user' por defecto
 
     // Opciones para los dropdowns
     roles: SelectItem[] = [
@@ -22,21 +23,24 @@ export class UserCreateComponent implements OnInit {
         { label: 'Receptionist', value: 'receptionist' },
         { label: 'User', value: 'user' }
     ];
-    countries: any[] = [];
+    
+    memberships: SelectItem[] = []; // List of memberships
 
     constructor(
         private userService: UserService,
+        private membershipService: MembershipService, // Inject MembershipService
         private messageService: MessageService,
-        private http: HttpClient,
         private router: Router
     ) { }
 
     ngOnInit(): void {
-        // Cargamos la lista de países desde el archivo JSON local
-        this.http.get<any>('assets/demo/data/countries.json')
-            .toPromise()
-            .then(res => res.data as any[])
-            .then(data => { this.countries = data; });
+        this.loadMemberships();
+    }
+
+    loadMemberships(): void {
+        this.membershipService.getMemberships().subscribe(data => {
+            this.memberships = data.map(m => ({ label: m.name, value: m._id }));
+        });
     }
 
     createUser(): void {

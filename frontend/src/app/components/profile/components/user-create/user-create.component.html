@@ -2,32 +2,72 @@
 <div class="card">
     <span class="text-900 text-xl font-bold mb-4 block">Crear Nuevo Usuario</span>
     <div class="grid formgrid p-fluid">
+        
+        <!-- Nombre Completo -->
         <div class="field mb-4 col-12 md:col-6">
             <label for="name" class="font-medium text-900">Nombre Completo</label>
-            <input id="name" type="text" pInputText [(ngModel)]="newUser.name" required>
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon"><i class="pi pi-user"></i></span>
+                <input id="name" type="text" pInputText [(ngModel)]="newUser.name" required placeholder="Ej. Juan Pérez">
+            </div>
         </div>
+
+        <!-- Email -->
         <div class="field mb-4 col-12 md:col-6">
             <label for="email" class="font-medium text-900">Email</label>
-            <input id="email" type="email" pInputText [(ngModel)]="newUser.email" required>
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon"><i class="pi pi-envelope"></i></span>
+                <input id="email" type="email" pInputText [(ngModel)]="newUser.email" required placeholder="juan@ejemplo.com">
+            </div>
         </div>
+
+        <!-- Contraseña -->
         <div class="field mb-4 col-12 md:col-6">
             <label for="password" class="font-medium text-900">Contraseña</label>
-            <p-password id="password" [(ngModel)]="newUser.password" [toggleMask]="true" [feedback]="true" required></p-password>
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon"><i class="pi pi-lock"></i></span>
+                <p-password id="password" [(ngModel)]="newUser.password" [toggleMask]="true" [feedback]="true" required placeholder="Contraseña segura" styleClass="w-full" [style]="{'width':'100%'}"></p-password>
+            </div>
         </div>
+
+        <!-- Rol -->
         <div class="field mb-4 col-12 md:col-6">
             <label for="role" class="font-medium text-900">Rol</label>
-            <p-dropdown id="role" [options]="roles" [(ngModel)]="newUser.role" placeholder="Selecciona un rol" [required]="true"></p-dropdown>
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon"><i class="pi pi-id-card"></i></span>
+                <p-dropdown id="role" [options]="roles" [(ngModel)]="newUser.role" placeholder="Selecciona un rol" [required]="true" appendTo="body"></p-dropdown>
+            </div>
         </div>
+
+        <!-- Teléfono -->
         <div class="field mb-4 col-12 md:col-6">
             <label for="phone" class="font-medium text-900">Teléfono</label>
-            <input id="phone" type="text" pInputText [(ngModel)]="newUser.phone">
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon"><i class="pi pi-phone"></i></span>
+                <input id="phone" type="text" pInputText [(ngModel)]="newUser.phone" placeholder="Ej. +1 234 567 890">
+            </div>
         </div>
+
+        <!-- Membresía (NUEVO) -->
+        <div class="field mb-4 col-12 md:col-6">
+            <label for="membership" class="font-medium text-900">Asignar Membresía</label>
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon"><i class="pi pi-star"></i></span>
+                <p-dropdown id="membership" [options]="memberships" [(ngModel)]="newUser.membership" placeholder="Selecciona una membresía (Opcional)" [showClear]="true" appendTo="body"></p-dropdown>
+            </div>
+        </div>
+
+        <!-- Biografía -->
         <div class="field mb-4 col-12">
             <label for="bio" class="font-medium text-900">Biografía</label>
-            <textarea id="bio" type="text" pInputTextarea rows="5" [(ngModel)]="newUser.bio"></textarea>
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon"><i class="pi pi-align-left"></i></span>
+                <textarea id="bio" type="text" pInputTextarea rows="5" [(ngModel)]="newUser.bio" placeholder="Notas adicionales sobre el usuario..."></textarea>
+            </div>
         </div>
+
         <div class="col-12">
-            <button pButton pRipple label="Crear Usuario" class="w-auto mt-3" (click)="createUser()"></button>
+            <button pButton pRipple label="Crear Usuario" icon="pi pi-check" class="w-auto mt-3" (click)="createUser()"></button>
         </div>
     </div>
 </div>
