@@ -103,10 +103,10 @@ const createBooking = async (req, res) => {
   }
 };
 
-// @desc    Get all bookings
+// @desc    Get all bookings (with filters)
 // @route   GET /api/bookings
 // @access  Private
-const getBookings = async (req, res) => {
+const getAllBookings = async (req, res) => {
   try {
     let query = {};
     
@@ -139,9 +139,23 @@ const getBookings = async (req, res) => {
 
     res.json(bookings);
   } catch (err) {
-    logger.error('Error in getBookings:', err);
+    logger.error('Error in getAllBookings:', err);
     res.status(500).send('Server error');
   }
+};
+
+// @desc    Get bookings for current user
+// @route   GET /api/bookings/mybookings
+const getMyBookings = async (req, res) => {
+    try {
+        const bookings = await Booking.find({ user: req.user._id })
+            .populate('resource', 'name type')
+            .populate('membership', 'name');
+        res.json(bookings);
+    } catch (err) {
+        logger.error('Error in getMyBookings:', err);
+        res.status(500).send('Server error');
+    }
 };
 
 // @desc    Get booking by ID
@@ -242,10 +256,31 @@ const deleteBooking = async (req, res) => {
   }
 };
 
+// @desc    Get availability for a resource
+// @route   GET /api/bookings/availability/:resourceId
+const getBookingAvailability = async (req, res) => {
+    try {
+        const { resourceId } = req.params;
+        // Find all active bookings for this resource
+        const bookings = await Booking.find({
+            resource: resourceId,
+            status: { $ne: 'cancelled' }
+        }).select('startDate endDate');
+        
+        res.json(bookings);
+    } catch (err) {
+        logger.error('Error in getBookingAvailability:', err);
+        res.status(500).send('Server error');
+    }
+};
+
 module.exports = {
   createBooking,
-  getBookings,
+  getAllBookings, // Exported as getAllBookings to match routes
+  getBookings: getAllBookings, // Alias kept for compatibility if used elsewhere
+  getMyBookings,
   getBookingById,
   updateBooking,
   deleteBooking,
+  getBookingAvailability
 };

@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const resourceSchema = mongoose.Schema({
-<<<<<<< HEAD
     name: {
         type: String,
         required: [true, 'El nombre del recurso es obligatorio.'],
@@ -39,37 +38,3 @@ resourceSchema.index({ name: 1 }, { unique: true });
 const Resource = mongoose.model('Resource', resourceSchema);
 
 module.exports = Resource;
-=======
-  name: {
-    type: String,
-    required: [true, 'Please add a resource name'],
-    trim: true
-  },
-  type: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: [true, 'Please select a resource type'],
-    ref: 'ResourceType',
-  },
-  capacity: {
-    type: Number,
-    default: 1,
-  },
-  description: {
-    type: String,
-  },
-  amenities: [{
-    type: String
-  }],
-  isActive: {
-    type: Boolean,
-    default: true,
-  }
-}, {
-  timestamps: true,
-});
-
-const Resource = mongoose.model('Resource', resourceSchema);
-
-module.exports = Resource;
-
->>>>>>> wvargas-frontend

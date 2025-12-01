@@ -7,6 +7,7 @@ const membershipRoutes = require('./routes/membership.routes');
 const bookingRoutes = require('./routes/booking.routes');
 const resourceRoutes = require('./routes/resource.routes');
 const resourceTypeRoutes = require('./routes/resourceType.routes');
+const dashboardRoutes = require('./routes/dashboard.routes'); // Import dashboard routes
 // Rutas adicionales que existían en la rama backend
 const userRoutes = require('./routes/user.routes'); // Descomentar si existen los archivos
 const staffRoutes = require('./routes/staff.routes'); // Descomentar si existen los archivos
@@ -32,6 +33,7 @@ app.use('/api/memberships', membershipRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/resources', resourceRoutes);
 app.use('/api/resourcetypes', resourceTypeRoutes);
+app.use('/api/dashboard', dashboardRoutes); // Use dashboard routes
 
 // Rutas adicionales de la rama backend (descomentar si se confirman los archivos)
 app.use('/api/users', userRoutes);

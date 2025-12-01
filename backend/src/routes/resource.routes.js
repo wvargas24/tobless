@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
-<<<<<<< HEAD
 
-const { createResource, getAllResources, updateResource, deleteResource, getBookableResources } = require('../controllers/resource.controller');
+const { createResource, getResources, updateResource, deleteResource, getBookableResources } = require('../controllers/resource.controller');
 const { protect } = require('../middlewares/authMiddleware');
 const { checkPermission } = require('../middlewares/permissionMiddleware');
 const { PERMISSIONS } = require('../config/permissions');
@@ -20,7 +19,7 @@ const resourceValidationRules = () => [
 ];
 
 router.route('/')
-    .get(protect, getAllResources) // Cualquiera logueado puede ver los recursos
+    .get(protect, getResources) // Corregido: getAllResources -> getResources
     .post(
         protect,
         checkPermission(PERMISSIONS.RESOURCES_MANAGE), // Solo admin/manager
@@ -47,27 +46,3 @@ router.route('/:id')
     );
 
 module.exports = router;
-=======
-const {
-  getResources,
-  getBookableResources,
-  createResource,
-  updateResource,
-  deleteResource,
-} = require('../controllers/resource.controller');
-const { protect } = require('../middlewares/authMiddleware');
-const { authorizeRoles } = require('../middlewares/authorizeRoles');
-
-router.get('/bookable', getBookableResources);
-
-router.route('/')
-  .get(getResources)
-  .post(protect, authorizeRoles('admin', 'manager'), createResource);
-
-router.route('/:id')
-  .put(protect, authorizeRoles('admin', 'manager'), updateResource)
-  .delete(protect, authorizeRoles('admin', 'manager'), deleteResource);
-
-module.exports = router;
-
->>>>>>> wvargas-frontend
