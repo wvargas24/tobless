@@ -66,9 +66,10 @@
             </li>
 
             <li class="right-panel-button relative hidden lg:block">
-                <button pButton type="button" label="Today" style="width:5.7rem" icon="pi pi-bookmark" class="layout-rightmenu-button hidden md:block font-normal" styleClass="font-normal"
+                <button pButton type="button" label="Agenda" style="width:auto; min-width: 6rem;" icon="pi pi-calendar-plus" 
+                        class="layout-rightmenu-button hidden md:block font-bold p-button-raised p-button-help" 
                         (click)="onSidebarButtonClick()"></button>
-                <button pButton type="button" icon="pi pi-bookmark" styleClass="font-normal" class="layout-rightmenu-button block md:hidden" (click)="onSidebarButtonClick()"></button>
+                <button pButton type="button" icon="pi pi-calendar-plus" styleClass="font-normal" class="layout-rightmenu-button block md:hidden p-button-help" (click)="onSidebarButtonClick()"></button>
             </li>
         </ul>
     </div>
