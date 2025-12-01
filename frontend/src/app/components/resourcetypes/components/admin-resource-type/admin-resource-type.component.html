@@ -16,8 +16,8 @@
 
         <ng-template pTemplate="header">
             <tr>
-                <th pSortableColumn="name"><i class="pi pi-tag mr-2"></i>Nombre <p-sortIcon field="name"></p-sortIcon></th>
-                <th pSortableColumn="description"><i class="pi pi-align-left mr-2"></i>Descripción <p-sortIcon field="description"></p-sortIcon></th>
+                <th pSortableColumn="name"><i class="pi pi-tag mr-2 text-primary"></i>Nombre <p-sortIcon field="name"></p-sortIcon></th>
+                <th pSortableColumn="description"><i class="pi pi-align-left mr-2 text-primary"></i>Descripción <p-sortIcon field="description"></p-sortIcon></th>
                 <th style="width: 8rem">Acciones</th>
             </tr>
         </ng-template>
@@ -44,19 +44,13 @@
 <p-dialog [(visible)]="resourceTypeDialog" [style]="{width: '450px'}" header="Detalles del Tipo de Recurso" [modal]="true" class="p-fluid">
     <ng-template pTemplate="content">
         <div class="field">
-            <label for="name">Nombre</label>
-            <div class="p-inputgroup">
-                <span class="p-inputgroup-addon"><i class="pi pi-tag"></i></span>
-                <input type="text" pInputText id="name" [(ngModel)]="resourceType.name" required autofocus placeholder="Ej. Sala de Juntas" />
-            </div>
+            <label for="name"><i class="pi pi-tag mr-2 text-primary"></i>Nombre</label>
+            <input type="text" pInputText id="name" [(ngModel)]="resourceType.name" required autofocus placeholder="Ej. Sala de Juntas" />
             <small class="p-error" *ngIf="submitted && !resourceType.name">El nombre es obligatorio.</small>
         </div>
         <div class="field">
-            <label for="description">Descripción</label>
-            <div class="p-inputgroup">
-                <span class="p-inputgroup-addon"><i class="pi pi-align-left"></i></span>
-                <textarea id="description" pInputTextarea [(ngModel)]="resourceType.description" rows="3" placeholder="Descripción opcional..."></textarea>
-            </div>
+            <label for="description"><i class="pi pi-align-left mr-2 text-primary"></i>Descripción</label>
+            <textarea id="description" pInputTextarea [(ngModel)]="resourceType.description" rows="3" placeholder="Descripción opcional..."></textarea>
         </div>
     </ng-template>
 
