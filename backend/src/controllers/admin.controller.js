@@ -3,12 +3,12 @@ const logger = require('../config/logger');
 const { ROLES } = require('../config/permissions');
 const Membership = require('../models/Membership');
 
-// @desc    Admin creates a new user with a specific role
+// @desc    Admin creates a new user with a specific role and optional membership
 // @route   POST /api/admin/users
 // @access  Private (Admin)
 const createUser = async (req, res, next) => {
     try {
-        const { name, email, password, role } = req.body;
+        const { name, email, password, role, membership } = req.body;
 
         // 1. Validar que el rol proporcionado sea válido
         if (!Object.values(ROLES).includes(role)) {
@@ -23,21 +23,40 @@ const createUser = async (req, res, next) => {
             throw new Error('User with this email already exists');
         }
 
-        // 3. Crear el nuevo usuario, especificando el rol
+        // 3. Si viene membresía, la validamos primero
+        let membershipData = {};
+        if (membership) {
+            const membershipPlan = await Membership.findById(membership);
+            if (!membershipPlan) {
+                res.status(404);
+                throw new Error('El plan de membresía seleccionado no existe');
+            }
+            const currentDate = new Date();
+            const endDate = new Date();
+            endDate.setDate(currentDate.getDate() + membershipPlan.duration);
+
+            membershipData = {
+                membership: membership,
+                membershipStatus: 'active',
+                membershipStartDate: currentDate,
+                membershipEndDate: endDate
+            };
+        }
+
+        // 4. Crear el nuevo usuario, asignando rol y membresía si existe
         const user = await User.create({
             name,
             email,
             password,
-            role, // Aquí asignamos el rol que viene en la petición
+            role,
+            ...membershipData
         });
 
         if (user) {
-            res.status(201).json({
-                _id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
-            });
+            // Poblamos la membresía para devolver el objeto completo
+            const populatedUser = await User.findById(user._id).select('-password').populate('membership', 'name');
+            
+            res.status(201).json(populatedUser);
         } else {
             res.status(400);
             throw new Error('Invalid user data');
