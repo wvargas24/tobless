@@ -78,34 +78,51 @@
     </p-tabView>
 </div>
 
-<!-- Diálogo de Edición de Usuario (que faltaba) -->
+<!-- Diálogo de Edición de Usuario -->
 <p-dialog [(visible)]="userDialog" [style]="{width: '450px'}" header="Editar Usuario" [modal]="true" class="p-fluid">
     <ng-template pTemplate="content">
+        
+        <!-- Nombre -->
         <div class="field">
-            <label for="name">Nombre</label>
+            <label for="name"><i class="pi pi-user mr-2 text-primary"></i>Nombre</label>
             <input type="text" pInputText id="name" [(ngModel)]="user.name" required autofocus />
             <small class="p-error" *ngIf="submitted && !user.name">El nombre es obligatorio.</small>
         </div>
+
+        <!-- Username (NUEVO) -->
         <div class="field">
-            <label for="email">Email</label>
+            <label for="username"><i class="pi pi-at mr-2 text-primary"></i>Nombre de Usuario</label>
+            <input type="text" pInputText id="username" [(ngModel)]="user.username" required />
+        </div>
+
+        <!-- Email -->
+        <div class="field">
+            <label for="email"><i class="pi pi-envelope mr-2 text-primary"></i>Email</label>
             <input type="email" pInputText id="email" [(ngModel)]="user.email" required />
         </div>
+
+        <!-- Rol -->
         <div class="field">
-            <label for="role">Rol</label>
-            <p-dropdown id="role" [options]="roles" [(ngModel)]="user.role" placeholder="Selecciona un rol"></p-dropdown>
+            <label for="role"><i class="pi pi-id-card mr-2 text-primary"></i>Rol</label>
+            <p-dropdown id="role" [options]="roles" [(ngModel)]="user.role" placeholder="Selecciona un rol" appendTo="body"></p-dropdown>
         </div>
+
+        <!-- Membresía -->
         <div class="field">
-            <label for="membership">Membresía</label>
-            <p-dropdown id="membership" [options]="memberships" [(ngModel)]="user.membership" placeholder="Sin membresía" [showClear]="true"></p-dropdown>
+            <label for="membership"><i class="pi pi-star mr-2 text-primary"></i>Membresía</label>
+            <p-dropdown id="membership" [options]="memberships" [(ngModel)]="user.membership" placeholder="Sin membresía" [showClear]="true" appendTo="body"></p-dropdown>
         </div>
+
+        <!-- Estado -->
         <div class="field">
-            <label for="status">Estado</label>
-            <p-dropdown id="status" [options]="statuses" [(ngModel)]="user.isActive" placeholder="Selecciona estado"></p-dropdown>
+            <label for="status"><i class="pi pi-power-off mr-2 text-primary"></i>Estado</label>
+            <p-dropdown id="status" [options]="statuses" [(ngModel)]="user.isActive" placeholder="Selecciona estado" appendTo="body"></p-dropdown>
         </div>
+
     </ng-template>
 
     <ng-template pTemplate="footer">
         <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
-        <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-text" (click)="saveUser()"></button>
+        <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-primary" (click)="saveUser()"></button>
     </ng-template>
 </p-dialog>
