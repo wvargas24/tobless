@@ -16,11 +16,11 @@
 
         <ng-template pTemplate="header">
             <tr>
-                <th pSortableColumn="name">Nombre <p-sortIcon field="name"></p-sortIcon></th>
-                <th pSortableColumn="type.name">Tipo <p-sortIcon field="type.name"></p-sortIcon></th>
-                <th pSortableColumn="capacity">Capacidad <p-sortIcon field="capacity"></p-sortIcon></th>
-                <th>Amenidades</th>
-                <th pSortableColumn="isActive">Estado <p-sortIcon field="isActive"></p-sortIcon></th>
+                <th pSortableColumn="name"><i class="pi pi-tag mr-2"></i>Nombre <p-sortIcon field="name"></p-sortIcon></th>
+                <th pSortableColumn="type.name"><i class="pi pi-list mr-2"></i>Tipo <p-sortIcon field="type.name"></p-sortIcon></th>
+                <th pSortableColumn="capacity"><i class="pi pi-users mr-2"></i>Capacidad <p-sortIcon field="capacity"></p-sortIcon></th>
+                <th><i class="pi pi-star mr-2"></i>Amenidades</th>
+                <th pSortableColumn="isActive"><i class="pi pi-check-circle mr-2"></i>Estado <p-sortIcon field="isActive"></p-sortIcon></th>
                 <th style="width: 8rem">Acciones</th>
             </tr>
         </ng-template>
@@ -32,7 +32,7 @@
                 <td>{{resource.capacity}}</td>
                 <td>
                     <div class="flex flex-wrap gap-1">
-                        <p-chip *ngFor="let amenity of resource.amenities" [label]="amenity" styleClass="text-xs"></p-chip>
+                        <p-chip *ngFor="let amenity of resource.amenities" [label]="amenity" icon="pi pi-star" styleClass="text-xs"></p-chip>
                     </div>
                 </td>
                 <td>
@@ -51,23 +51,35 @@
     <ng-template pTemplate="content">
         <div class="field">
             <label for="name">Nombre del Recurso</label>
-            <input type="text" pInputText id="name" [(ngModel)]="resource.name" required autofocus />
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon"><i class="pi pi-tag"></i></span>
+                <input type="text" pInputText id="name" [(ngModel)]="resource.name" required autofocus placeholder="Ej. Sala de Juntas A" />
+            </div>
         </div>
         <div class="field">
             <label for="type">Tipo</label>
-            <p-dropdown id="type" [options]="resourceTypes" [(ngModel)]="resource.type" placeholder="Selecciona un tipo"></p-dropdown>
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon"><i class="pi pi-list"></i></span>
+                <p-dropdown id="type" [options]="resourceTypes" [(ngModel)]="resource.type" placeholder="Selecciona un tipo" appendTo="body"></p-dropdown>
+            </div>
         </div>
         <div class="field">
             <label for="capacity">Capacidad</label>
-            <p-inputNumber id="capacity" [(ngModel)]="resource.capacity"></p-inputNumber>
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon"><i class="pi pi-users"></i></span>
+                <p-inputNumber id="capacity" [(ngModel)]="resource.capacity" [min]="1" placeholder="Ej. 4"></p-inputNumber>
+            </div>
         </div>
         <div class="field">
             <label for="description">Descripción</label>
-            <textarea id="description" pInputTextarea [(ngModel)]="resource.description" rows="3"></textarea>
+            <div class="p-inputgroup">
+                <span class="p-inputgroup-addon"><i class="pi pi-align-left"></i></span>
+                <textarea id="description" pInputTextarea [(ngModel)]="resource.description" rows="3" placeholder="Breve descripción del espacio..."></textarea>
+            </div>
         </div>
         <div class="field">
             <label for="amenities">Amenidades del Recurso</label>
-            <p-chips id="amenities" [(ngModel)]="resource.amenities" separator=","></p-chips>
+            <p-chips id="amenities" [(ngModel)]="resource.amenities" separator="," placeholder="Ej. Wifi, Proyector, Café"></p-chips>
         </div>
     </ng-template>
 

@@ -46,7 +46,7 @@ export class BookingCalendarComponent implements OnInit {
     initCalendar(): void {
         this.calendarOptions = {
             plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
-            initialView: 'dayGridMonth',
+            initialView: 'timeGridWeek', // Changed from dayGridMonth to timeGridWeek
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
@@ -56,7 +56,18 @@ export class BookingCalendarComponent implements OnInit {
             selectable: true,     // Permite seleccionar rangos de tiempo
             select: this.handleDateSelect.bind(this),       // Se dispara al seleccionar un rango
             eventClick: this.handleEventClick.bind(this), // Se dispara al hacer clic en un evento
-            events: this.events // Enlazamos los eventos
+            events: this.events, // Enlazamos los eventos
+            slotMinTime: '09:00:00', // Start of business day
+            slotMaxTime: '18:00:00', // End of business day
+            allDaySlot: false, // Hide "all day" row as bookings are time-based
+            businessHours: { // Visual emphasis on business hours
+                daysOfWeek: [ 1, 2, 3, 4, 5 ], // Monday - Friday
+                startTime: '09:00',
+                endTime: '18:00',
+            },
+            // Optional: Constraint to prevent dragging outside business hours
+            eventConstraint: 'businessHours', 
+            selectConstraint: 'businessHours'
         };
     }
 
