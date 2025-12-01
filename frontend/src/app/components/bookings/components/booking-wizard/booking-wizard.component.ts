@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Resource } from 'src/app/components/resources/services/resource.service';
 import { ResourceType } from 'src/app/components/resourcetypes/services/resource-type.service';
@@ -6,6 +6,7 @@ import { BookingService } from '../../services/booking.service';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/auth/services/auth.service'; // Importar AuthService
 import { User } from 'src/app/auth/models/user.model';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-booking-wizard',
@@ -13,7 +14,7 @@ import { User } from 'src/app/auth/models/user.model';
     styleUrls: ['./booking-wizard.component.scss'],
     providers: [MessageService]
 })
-export class BookingWizardComponent implements OnInit {
+export class BookingWizardComponent implements OnInit, OnDestroy {
 
     steps: MenuItem[] = [];
     isStep2Valid: boolean = false;
@@ -28,6 +29,8 @@ export class BookingWizardComponent implements OnInit {
         notes?: string;
     } = { user: null, resource: null, startTime: null, endTime: null, notes: '' };
 
+    private userSubscription: Subscription = new Subscription();
+
     constructor(
         private bookingService: BookingService,
         private messageService: MessageService,
@@ -36,9 +39,29 @@ export class BookingWizardComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
-        const currentUser = this.authService.currentUserValue;
-        this.isAdminOrManager = currentUser ? ['admin', 'manager'].includes(currentUser.role) : false;
+        // Suscribirse para asegurar que tenemos el usuario cargado
+        this.userSubscription = this.authService.currentUser$.subscribe(user => {
+            console.log('BookingWizard: Usuario actual recibido:', user);
+            
+            if (user) {
+                console.log('BookingWizard: Rol del usuario:', user.role);
+                this.isAdminOrManager = ['admin', 'manager'].includes(user.role);
+                console.log('BookingWizard: ¿Es Admin/Manager?', this.isAdminOrManager);
+            } else {
+                this.isAdminOrManager = false;
+            }
 
+            this.initSteps();
+        });
+    }
+
+    ngOnDestroy(): void {
+        if (this.userSubscription) {
+            this.userSubscription.unsubscribe();
+        }
+    }
+
+    initSteps() {
         this.steps = [];
         
         // Agregar paso de usuario solo si es admin/manager
@@ -51,6 +74,8 @@ export class BookingWizardComponent implements OnInit {
             { label: 'Elegir Fecha y Hora' },
             { label: 'Confirmación' }
         );
+        
+        console.log('BookingWizard: Pasos inicializados:', this.steps);
     }
 
     // Nuevo método para manejar la selección de usuario
