@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../environments/environment';
 
 export interface DashboardStats {
     // Admin Stats
@@ -34,4 +34,3 @@ export class DashboardService {
         return this.http.get<DashboardStats>(this.apiUrl);
     }
 }
-
