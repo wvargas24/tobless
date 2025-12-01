@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { createResource, getAllResources, updateResource, deleteResource, getBookableResources } = require('../controllers/resource.controller');
+const { createResource, getResources, updateResource, deleteResource, getBookableResources } = require('../controllers/resource.controller');
 const { protect } = require('../middlewares/authMiddleware');
 const { checkPermission } = require('../middlewares/permissionMiddleware');
 const { PERMISSIONS } = require('../config/permissions');
@@ -19,7 +19,7 @@ const resourceValidationRules = () => [
 ];
 
 router.route('/')
-    .get(protect, getAllResources) // Cualquiera logueado puede ver los recursos
+    .get(protect, getResources) // Corregido: getAllResources -> getResources
     .post(
         protect,
         checkPermission(PERMISSIONS.RESOURCES_MANAGE), // Solo admin/manager
