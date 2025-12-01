@@ -23,6 +23,7 @@ import { ButtonModule } from 'primeng/button';
 import { StyleClassModule } from 'primeng/styleclass';
 import { CalendarModule } from 'primeng/calendar';
 import { AvatarModule } from 'primeng/avatar';
+import { TagModule } from 'primeng/tag'; // Importar TagModule
 
 @NgModule({
     declarations: [
@@ -51,7 +52,8 @@ import { AvatarModule } from 'primeng/avatar';
         AppConfigModule,
         StyleClassModule,
         CalendarModule,
-        AvatarModule
+        AvatarModule,
+        TagModule // Agregar TagModule a imports
     ]
 })
 export class AppLayoutModule { }
