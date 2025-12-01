@@ -1,47 +1,40 @@
-// models/Booking.js
-
 const mongoose = require('mongoose');
 
 const bookingSchema = mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: 'User', // Quién hizo la reserva
+    ref: 'User',
   },
   resource: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: 'Resource', // Qué se reservó
+    ref: 'Resource',
   },
   membership: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: 'Membership', // Con qué membresía se hizo la reserva (para historial)
+    required: false, // Made optional as not all bookings might require a membership
+    ref: 'Membership',
   },
-  startTime: {
+  startDate: {
     type: Date,
-    required: true,
+    required: [true, 'Please add a start date'],
   },
-  endTime: {
+  endDate: {
     type: Date,
-    required: true,
+    required: [true, 'Please add an end date'],
   },
   status: {
     type: String,
-    required: true,
-    enum: ['confirmada', 'cancelada'],
-    default: 'confirmada',
-  },
-  notes: {
-    type: String,
-    trim: true,
+    enum: ['pending', 'confirmed', 'cancelled', 'completed'],
+    default: 'pending',
   },
 }, {
   timestamps: true,
 });
 
-// Índice para prevenir eficientemente la doble reserva del mismo recurso a la misma hora
-bookingSchema.index({ resource: 1, startTime: 1, endTime: 1 });
+// Index for efficient queries and potential overlap checks (though handled in controller)
+bookingSchema.index({ resource: 1, startDate: 1, endDate: 1 });
 
 const Booking = mongoose.model('Booking', bookingSchema);
 

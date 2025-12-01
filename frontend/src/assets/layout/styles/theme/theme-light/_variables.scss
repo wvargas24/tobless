@@ -1,6 +1,6 @@
 $colors: (
     "blue": #2196F3,
-    "green": #4caf50,
+    "green": #3A483A,
     "yellow": #FBC02D,
     "cyan": #00BCD4,
     "pink": #E91E63,
@@ -20,8 +20,8 @@ $shade200: rgba(68, 72, 109, 0.12) !default; //Alpha - 02
 $shade300: rgba(68, 72, 109, 0.17) !default; //Alpha - 03
 $shade400: rgba(255, 255, 255, 0.9) !default; //CardBg
 $shade500: #8A8EA6 !default; //text third color
-$shade600: #676B89 !default; //text secondary color
-$shade700: #44486D !default; //text color
+$shade600: #3A483A !default; //text secondary color
+$shade700: #2D2D2D !default; //text color
 
 $solidSurfaceColor: #ececf9 !default;
 
@@ -893,7 +893,7 @@ $imagePreviewActionIconBorderRadius: 50% !default;
     --content-padding:#{$panelContentPadding};
     --inline-spacing:#{$inlineSpacing};
     --border-radius:#{$borderRadius};
-    --surface-ground: linear-gradient(180deg, #F6F9FC 0%, #ECECF9 100%);
+    --surface-ground: linear-gradient(180deg, #E6DAC4 0%, #E6DAC4 100%);
     --surface-section: #ffffff;
     --surface-card: rgba(255, 255, 255, 0.9);
     --surface-overlay: #ececf9;

@@ -1,0 +1,44 @@
+<p-toast></p-toast>
+<div class="card">
+    <div class="text-center">
+        <h2 class="text-3xl font-bold">Agregar Nuevo Usuario</h2>
+        <p class="text-lg text-600">Elige el plan que mejor se adapte a tus necesidades.</p>
+    </div>
+    <div class="grid justify-content-center">
+        <div class="col-12 md:col-8 lg:col-6">
+            <p-card header="Onboarding de Nuevo Miembro">
+                <form #onboardingForm="ngForm" (ngSubmit)="onSubmit()">
+                    <div class="p-fluid formgrid grid">
+
+                        <div class="field col-12">
+                            <label for="name">Nombre Completo</label>
+                            <input pInputText id="name" type="text" [(ngModel)]="onboardingData.name" name="name" required />
+                        </div>
+
+                        <div class="field col-12">
+                            <label for="email">Email</label>
+                            <input pInputText id="email" type="email" [(ngModel)]="onboardingData.email" name="email" required />
+                        </div>
+
+                        <div class="field col-12">
+                            <label for="password">Contraseña Temporal</label>
+                            <p-password id="password" [(ngModel)]="onboardingData.password" name="password" [toggleMask]="true" [feedback]="false" required></p-password>
+                        </div>
+
+                        <div class="field col-12">
+                            <label for="membership">Asignar Membresía</label>
+                            <p-dropdown id="membership" [options]="memberships" [(ngModel)]="onboardingData.membershipId" name="membershipId" placeholder="Selecciona una membresía" optionLabel="name" optionValue="_id"
+                                        [showClear]="true">
+                            </p-dropdown>
+                        </div>
+
+                        <div class="col-12 mt-4">
+                            <p-button label="Crear y Asignar Usuario" type="submit" icon="pi pi-user-plus" [loading]="submitting"></p-button>
+                        </div>
+
+                    </div>
+                </form>
+            </p-card>
+        </div>
+    </div>
+</div>

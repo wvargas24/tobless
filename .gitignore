@@ -62,3 +62,5 @@ Thumbs.db
 # Compiled files
 theme.css
 layout.css
+# Snyk Security Extension - AI Rules (auto-generated)
+.cursor/rules/snyk_rules.mdc

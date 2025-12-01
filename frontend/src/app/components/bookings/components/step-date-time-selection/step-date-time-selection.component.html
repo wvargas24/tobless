@@ -1,0 +1,34 @@
+<div *ngIf="resource">
+    <div class="text-center mb-5">
+        <h3 class="text-2xl font-bold">Disponibilidad para: {{ resource.name }}</h3>
+        <p class="text-600">Haz clic y arrastra en el calendario para seleccionar tu horario.</p>
+    </div>
+
+    <div class="grid">
+        <div class="col-12 md:col-8">
+            <full-calendar [options]="calendarOptions"></full-calendar>
+        </div>
+
+        <div class="col-12 md:col-4">
+            <h4 class="text-xl font-medium mb-2">Horario Seleccionado</h4>
+            <div *ngIf="startTime; else selectTimePrompt" class="p-fluid">
+                <div class="field">
+                    <label for="startTime">Hora de Inicio (8am - 8pm)</label>
+                    <p-calendar id="startTime" [(ngModel)]="startTime" [showTime]="true" hourFormat="12" [minDate]="minTime" [maxDate]="maxTime" (onSelect)="onTimeChange()">
+                    </p-calendar>
+                </div>
+                <div class="field">
+                    <label for="endTime">Hora de Fin (8am - 8pm)</label>
+                    <p-calendar id="endTime" [(ngModel)]="endTime" [showTime]="true" hourFormat="12" [minDate]="minTime" [maxDate]="maxTime" (onSelect)="onTimeChange()">
+                    </p-calendar>
+                </div>
+            </div>
+
+            <ng-template #selectTimePrompt>
+                <div class="flex align-items-center justify-content-center border-round bg-gray-100" style="height: 150px;">
+                    <p class="text-gray-500 font-medium">Selecciona un rango en el calendario.</p>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+</div>
