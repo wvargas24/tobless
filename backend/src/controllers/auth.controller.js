@@ -1,5 +1,3 @@
-// Archivo completo: controllers/authController.js
-
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -9,6 +7,7 @@ const generateToken = (user) => {
   const payload = {
     sub: user.id,
     name: user.name,
+    username: user.username, // Include username in token
     email: user.email,
     role: user.role,
     membershipStatus: user.membershipStatus,
@@ -23,20 +22,20 @@ const generateToken = (user) => {
 // @desc    Register new user
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, username, email, password } = req.body;
 
-    if (!name || !email || !password) {
+    if (!name || !username || !email || !password) {
       return res.status(400).json({ message: 'Please enter all fields' });
     }
 
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ $or: [{ email }, { username }] });
 
     if (user) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(400).json({ message: 'User already exists (email or username)' });
     }
 
-    user = new User({ name, email, password });
-    await user.save(); // El rol por defecto 'user' se asignará aquí gracias al modelo
+    user = new User({ name, username, email, password });
+    await user.save();
 
     if (user) {
       res.status(201).json({
@@ -55,21 +54,21 @@ const registerUser = async (req, res) => {
 // @desc    Auth user & get token
 const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    const { username, password } = req.body;
+    // Allow login with either username or email if desired, but user asked for username.
+    // Let's stick to username as requested for login.
+    const user = await User.findOne({ username });
 
     if (user && (await bcrypt.compare(password, user.password))) {
-      if (user.membershipStatus === 'active' && user.membershipEndDate < new Date()) {
-        console.log(`Membership for user ${user.email} has expired. Updating status.`);
+      if (user.membershipStatus === 'active' && user.membershipEndDate && user.membershipEndDate < new Date()) {
+        console.log(`Membership for user ${user.username} has expired. Updating status.`);
         user.membershipStatus = 'expired';
-        await user.save(); // Guardamos el cambio en la BD
+        await user.save();
       }
 
-      // Generamos el token con la información actualizada
       res.json({
         token: generateToken(user),
       });
-
     } else {
       res.status(400).json({ message: 'Invalid credentials' });
     }

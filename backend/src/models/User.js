@@ -7,6 +7,12 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true
+    },
     email: {
       type: String,
       required: true,
@@ -27,24 +33,24 @@ const userSchema = mongoose.Schema(
     },
     profilePictureUrl: {
       type: String,
-      default: '' // Guardaremos la URL a una imagen, no el archivo en sí
+      default: ''
     },
     bio: {
       type: String,
       default: ''
     },
-    isActive: { // Para "soft delete" o desactivar usuarios
+    isActive: {
       type: Boolean,
       default: true
     },
     membership: {
-      type: mongoose.Schema.Types.ObjectId, // Referencia al ID de un documento de Membership
-      ref: 'Membership', // Le dice a Mongoose que este ID corresponde al modelo 'Membership'
-      required: false, // No todos los usuarios tendrán una membresía al registrarse
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Membership',
+      required: false,
     },
     membershipStatus: {
       type: String,
-      enum: ['active', 'expired', 'cancelled', 'pending'], // Estados posibles
+      enum: ['active', 'expired', 'cancelled', 'pending'],
       default: null,
     },
     membershipStartDate: {
