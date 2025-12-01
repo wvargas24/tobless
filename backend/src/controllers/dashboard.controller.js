@@ -11,40 +11,50 @@ const getDashboardStats = async (req, res, next) => {
         const user = req.user;
         const stats = {};
 
-        const todayStart = new Date();
-        todayStart.setHours(0, 0, 0, 0);
-        const todayEnd = new Date();
-        todayEnd.setHours(23, 59, 59, 999);
+        // Determinar la fecha objetivo (hoy o la fecha enviada por query param)
+        let targetDate = new Date();
+        if (req.query.date) {
+            const parsedDate = new Date(req.query.date);
+            if (!isNaN(parsedDate.getTime())) {
+                targetDate = parsedDate;
+            }
+        }
+
+        // Configurar inicio y fin del día objetivo
+        const dayStart = new Date(targetDate);
+        dayStart.setHours(0, 0, 0, 0);
+        const dayEnd = new Date(targetDate);
+        dayEnd.setHours(23, 59, 59, 999);
 
         if (['admin', 'manager'].includes(user.role)) {
             // --- ADMIN/MANAGER STATS ---
 
-            // 1. Total Active Users
+            // 1. Total Active Users (Global stat, not date dependent)
             stats.totalUsers = await User.countDocuments({ isActive: true, role: 'user' });
 
-            // 2. Active Bookings (Today and Future)
+            // 2. Active Bookings (Future from now, global stat)
             stats.activeBookings = await Booking.countDocuments({
                 status: 'confirmed',
-                startDate: { $gte: new Date() } // From now onwards
+                startDate: { $gte: new Date() } 
             });
 
-            // 3. Today's Bookings count
+            // 3. Target Date Bookings count
             stats.todayBookingsCount = await Booking.countDocuments({
                 status: 'confirmed',
-                startDate: { $gte: todayStart, $lte: todayEnd }
+                startDate: { $gte: dayStart, $lte: dayEnd }
             });
 
-            // 4. Detailed Today's Bookings (for a quick list)
+            // 4. Detailed Target Date Bookings (for the agenda list)
             stats.todayBookingsList = await Booking.find({
                 status: 'confirmed',
-                startDate: { $gte: todayStart, $lte: todayEnd }
+                startDate: { $gte: dayStart, $lte: dayEnd }
             })
-                .populate('user', 'name')
-                .populate('resource', 'name')
-                .sort({ startDate: 1 })
-                .limit(5); // Show top 5 next events
+            .populate('user', 'name')
+            .populate('resource', 'name')
+            .sort({ startDate: 1 }); // List all events for the day, sorted by time
 
-            // 5. Currently Occupied Resources (Approximation based on time overlap with now)
+            // 5. Currently Occupied Resources (Real-time, ignores target date unless we want 'occupied at target date time' which is complex)
+            // Let's keep this as "Right Now" status for the dashboard KPI card
             const now = new Date();
             stats.occupiedResourcesCount = await Booking.countDocuments({
                 status: 'confirmed',
@@ -56,32 +66,43 @@ const getDashboardStats = async (req, res, next) => {
             // --- USER STATS ---
 
             // 1. Membership Status
-            // Assuming the user object already has membership populated by the auth middleware or we fetch it lightly
-            // If not, we might use: const fullUser = await User.findById(user._id).populate('membership');
-            // But let's use what we have or keep it simple.
             stats.membershipStatus = {
-                status: user.membershipStatus, // 'active', 'inactive'
+                status: user.membershipStatus, 
                 endDate: user.membershipEndDate,
-                planName: user.membership ? user.membership.name : 'Sin Plan' // Note: requires population or separate query if not populated
+                planName: user.membership ? user.membership.name : 'Sin Plan' 
             };
-
-            // To ensure we have the plan name, let's quickly fetch if needed, or rely on frontend to know current user details.
-            // Let's do a quick robust fetch for the user's specific dashboard needs.
+            
             const fullUser = await User.findById(user._id).populate('membership', 'name');
             if (fullUser.membership) {
-                stats.membershipStatus.planName = fullUser.membership.name;
+                 stats.membershipStatus.planName = fullUser.membership.name;
             }
 
-            // 2. My Next Booking
+            // 2. My Next Booking (Global logic: next upcoming booking from NOW)
+            // But if a date is selected in agenda, maybe show bookings for THAT date?
+            // For the main dashboard cards, we want "Next Upcoming".
+            // For the agenda sidebar, we might want "Bookings on Selected Date".
+            
+            // Let's return both or handle logic. 
+            // 'myNextBooking' will remain "next form now".
             const nextBooking = await Booking.findOne({
                 user: user._id,
                 status: 'confirmed',
                 startDate: { $gte: new Date() }
             })
-                .populate('resource', 'name')
-                .sort({ startDate: 1 });
+            .populate('resource', 'name')
+            .sort({ startDate: 1 });
 
             stats.myNextBooking = nextBooking;
+
+            // New: Bookings for the specific target date (for agenda sidebar)
+            stats.myBookingsOnDate = await Booking.find({
+                user: user._id,
+                status: 'confirmed',
+                startDate: { $gte: dayStart, $lte: dayEnd }
+            })
+            .populate('resource', 'name')
+            .sort({ startDate: 1 });
+
 
             // 3. My Active Bookings Count
             stats.myActiveBookingsCount = await Booking.countDocuments({
@@ -102,4 +123,3 @@ const getDashboardStats = async (req, res, next) => {
 module.exports = {
     getDashboardStats
 };
-
