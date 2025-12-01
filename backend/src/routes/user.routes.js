@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 // Importamos el controlador que maneja la lógica de suscripción
-const { subscribeToMembership, getMyProfile, updateMyProfile } = require('../controllers/user.controller');
+const { subscribeToMembership, getMyProfile, updateMyProfile, checkUsernameAvailability } = require('../controllers/user.controller');
 
 // Importamos los middlewares que necesitamos
 const { protect } = require('../middlewares/authMiddleware'); // Para asegurar que el usuario esté logueado
@@ -28,6 +28,11 @@ const subscriptionValidationRules = () => {
         check('membershipId', 'Invalid Membership ID format').isMongoId(),
     ];
 };
+
+// @route   GET /api/users/check-username
+// @desc    Verificar disponibilidad de username
+// @access  Private
+router.get('/check-username', protect, checkUsernameAvailability);
 
 // @route   POST /api/users/subscribe
 // @desc    Suscribe al usuario logueado a un plan de membresía
