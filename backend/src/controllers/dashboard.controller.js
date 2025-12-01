@@ -39,10 +39,10 @@ const getDashboardStats = async (req, res, next) => {
                 status: 'confirmed',
                 startDate: { $gte: todayStart, $lte: todayEnd }
             })
-            .populate('user', 'name')
-            .populate('resource', 'name')
-            .sort({ startDate: 1 })
-            .limit(5); // Show top 5 next events
+                .populate('user', 'name')
+                .populate('resource', 'name')
+                .sort({ startDate: 1 })
+                .limit(5); // Show top 5 next events
 
             // 5. Currently Occupied Resources (Approximation based on time overlap with now)
             const now = new Date();
@@ -64,12 +64,12 @@ const getDashboardStats = async (req, res, next) => {
                 endDate: user.membershipEndDate,
                 planName: user.membership ? user.membership.name : 'Sin Plan' // Note: requires population or separate query if not populated
             };
-            
+
             // To ensure we have the plan name, let's quickly fetch if needed, or rely on frontend to know current user details.
             // Let's do a quick robust fetch for the user's specific dashboard needs.
             const fullUser = await User.findById(user._id).populate('membership', 'name');
             if (fullUser.membership) {
-                 stats.membershipStatus.planName = fullUser.membership.name;
+                stats.membershipStatus.planName = fullUser.membership.name;
             }
 
             // 2. My Next Booking
@@ -78,8 +78,8 @@ const getDashboardStats = async (req, res, next) => {
                 status: 'confirmed',
                 startDate: { $gte: new Date() }
             })
-            .populate('resource', 'name')
-            .sort({ startDate: 1 });
+                .populate('resource', 'name')
+                .sort({ startDate: 1 });
 
             stats.myNextBooking = nextBooking;
 
