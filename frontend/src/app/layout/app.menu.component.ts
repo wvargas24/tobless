@@ -66,14 +66,9 @@ export class AppMenuComponent implements OnInit, OnDestroy {
         const membershipsManagementMenu = {
             label: 'Membresías',
             icon: 'pi pi-fw pi-id-card',
-            visible: ['admin', 'manager', 'receptionist'].includes(user.role),
+            visible: user.role === 'admin', // Visible solo para Admin (ahora que Onboarding no está)
             items: [
-                {
-                    label: 'Registrar Miembro',
-                    icon: 'pi pi-fw pi-user-plus',
-                    routerLink: ['/memberships/onboarding'],
-                    visible: true
-                },
+                // ELIMINADO: 'Registrar Miembro' ya no es necesario aquí
                 {
                     label: 'Administrar Planes',
                     icon: 'pi pi-fw pi-cog',
