@@ -23,7 +23,7 @@ export class UserCreateComponent implements OnInit {
         { label: 'Receptionist', value: 'receptionist' },
         { label: 'User', value: 'user' }
     ];
-    
+
     memberships: SelectItem[] = [];
 
     // Username availability
@@ -40,7 +40,7 @@ export class UserCreateComponent implements OnInit {
 
     ngOnInit(): void {
         this.loadMemberships();
-        
+
         // Debounce name changes to auto-generate username
         this.nameChange$.pipe(
             debounceTime(500) // Wait 500ms after user stops typing
@@ -68,9 +68,9 @@ export class UserCreateComponent implements OnInit {
         const parts = fullName.trim().toLowerCase()
             .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Remove accents
             .split(/\s+/); // Split by spaces
-        
+
         let suggestedUsername = '';
-        
+
         if (parts.length >= 2) {
             // First name + last name
             suggestedUsername = `${parts[0]}.${parts[parts.length - 1]}`;
@@ -94,8 +94,8 @@ export class UserCreateComponent implements OnInit {
         }
 
         this.usernameStatus = 'checking';
-        
-        this.http.get<{available: boolean}>(`${environment.API_URL}/auth/check-username?username=${username}`)
+
+        this.http.get<{ available: boolean }>(`${environment.API_URL}/auth/check-username?username=${username}`)
             .subscribe({
                 next: (response) => {
                     if (response.available) {
