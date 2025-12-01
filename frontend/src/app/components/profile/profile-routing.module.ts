@@ -7,14 +7,21 @@ import { AuthGuard } from '../../auth/guards/auth.guard';
 
 const routes: Routes = [
     // La ruta para el perfil del propio usuario
-    { path: '', component: MyProfileComponent },
+    { 
+        path: '', 
+        component: MyProfileComponent,
+        data: { breadcrumb: 'Mi Perfil' } // Override parent breadcrumb to show 'Mi Perfil' specifically here
+    },
 
     // La ruta para que el admin/manager vea la lista de usuarios
     {
         path: 'list',
         component: UserListComponent,
         canActivate: [AuthGuard],
-        data: { expectedRoles: ['admin', 'manager'] }
+        data: { 
+            breadcrumb: 'Lista de Usuarios',
+            expectedRoles: ['admin', 'manager'] 
+        }
     },
 
     // La ruta para que el admin acceda al formulario de creación
@@ -22,7 +29,10 @@ const routes: Routes = [
         path: 'create',
         component: UserCreateComponent,
         canActivate: [AuthGuard],
-        data: { expectedRoles: ['admin'] }
+        data: { 
+            breadcrumb: 'Crear Usuario',
+            expectedRoles: ['admin'] 
+        }
     }
 ];
 

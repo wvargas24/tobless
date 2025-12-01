@@ -54,7 +54,7 @@ const routes: Routes = [
             { path: 'pages', data: { breadcrumb: 'Pages', expectedRoles: ['admin', 'manager', 'receptionist'] }, loadChildren: () => import('./demo/components/pages/pages.module').then(m => m.PagesModule), canActivate: [AuthGuard] },
             {
                 path: 'profile',
-                data: { breadcrumb: 'Mi Perfil' },
+                data: { breadcrumb: 'Usuarios' }, // Changed from 'Mi Perfil' to 'Usuarios'
                 loadChildren: () => import('./components/profile/profile.module').then(m => m.ProfileModule),
                 canActivate: [AuthGuard]
             },
