@@ -8,7 +8,7 @@ const Membership = require('../models/Membership');
 // @access  Private (Admin)
 const createUser = async (req, res, next) => {
     try {
-        const { name, email, password, role, membership } = req.body;
+        const { name, username, email, password, role, membership } = req.body;
 
         // 1. Validar que el rol proporcionado sea válido
         if (!Object.values(ROLES).includes(role)) {
@@ -16,11 +16,11 @@ const createUser = async (req, res, next) => {
             throw new Error(`Invalid role specified. Valid roles are: ${Object.values(ROLES).join(', ')}`);
         }
 
-        // 2. Validar que el usuario no exista
-        const userExists = await User.findOne({ email });
+        // 2. Validar que el usuario no exista (email o username)
+        const userExists = await User.findOne({ $or: [{ email }, { username }] });
         if (userExists) {
             res.status(400);
-            throw new Error('User with this email already exists');
+            throw new Error('User with this email or username already exists');
         }
 
         // 3. Si viene membresía, la validamos primero
@@ -46,6 +46,7 @@ const createUser = async (req, res, next) => {
         // 4. Crear el nuevo usuario, asignando rol y membresía si existe
         const user = await User.create({
             name,
+            username,
             email,
             password,
             role,
@@ -117,6 +118,7 @@ const updateUser = async (req, res, next) => {
         if (user) {
             // Un admin puede cambiar casi todo, incluyendo el rol y el estado
             user.name = req.body.name || user.name;
+            user.username = req.body.username || user.username; // Allow updating username
             user.role = req.body.role || user.role;
             user.isActive = req.body.isActive ?? user.isActive;
             user.email = req.body.email || user.email;
