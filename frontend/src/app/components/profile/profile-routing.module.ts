@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { MyProfileComponent } from './components/my-profile/my-profile.component';
 import { UserListComponent } from './components/user-list/user-list.component';
 import { UserCreateComponent } from './components/user-create/user-create.component'; // <-- 1. IMPORTAR el nuevo componente
-import { AuthGuard } from 'src/app/auth/guards/auth.guard';
+import { AuthGuard } from '../../auth/guards/auth.guard';
 
 const routes: Routes = [
     // La ruta para el perfil del propio usuario
