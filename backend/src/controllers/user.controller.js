@@ -4,6 +4,29 @@ const User = require('../models/User');
 const Membership = require('../models/Membership');
 const logger = require('../config/logger');
 
+// @desc    Check if username is available
+// @route   GET /api/users/check-username?username=...
+// @access  Public (or Private depending on needs, let's make it Protected for now to avoid scraping)
+const checkUsernameAvailability = async (req, res, next) => {
+    try {
+        const { username } = req.query;
+        
+        if (!username) {
+            return res.status(400).json({ message: 'Username parameter is required' });
+        }
+
+        const user = await User.findOne({ username });
+        
+        if (user) {
+            res.json({ available: false });
+        } else {
+            res.json({ available: true });
+        }
+    } catch (error) {
+        next(error);
+    }
+};
+
 // @desc    Subscribe user to a membership
 // @route   POST /api/users/subscribe
 // @access  Private (el usuario debe estar logueado)
@@ -81,6 +104,11 @@ const updateMyProfile = async (req, res, next) => {
         if (user) {
             // Actualizamos solo los campos que el usuario puede cambiar
             user.name = req.body.name || user.name;
+            // Prevent username update by user themselves if desired, or allow it.
+            // Let's allow it but we should check availability if it changed. 
+            // For simplicity here, assume front checks, or database will throw error on unique index.
+            // user.username = req.body.username || user.username; 
+            
             user.email = req.body.email || user.email; // Podrías querer validar si el nuevo email ya existe
             user.phone = req.body.phone ?? user.phone;
             user.bio = req.body.bio ?? user.bio;
@@ -97,6 +125,7 @@ const updateMyProfile = async (req, res, next) => {
             res.json({
                 _id: updatedUser._id,
                 name: updatedUser.name,
+                username: updatedUser.username,
                 email: updatedUser.email,
                 role: updatedUser.role,
                 phone: updatedUser.phone,
@@ -115,5 +144,6 @@ const updateMyProfile = async (req, res, next) => {
 module.exports = {
     subscribeToMembership,
     getMyProfile,
-    updateMyProfile
+    updateMyProfile,
+    checkUsernameAvailability
 };

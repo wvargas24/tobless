@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { registerUser, loginUser } = require('../controllers/auth.controller');
+const { registerUser, loginUser, checkUsernameAvailability } = require('../controllers/auth.controller');
 
 const { check, validationResult } = require('express-validator');
 
@@ -44,6 +44,11 @@ router.post(
   },
   loginUser
 );
+
+// @route   GET /api/auth/check-username
+// @desc    Check if username is available
+// @access  Public
+router.get('/check-username', checkUsernameAvailability);
 
 
 module.exports = router;

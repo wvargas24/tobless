@@ -7,7 +7,7 @@ const generateToken = (user) => {
   const payload = {
     sub: user.id,
     name: user.name,
-    username: user.username, // Include username in token
+    username: user.username,
     email: user.email,
     role: user.role,
     membershipStatus: user.membershipStatus,
@@ -55,8 +55,6 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { username, password } = req.body;
-    // Allow login with either username or email if desired, but user asked for username.
-    // Let's stick to username as requested for login.
     const user = await User.findOne({ username });
 
     if (user && (await bcrypt.compare(password, user.password))) {
@@ -78,7 +76,32 @@ const loginUser = async (req, res) => {
   }
 };
 
+// @desc    Check if username is available
+// @route   GET /api/auth/check-username?username=XXXXX
+// @access  Public
+const checkUsernameAvailability = async (req, res) => {
+  try {
+    const { username } = req.query;
+
+    if (!username) {
+      return res.status(400).json({ message: 'Username parameter is required' });
+    }
+
+    const user = await User.findOne({ username });
+
+    res.json({
+      available: !user, // true if not found (available), false if found (taken)
+      username: username
+    });
+
+  } catch (err) {
+    logger.error('Error in checkUsernameAvailability:', err);
+    res.status(500).send('Server error');
+  }
+};
+
 module.exports = {
   registerUser,
-  loginUser
+  loginUser,
+  checkUsernameAvailability
 };
