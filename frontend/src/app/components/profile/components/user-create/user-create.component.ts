@@ -44,8 +44,9 @@ export class UserCreateComponent implements OnInit {
     }
 
     createUser(): void {
-        if (!this.newUser.name || !this.newUser.email || !this.newUser.password || !this.newUser.role) {
-            this.messageService.add({ severity: 'warn', summary: 'Campos requeridos', detail: 'Por favor, llena todos los campos obligatorios.' });
+        // Validate username as well
+        if (!this.newUser.name || !this.newUser.username || !this.newUser.email || !this.newUser.password || !this.newUser.role) {
+            this.messageService.add({ severity: 'warn', summary: 'Campos requeridos', detail: 'Por favor, llena todos los campos obligatorios (incluyendo nombre de usuario).' });
             return;
         }
 

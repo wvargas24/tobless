@@ -9,6 +9,12 @@
             <input id="name" type="text" pInputText [(ngModel)]="newUser.name" required placeholder="Ej. Juan Pérez">
         </div>
 
+        <!-- Username (NUEVO) -->
+        <div class="field mb-4 col-12 md:col-6">
+            <label for="username" class="font-medium text-900"><i class="pi pi-at mr-2 text-primary"></i>Nombre de Usuario</label>
+            <input id="username" type="text" pInputText [(ngModel)]="newUser.username" required placeholder="Ej. jperez">
+        </div>
+
         <!-- Email -->
         <div class="field mb-4 col-12 md:col-6">
             <label for="email" class="font-medium text-900"><i class="pi pi-envelope mr-2 text-primary"></i>Email</label>
@@ -33,7 +39,7 @@
             <input id="phone" type="text" pInputText [(ngModel)]="newUser.phone" placeholder="Ej. +1 234 567 890">
         </div>
 
-        <!-- Membresía (NUEVO) -->
+        <!-- Membresía -->
         <div class="field mb-4 col-12 md:col-6">
             <label for="membership" class="font-medium text-900"><i class="pi pi-star mr-2 text-primary"></i>Asignar Membresía</label>
             <p-dropdown id="membership" [options]="memberships" [(ngModel)]="newUser.membership" placeholder="Selecciona una membresía (Opcional)" [showClear]="true" appendTo="body" styleClass="w-full" [style]="{'width':'100%'}"></p-dropdown>
