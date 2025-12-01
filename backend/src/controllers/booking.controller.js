@@ -1,5 +1,6 @@
 const Booking = require('../models/Booking');
 const Resource = require('../models/Resource');
+const User = require('../models/User'); // Import User model
 const logger = require('../config/logger');
 
 // Helper to check availability
@@ -52,8 +53,20 @@ const validateBusinessHours = (startDate, endDate) => {
 // @access  Private
 const createBooking = async (req, res) => {
   try {
-    const { resource, membership, startDate, endDate } = req.body;
-    const user = req.user._id; // Get user from authenticated request
+    const { resource, membership, startDate, endDate, userId } = req.body;
+    
+    // Determine the user for the booking
+    let bookingUser = req.user._id; // Default to authenticated user
+
+    // If user is admin/manager and provides a userId, book on behalf of that user
+    if (['admin', 'manager'].includes(req.user.role) && userId) {
+        // Verify the target user exists
+        const targetUser = await User.findById(userId);
+        if (!targetUser) {
+            return res.status(404).json({ message: 'Target user not found' });
+        }
+        bookingUser = userId;
+    }
 
     if (!resource || !startDate || !endDate) {
       return res.status(400).json({ message: 'Please enter resource, startDate, and endDate' });
@@ -82,7 +95,7 @@ const createBooking = async (req, res) => {
     }
 
     const booking = new Booking({
-      user,
+      user: bookingUser, // Use the determined user
       resource,
       membership, // Optional
       startDate,
