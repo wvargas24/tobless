@@ -28,13 +28,13 @@ export class AppProfileSidebarComponent implements OnInit, OnDestroy {
     ) { }
 
     ngOnInit(): void {
-        this.todayDateString = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        this.updateDateString(); // Initial date string
         
         this.subscription.add(
             this.authService.currentUser$.subscribe(user => {
                 this.user = user;
                 if (this.visible) {
-                    this.loadData();
+                    this.loadData(this.date);
                 }
             })
         );
@@ -51,13 +51,22 @@ export class AppProfileSidebarComponent implements OnInit, OnDestroy {
     set visible(_val: boolean) {
         this.layoutService.state.rightMenuActive = _val;
         if (_val) {
-            this.loadData();
+            this.loadData(this.date);
         }
     }
 
-    loadData() {
+    onDateSelect(): void {
+        this.updateDateString();
+        this.loadData(this.date);
+    }
+
+    updateDateString(): void {
+        this.todayDateString = this.date.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    loadData(date?: Date) {
         this.loading = true;
-        this.dashboardService.getStats().subscribe({
+        this.dashboardService.getStats(date).subscribe({
             next: (data) => {
                 this.stats = data;
                 this.processEvents(data);
@@ -74,7 +83,7 @@ export class AppProfileSidebarComponent implements OnInit, OnDestroy {
         this.events = [];
         
         if (this.isAdminOrManager()) {
-            // Para Admin: Mostrar 'todayBookingsList'
+            // Para Admin: Mostrar 'todayBookingsList' (que ahora trae la fecha seleccionada)
             if (data.todayBookingsList && data.todayBookingsList.length > 0) {
                 this.events = data.todayBookingsList.map(booking => ({
                     time: `${new Date(booking.startDate).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${new Date(booking.endDate).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`,
@@ -82,32 +91,23 @@ export class AppProfileSidebarComponent implements OnInit, OnDestroy {
                     color: '#0BD18A' // Verde para confirmado
                 }));
             } else {
-                this.events.push({ time: 'N/A', topic: 'No hay más reservas hoy', color: '#FC6161' });
+                this.events.push({ time: 'N/A', topic: 'No hay más reservas para esta fecha', color: '#FC6161' });
             }
         } else {
-            // Para User: Mostrar 'myNextBooking' si es hoy, o un mensaje
-            if (data.myNextBooking) {
-                const bookingDate = new Date(data.myNextBooking.startDate);
-                const today = new Date();
-                
-                // Si la próxima reserva es HOY
-                if (bookingDate.toDateString() === today.toDateString()) {
-                    this.events.push({
-                        time: `${new Date(data.myNextBooking.startDate).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`,
-                        topic: `Reserva en ${data.myNextBooking.resource?.name}`,
-                        color: '#0F8BFD' // Azul para el usuario
-                    });
-                } else {
-                     this.events.push({ time: 'Hoy', topic: 'Sin reservas para hoy', color: '#64748B' });
-                     // Podríamos mostrar la próxima fecha
-                     this.events.push({ 
-                         time: 'Próxima:', 
-                         topic: `${bookingDate.toLocaleDateString()} en ${data.myNextBooking.resource?.name}`,
-                         color: '#0F8BFD'
-                     });
-                }
+            // Para User: Mostrar 'myBookingsOnDate' (nuevo campo del backend)
+            // o 'myNextBooking' si no hay nada específico y la fecha es hoy/futuro
+            if (data.myBookingsOnDate && data.myBookingsOnDate.length > 0) {
+                 this.events = data.myBookingsOnDate.map(booking => ({
+                    time: `${new Date(booking.startDate).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${new Date(booking.endDate).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`,
+                    topic: `Reserva en ${booking.resource?.name}`,
+                    color: '#0F8BFD'
+                }));
             } else {
-                this.events.push({ time: '', topic: 'No tienes reservas futuras', color: '#64748B' });
+                // Si no hay reservas en la fecha seleccionada
+                this.events.push({ time: '', topic: 'No tienes reservas para esta fecha', color: '#64748B' });
+                
+                // Opcional: Mostrar la próxima reserva real si estamos viendo hoy y está vacía
+                /* if (data.myNextBooking) { ... } */
             }
         }
     }

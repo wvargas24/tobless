@@ -31,13 +31,14 @@
                        style="background:rgba(11, 209, 138, 0.1); padding: 9px; width: 50px; height: 50px; font-size: 24px;">
                         {{ isAdminOrManager() ? (stats.todayBookingsCount || 0) : (stats.myActiveBookingsCount || 0) }}
                     </a>
-                    <span class="task-name block mt-3">{{ isAdminOrManager() ? 'Reservas Hoy' : 'Mis Reservas' }}</span>
+                    <span class="task-name block mt-3">{{ isAdminOrManager() ? 'Reservas Fecha' : 'Mis Reservas' }}</span>
                 </div>
             </div>
         </div>
 
         <div>
-            <p-calendar [(ngModel)]="date" [inline]="true" styleClass="w-full p-0"></p-calendar>
+            <!-- Calendario con evento (onSelect) -->
+            <p-calendar [(ngModel)]="date" [inline]="true" styleClass="w-full p-0" (onSelect)="onDateSelect()"></p-calendar>
         </div>
 
         <div class="daily-plan-wrapper mt-5">

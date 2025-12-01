@@ -19,6 +19,7 @@ export interface DashboardStats {
     };
     myNextBooking?: any;
     myActiveBookingsCount?: number;
+    myBookingsOnDate?: any[]; // New: bookings for the selected date
 }
 
 @Injectable({
@@ -30,7 +31,13 @@ export class DashboardService {
 
     constructor(private http: HttpClient) { }
 
-    getStats(): Observable<DashboardStats> {
-        return this.http.get<DashboardStats>(this.apiUrl);
+    getStats(date?: Date): Observable<DashboardStats> {
+        let url = this.apiUrl;
+        if (date) {
+            // Convert date to ISO string YYYY-MM-DD or full ISO
+            const dateString = date.toISOString();
+            url += `?date=${dateString}`;
+        }
+        return this.http.get<DashboardStats>(url);
     }
 }
