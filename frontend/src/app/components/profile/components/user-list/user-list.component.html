@@ -79,7 +79,7 @@
 </div>
 
 <!-- Diálogo de Edición de Usuario -->
-<p-dialog [(visible)]="userDialog" [style]="{width: '450px'}" header="Editar Usuario" [modal]="true" class="p-fluid">
+<p-dialog [(visible)]="userDialog" [style]="{width: '550px'}" header="Editar Usuario" [modal]="true" class="p-fluid">
     <ng-template pTemplate="content">
 
         <!-- Nombre -->
@@ -89,7 +89,7 @@
             <small class="p-error" *ngIf="submitted && !user.name">El nombre es obligatorio.</small>
         </div>
 
-        <!-- Username (NUEVO) -->
+        <!-- Username -->
         <div class="field">
             <label for="username"><i class="pi pi-at mr-2 text-primary"></i>Nombre de Usuario</label>
             <input type="text" pInputText id="username" [(ngModel)]="user.username" required />
@@ -119,10 +119,37 @@
             <p-dropdown id="status" [options]="statuses" [(ngModel)]="user.isActive" placeholder="Selecciona estado" appendTo="body"></p-dropdown>
         </div>
 
+        <!-- SECCIÓN DE RESETEO DE CONTRASEÑA -->
+        <p-divider></p-divider>
+        <div class="field">
+            <label class="font-semibold text-900"><i class="pi pi-shield mr-2 text-primary"></i>Restablecer Contraseña</label>
+            <p class="text-500 text-sm mb-3">Genera una contraseña temporal o personalízala manualmente.</p>
+            
+            <button pButton type="button" label="Generar Contraseña Aleatoria" icon="pi pi-refresh" 
+                    class="p-button-help p-button-sm mb-3 w-full" (click)="generateRandomPassword()"></button>
+
+            <div class="formgrid grid">
+                <div class="col-12 md:col-6">
+                    <label for="newPassword"><i class="pi pi-lock mr-2 text-primary"></i>Nueva Contraseña</label>
+                    <input type="text" pInputText id="newPassword" [(ngModel)]="user.newPassword" placeholder="Dejar vacío para no cambiar" />
+                </div>
+                <div class="col-12 md:col-6">
+                    <label for="confirmPassword"><i class="pi pi-lock mr-2 text-primary"></i>Confirmar Contraseña</label>
+                    <input type="text" pInputText id="confirmPassword" [(ngModel)]="user.confirmPassword" placeholder="Confirmar" />
+                </div>
+            </div>
+            <small class="text-red-500" *ngIf="user.newPassword && user.confirmPassword && user.newPassword !== user.confirmPassword">
+                ✗ Las contraseñas no coinciden
+            </small>
+            <small class="text-green-500" *ngIf="user.newPassword && user.confirmPassword && user.newPassword === user.confirmPassword">
+                ✓ Las contraseñas coinciden
+            </small>
+        </div>
+
     </ng-template>
 
     <ng-template pTemplate="footer">
         <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
-        <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-primary" (click)="saveUser()"></button>
+        <button pButton pRipple label="Actualizar Usuario" icon="pi pi-check" class="p-button-primary" (click)="saveUser()"></button>
     </ng-template>
 </p-dialog>
