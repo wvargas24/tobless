@@ -20,6 +20,33 @@ const checkAvailability = async (resourceId, startDate, endDate, excludeBookingI
   return !existingBooking;
 };
 
+// Helper to validate business hours (9 AM to 6 PM)
+const validateBusinessHours = (startDate, endDate) => {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  const startHour = start.getHours();
+  const endHour = end.getHours();
+  const endMinutes = end.getMinutes();
+
+  // Business hours: 9:00 to 18:00
+  if (startHour < 9 || startHour >= 18) {
+      return false;
+  }
+  
+  // For end time, allow exactly 18:00 but not 18:01
+  if (endHour < 9 || (endHour > 18) || (endHour === 18 && endMinutes > 0)) {
+      return false;
+  }
+  
+  // Optional: Check if it's weekend (0 = Sunday, 6 = Saturday)
+  // const day = start.getDay();
+  // if (day === 0 || day === 6) return false;
+
+  return true;
+};
+
+
 // @desc    Create new booking
 // @route   POST /api/bookings
 // @access  Private
@@ -32,9 +59,14 @@ const createBooking = async (req, res) => {
       return res.status(400).json({ message: 'Please enter resource, startDate, and endDate' });
     }
 
-    // Validate dates
+    // Validate dates logic
     if (new Date(startDate) >= new Date(endDate)) {
       return res.status(400).json({ message: 'End date must be after start date' });
+    }
+    
+    // Validate business hours
+    if (!validateBusinessHours(startDate, endDate)) {
+        return res.status(400).json({ message: 'Bookings are only allowed between 9:00 AM and 6:00 PM' });
     }
 
     // Check if resource exists
@@ -84,14 +116,7 @@ const getBookings = async (req, res) => {
     }
 
     // If not admin/manager, only show own bookings UNLESS checking availability for a resource (public/shared info)
-    // Use caution here. If we want users to see "booked slots" without seeing WHO booked them, we might need a separate endpoint or projection.
-    // For now, let's restrict full booking details to own bookings or admin.
-    
     if (req.user.role !== 'admin' && req.user.role !== 'manager') {
-        // If filtering by resource to check availability, maybe allow it but hide user details?
-        // For simplicity in this "personal project", let's just enforce user filter unless it's a specific resource availability check context.
-        // Let's stick to: Users see their own. Admins see all.
-        // If a user needs to see availability, they probably use a different endpoint or we return anonymized data.
         // Current implementation: User only sees OWN bookings.
         query.user = req.user._id;
     }
@@ -100,7 +125,6 @@ const getBookings = async (req, res) => {
     if (req.user.role === 'admin' || req.user.role === 'manager') {
         if (req.query.resource) {
              query.resource = req.query.resource;
-             // Remove user filter if present from previous logic (though logic above handled it)
              delete query.user; 
         } else {
             // If no resource filter, show all.
@@ -163,11 +187,16 @@ const updateBooking = async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to update this booking' });
     }
     
-    // If dates or resource changed, check availability
+    // If dates or resource changed, check availability and business hours
     if ((startDate || endDate || resource) && (status !== 'cancelled')) {
         const newStart = startDate || booking.startDate;
         const newEnd = endDate || booking.endDate;
         const newResource = resource || booking.resource;
+        
+        // Validate business hours for update too
+        if (!validateBusinessHours(newStart, newEnd)) {
+            return res.status(400).json({ message: 'Bookings are only allowed between 9:00 AM and 6:00 PM' });
+        }
 
         // If changing dates/resource, verify availability excluding current booking
         const isAvailable = await checkAvailability(newResource, newStart, newEnd, booking._id);

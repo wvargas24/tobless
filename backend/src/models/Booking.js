@@ -33,6 +33,9 @@ const bookingSchema = mongoose.Schema({
   timestamps: true,
 });
 
+// Index for efficient queries and potential overlap checks (though handled in controller)
+bookingSchema.index({ resource: 1, startDate: 1, endDate: 1 });
+
 const Booking = mongoose.model('Booking', bookingSchema);
 
 module.exports = Booking;

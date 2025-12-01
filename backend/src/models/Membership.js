@@ -17,6 +17,14 @@ const membershipSchema = mongoose.Schema({
     type: Number, // Duration in days
     required: [true, 'Please add a duration in days'],
   },
+  amenities: {
+    type: [String],
+    default: []
+  },
+  allowedResourceTypes: [{ // Es un array de referencias
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ResourceType',
+  }],
 }, {
   timestamps: true,
 });
