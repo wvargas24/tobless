@@ -8,9 +8,13 @@ const routerOptions: ExtraOptions = {
 };
 
 const routes: Routes = [
+    // La ruta raíz ahora verifica autenticación:
+    // - Si tiene sesión, va a 'dashboard' (child route)
+    // - Si NO tiene sesión, el AuthGuard lo manda a login
     {
         path: '',
-        loadChildren: () => import('./demo/components/landing/landing.module').then(m => m.LandingModule)
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
     },
     {
         path: '', component: AppLayoutComponent,
@@ -51,7 +55,7 @@ const routes: Routes = [
             {
                 path: 'profile',
                 data: { breadcrumb: 'Mi Perfil' },
-                loadChildren: () => import('./components/profile/profile.module').then(m => m.ProfileModule), // <-- RUTA NUEVA Y CORRECTA
+                loadChildren: () => import('./components/profile/profile.module').then(m => m.ProfileModule),
                 canActivate: [AuthGuard]
             },
             { path: 'documentation', data: { breadcrumb: 'Documentation', expectedRoles: ['admin', 'manager', 'receptionist'] }, loadChildren: () => import('./demo/components/documentation/documentation.module').then(m => m.DocumentationModule), canActivate: [AuthGuard] },
@@ -60,7 +64,13 @@ const routes: Routes = [
             { path: 'apps', data: { breadcrumb: 'Apps', expectedRoles: ['admin', 'manager', 'receptionist'] }, loadChildren: () => import('./demo/components/apps/apps.module').then(m => m.AppsModule), canActivate: [AuthGuard] }
         ]
     },
+    // Mantener acceso público al módulo de Auth
     { path: 'auth', data: { breadcrumb: 'Auth' }, loadChildren: () => import('./components/auth/auth.module').then(m => m.AuthModule) },
+    // Landing page opcionalmente movida a otra ruta o eliminada si ya no se usa como home
+    {
+        path: 'landing',
+        loadChildren: () => import('./demo/components/landing/landing.module').then(m => m.LandingModule)
+    },
     { path: 'notfound', loadChildren: () => import('./demo/components/notfound/notfound.module').then(m => m.NotfoundModule) },
     { path: '**', redirectTo: '/notfound' }
 ];

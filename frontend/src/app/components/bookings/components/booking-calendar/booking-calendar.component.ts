@@ -21,7 +21,7 @@ export class BookingCalendarComponent implements OnInit {
 
     bookingDialog: boolean = false;
     resources: Resource[] = []; // Para llenar el dropdown
-    newBooking: { resourceId?: string, startTime?: Date, endTime?: Date, notes?: string } = {};
+    newBooking: { resource?: string, startDate?: Date, endDate?: Date } = {}; // Fixed type structure
 
     viewBookingDialog: boolean = false;
     selectedBooking: Booking | null = null;
@@ -61,22 +61,23 @@ export class BookingCalendarComponent implements OnInit {
     }
 
     loadBookings(): void {
-        const currentUser = this.authService.currentUserValue;
-        const isAdminOrStaff = currentUser && ['admin', 'manager', 'receptionist'].includes(currentUser.role);
-
-        const bookingObservable = isAdminOrStaff
-            ? this.bookingService.getAllBookings()
-            : this.bookingService.getMyBookings();
-
-        bookingObservable.subscribe(bookings => {
+        // Use getBookings() which handles the logic (admin sees all, user sees theirs) based on backend response
+        // The previous logic distinguishing isAdminOrStaff in frontend for method call was removed in service
+        
+        this.bookingService.getBookings().subscribe(bookings => {
             // Transformamos nuestras reservas al formato que FullCalendar entiende
-            this.events = bookings.map((booking: Booking) => ({
+            this.events = bookings
+                .filter(b => b.status !== 'cancelled') // Optional: hide cancelled bookings in calendar
+                .map((booking: Booking) => ({
                 id: booking._id,
                 title: `${booking.resource.name} - ${booking.user.name}`,
-                start: booking.startTime,
-                end: booking.endTime,
-                backgroundColor: this.getColorForStatus(booking.status),
-                borderColor: this.getColorForStatus(booking.status)
+                start: booking.startDate, // Use startDate property
+                end: booking.endDate,     // Use endDate property
+                backgroundColor: this.getColorForStatus(booking.status) === 'success' ? '#22c55e' : '#ef4444',
+                borderColor: this.getColorForStatus(booking.status) === 'success' ? '#22c55e' : '#ef4444',
+                extendedProps: {
+                    booking: booking // Store full booking object to retrieve later
+                }
             }));
             // Actualizamos las opciones del calendario con los nuevos eventos
             this.calendarOptions = { ...this.calendarOptions, events: this.events };
@@ -91,8 +92,8 @@ export class BookingCalendarComponent implements OnInit {
 
     handleDateSelect(selectInfo: any): void {
         this.newBooking = {
-            startTime: selectInfo.start,
-            endTime: selectInfo.end
+            startDate: selectInfo.start,
+            endDate: selectInfo.end
         };
         this.bookingDialog = true; // Mostramos el diálogo
         const calendarApi = selectInfo.view.calendar;
@@ -114,7 +115,7 @@ export class BookingCalendarComponent implements OnInit {
     }
 
     saveBooking(): void {
-        if (!this.newBooking.resourceId) {
+        if (!this.newBooking.resource) {
             this.messageService.add({ severity: 'warn', summary: 'Error de Validación', detail: 'Por favor, selecciona un recurso.' });
             return;
         }
@@ -157,7 +158,14 @@ export class BookingCalendarComponent implements OnInit {
     }
 
     getColorForStatus(status: string): "success" | "secondary" | "info" | "warning" | "danger" | "contrast" | undefined {
-        return status === 'confirmada' ? 'success' : 'danger';
+        // Map backend statuses to PrimeNG severities
+        switch (status) {
+            case 'confirmed': return 'success';
+            case 'completed': return 'info';
+            case 'pending': return 'warning';
+            case 'cancelled': return 'danger';
+            default: return 'secondary';
+        }
     }
 
     openNewBookingDialog(): void {

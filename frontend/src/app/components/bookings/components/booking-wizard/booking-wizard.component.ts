@@ -65,11 +65,12 @@ export class BookingWizardComponent implements OnInit {
 
         this.submitting = true; // Activamos el estado de carga
 
+        // AJUSTADO: Payload con los nombres de campos que espera el Backend
         const payload = {
-            resourceId: this.bookingState.resource._id,
-            startTime: this.bookingState.startTime,
-            endTime: this.bookingState.endTime,
-            notes: this.bookingState.notes || ''
+            resource: this.bookingState.resource._id, // 'resource' (el ID) en lugar de 'resourceId'
+            startDate: this.bookingState.startTime,   // 'startDate' en lugar de 'startTime'
+            endDate: this.bookingState.endTime,       // 'endDate' en lugar de 'endTime'
+            // notes: this.bookingState.notes || ''   // El backend por ahora no guarda notas, pero no molesta enviarlo
         };
 
         this.bookingService.createBooking(payload).subscribe({

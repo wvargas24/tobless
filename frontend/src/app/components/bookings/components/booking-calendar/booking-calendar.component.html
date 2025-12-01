@@ -14,23 +14,20 @@
     <ng-template pTemplate="content">
         <div class="field">
             <label for="resource">Recurso a Reservar</label>
-            <p-dropdown id="resource" [options]="resources" [(ngModel)]="newBooking.resourceId" placeholder="Selecciona el recurso" optionLabel="name" optionValue="_id" [showClear]="true">
+            <p-dropdown id="resource" [options]="resources" [(ngModel)]="newBooking.resource" placeholder="Selecciona el recurso" optionLabel="name" optionValue="_id" [showClear]="true">
             </p-dropdown>
         </div>
         <div class="formgrid grid">
             <div class="field col">
                 <label for="startTime">Inicio</label>
-                <p-calendar id="startTime" [(ngModel)]="newBooking.startTime" [showTime]="true" hourFormat="12"></p-calendar>
+                <p-calendar id="startTime" [(ngModel)]="newBooking.startDate" [showTime]="true" hourFormat="12"></p-calendar>
             </div>
             <div class="field col">
                 <label for="endTime">Fin</label>
-                <p-calendar id="endTime" [(ngModel)]="newBooking.endTime" [showTime]="true" hourFormat="12"></p-calendar>
+                <p-calendar id="endTime" [(ngModel)]="newBooking.endDate" [showTime]="true" hourFormat="12"></p-calendar>
             </div>
         </div>
-        <div class="field">
-            <label for="notes">Notas (Opcional)</label>
-            <textarea id="notes" pInputTextarea [(ngModel)]="newBooking.notes" rows="3"></textarea>
-        </div>
+        <!-- Removed Notes field as it is not yet supported by backend model or API -->
     </ng-template>
 
     <ng-template pTemplate="footer">
@@ -46,10 +43,13 @@
                 <label>Recurso</label>
                 <p><strong>{{ selectedBooking.resource.name }}</strong></p>
             </div>
+            <!-- Removed resource type display if not populated properly or causes issues, can be added back if resource.type is populated object -->
+            <!--
             <div class="field">
                 <label>Tipo de Recurso</label>
                 <p><strong>{{ selectedBooking.resource.type }}</strong></p>
             </div>
+            -->
             <div class="field">
                 <label>Reservado por</label>
                 <p><strong>{{ selectedBooking.user.name }}</strong></p>
@@ -57,17 +57,14 @@
             <div class="formgrid grid">
                 <div class="field col">
                     <label>Inicio</label>
-                    <p><strong>{{ selectedBooking.startTime | date:'medium' }}</strong></p>
+                    <p><strong>{{ selectedBooking.startDate | date:'medium' }}</strong></p>
                 </div>
                 <div class="field col">
                     <label>Fin</label>
-                    <p><strong>{{ selectedBooking.endTime | date:'medium' }}</strong></p>
+                    <p><strong>{{ selectedBooking.endDate | date:'medium' }}</strong></p>
                 </div>
             </div>
-            <div class="field" *ngIf="selectedBooking.notes">
-                <label>Notas</label>
-                <p>{{ selectedBooking.notes }}</p>
-            </div>
+            <!-- Removed notes display -->
             <div class="field">
                 <label>Estado</label>
                 <p><p-tag [value]="selectedBooking.status" [severity]="getColorForStatus(selectedBooking.status)"></p-tag></p>
@@ -77,7 +74,8 @@
 
     <ng-template pTemplate="footer">
         <button pButton pRipple label="Cerrar" icon="pi pi-times" class="p-button-text" (click)="viewBookingDialog = false"></button>
-        <button pButton pRipple label="Cancelar Reserva" icon="pi pi-trash" class="p-button-danger" *ngIf="selectedBooking && currentUser?._id === selectedBooking.user._id && selectedBooking.status === 'confirmada'"
+        <button pButton pRipple label="Cancelar Reserva" icon="pi pi-trash" class="p-button-danger" *ngIf="selectedBooking && currentUser?._id === selectedBooking.user._id && selectedBooking.status !== 'cancelled'"
                 (click)="cancelBooking()"></button>
     </ng-template>
 </p-dialog>
+
