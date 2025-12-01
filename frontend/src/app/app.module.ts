@@ -1,26 +1,35 @@
 import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser'; // <-- 1. IMPORTAR BROWSERMODULE
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; // <-- 2. IMPORTAR BROWSERANIMATIONSMODULE
-import { HashLocationStrategy, LocationStrategy } from '@angular/common';
-import { AppRoutingModule } from './app-routing.module';
+import { HashLocationStrategy, LocationStrategy, registerLocaleData } from '@angular/common'; // Importar registerLocaleData
+import localeEs from '@angular/common/locales/es'; // Importar locale español
 import { AppComponent } from './app.component';
+import { AppRoutingModule } from './app-routing.module';
 import { AppLayoutModule } from './layout/app.layout.module';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { NotfoundComponent } from './demo/components/notfound/notfound.component';
+import { ProductService } from './demo/service/product.service';
+import { CountryService } from './demo/service/country.service';
+import { CustomerService } from './demo/service/customer.service';
+import { EventService } from './demo/service/event.service';
+import { IconService } from './demo/service/icon.service';
+import { NodeService } from './demo/service/node.service';
+import { PhotoService } from './demo/service/photo.service';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './auth/guards/auth.interceptor';
+
+// Registrar los datos regionales para español
+registerLocaleData(localeEs);
 
 @NgModule({
     declarations: [
-        AppComponent
+        AppComponent, NotfoundComponent
     ],
     imports: [
-        BrowserModule, // <-- 3. AÑADIR AQUÍ
-        BrowserAnimationsModule, // <-- 4. AÑADIR AQUÍ
         AppRoutingModule,
-        AppLayoutModule,
-        HttpClientModule
+        AppLayoutModule
     ],
     providers: [
         { provide: LocationStrategy, useClass: HashLocationStrategy },
+        CountryService, CustomerService, EventService, IconService, NodeService,
+        PhotoService, ProductService,
         { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
     ],
     bootstrap: [AppComponent]
