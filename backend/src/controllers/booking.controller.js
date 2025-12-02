@@ -1,9 +1,9 @@
 const Booking = require('../models/Booking');
 const Resource = require('../models/Resource');
-const User = require('../models/User'); // Import User model
+const User = require('../models/User');
 const logger = require('../config/logger');
+const { utcToZonedTime } = require('date-fns-tz');
 
-// Helper to check availability
 const checkAvailability = async (resourceId, startDate, endDate, excludeBookingId = null) => {
   const query = {
     resource: resourceId,
@@ -21,128 +21,101 @@ const checkAvailability = async (resourceId, startDate, endDate, excludeBookingI
   return !existingBooking;
 };
 
-// Helper to validate business hours (9 AM to 6 PM)
 const validateBusinessHours = (startDate, endDate) => {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+  const timeZone = 'America/Caracas';
+  const zonedStart = utcToZonedTime(new Date(startDate), timeZone);
+  const zonedEnd = utcToZonedTime(new Date(endDate), timeZone);
 
-  const startHour = start.getHours();
-  const endHour = end.getHours();
-  const endMinutes = end.getMinutes();
+  const startHour = zonedStart.getHours();
+  const endHour = zonedEnd.getHours();
+  const endMinutes = zonedEnd.getMinutes();
 
-  // Business hours: 9:00 to 18:00
   if (startHour < 9 || startHour >= 18) {
-      return false;
+    return false;
   }
-  
-  // For end time, allow exactly 18:00 but not 18:01
+
   if (endHour < 9 || (endHour > 18) || (endHour === 18 && endMinutes > 0)) {
-      return false;
+    return false;
   }
-  
-  // Optional: Check if it's weekend (0 = Sunday, 6 = Saturday)
-  // const day = start.getDay();
-  // if (day === 0 || day === 6) return false;
 
   return true;
 };
 
-
-// @desc    Create new booking
-// @route   POST /api/bookings
-// @access  Private
 const createBooking = async (req, res) => {
   try {
     const { resource, membership, startDate, endDate, userId } = req.body;
-    
-    // Determine the user for the booking
-    let bookingUser = req.user._id; // Default to authenticated user
+    let bookingUser = req.user._id;
 
-    // If user is admin/manager and provides a userId, book on behalf of that user
     if (['admin', 'manager'].includes(req.user.role) && userId) {
-        // Verify the target user exists
-        const targetUser = await User.findById(userId);
-        if (!targetUser) {
-            return res.status(404).json({ message: 'Target user not found' });
-        }
-        bookingUser = userId;
+      const targetUser = await User.findById(userId);
+      if (!targetUser) {
+        return res.status(404).json({ message: 'Usuario de destino no encontrado' });
+      }
+      bookingUser = userId;
     }
 
     if (!resource || !startDate || !endDate) {
-      return res.status(400).json({ message: 'Please enter resource, startDate, and endDate' });
+      return res.status(400).json({ message: 'Por favor, ingrese recurso, fecha de inicio y fecha de fin' });
     }
 
-    // Validate dates logic
     if (new Date(startDate) >= new Date(endDate)) {
-      return res.status(400).json({ message: 'End date must be after start date' });
-    }
-    
-    // Validate business hours
-    if (!validateBusinessHours(startDate, endDate)) {
-        return res.status(400).json({ message: 'Bookings are only allowed between 9:00 AM and 6:00 PM' });
+      return res.status(400).json({ message: 'La fecha de fin debe ser posterior a la fecha de inicio' });
     }
 
-    // Check if resource exists
+    if (!validateBusinessHours(startDate, endDate)) {
+      return res.status(400).json({ message: 'Las reservas solo se permiten entre las 9:00 AM y las 6:00 PM' });
+    }
+
     const resourceExists = await Resource.findById(resource);
     if (!resourceExists) {
-      return res.status(404).json({ message: 'Resource not found' });
+      return res.status(404).json({ message: 'Recurso no encontrado' });
     }
 
-    // Check availability
     const isAvailable = await checkAvailability(resource, startDate, endDate);
     if (!isAvailable) {
-      return res.status(400).json({ message: 'Resource is not available for the selected dates' });
+      return res.status(400).json({ message: 'El recurso no está disponible para las fechas seleccionadas' });
     }
 
     const booking = new Booking({
-      user: bookingUser, // Use the determined user
+      user: bookingUser,
       resource,
-      membership, // Optional
+      membership,
       startDate,
       endDate,
     });
 
     const createdBooking = await booking.save();
-    // Populate resource and membership details in response
     const populatedBooking = await Booking.findById(createdBooking._id)
-        .populate('resource', 'name')
-        .populate('membership', 'name');
+      .populate('resource', 'name')
+      .populate('membership', 'name');
 
     res.status(201).json(populatedBooking);
 
   } catch (err) {
-    logger.error('Error in createBooking:', err);
-    res.status(500).send('Server error');
+    logger.error('Error en createBooking:', err);
+    res.status(500).send('Error del servidor');
   }
 };
 
-// @desc    Get all bookings (with filters)
-// @route   GET /api/bookings
-// @access  Private
 const getAllBookings = async (req, res) => {
   try {
     let query = {};
-    
-    // Allow filtering by resource (e.g., for calendar availability)
+
     if (req.query.resource) {
-        query.resource = req.query.resource;
+      query.resource = req.query.resource;
     }
 
-    // If not admin/manager, only show own bookings UNLESS checking availability for a resource (public/shared info)
     if (req.user.role !== 'admin' && req.user.role !== 'manager') {
-        // Current implementation: User only sees OWN bookings.
-        query.user = req.user._id;
+      query.user = req.user._id;
     }
 
-    // Override for admin/manager to see all (or filtered by resource)
     if (req.user.role === 'admin' || req.user.role === 'manager') {
-        if (req.query.resource) {
-             query.resource = req.query.resource;
-             delete query.user; 
-        } else {
-            // If no resource filter, show all.
-            delete query.user;
-        }
+      if (req.query.resource) {
+        query.resource = req.query.resource;
+        delete query.user;
+      } else {
+        delete query.user;
+      }
     }
 
     const bookings = await Booking.find(query)
@@ -152,28 +125,23 @@ const getAllBookings = async (req, res) => {
 
     res.json(bookings);
   } catch (err) {
-    logger.error('Error in getAllBookings:', err);
-    res.status(500).send('Server error');
+    logger.error('Error en getAllBookings:', err);
+    res.status(500).send('Error del servidor');
   }
 };
 
-// @desc    Get bookings for current user
-// @route   GET /api/bookings/mybookings
 const getMyBookings = async (req, res) => {
-    try {
-        const bookings = await Booking.find({ user: req.user._id })
-            .populate('resource', 'name type')
-            .populate('membership', 'name');
-        res.json(bookings);
-    } catch (err) {
-        logger.error('Error in getMyBookings:', err);
-        res.status(500).send('Server error');
-    }
+  try {
+    const bookings = await Booking.find({ user: req.user._id })
+      .populate('resource', 'name type')
+      .populate('membership', 'name');
+    res.json(bookings);
+  } catch (err) {
+    logger.error('Error en getMyBookings:', err);
+    res.status(500).send('Error del servidor');
+  }
 };
 
-// @desc    Get booking by ID
-// @route   GET /api/bookings/:id
-// @access  Private
 const getBookingById = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id)
@@ -182,54 +150,46 @@ const getBookingById = async (req, res) => {
       .populate('membership', 'name');
 
     if (!booking) {
-      return res.status(404).json({ message: 'Booking not found' });
+      return res.status(404).json({ message: 'Reserva no encontrada' });
     }
 
-    // Access control
     if (booking.user._id.toString() !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'manager') {
-      return res.status(403).json({ message: 'Not authorized to view this booking' });
+      return res.status(403).json({ message: 'No autorizado para ver esta reserva' });
     }
 
     res.json(booking);
   } catch (err) {
-    logger.error('Error in getBookingById:', err);
-    res.status(500).send('Server error');
+    logger.error('Error en getBookingById:', err);
+    res.status(500).send('Error del servidor');
   }
 };
 
-// @desc    Update booking
-// @route   PUT /api/bookings/:id
-// @access  Private
 const updateBooking = async (req, res) => {
   try {
     const { startDate, endDate, status, resource } = req.body;
     const booking = await Booking.findById(req.params.id);
 
     if (!booking) {
-      return res.status(404).json({ message: 'Booking not found' });
+      return res.status(404).json({ message: 'Reserva no encontrada' });
     }
 
-    // Access control
     if (booking.user.toString() !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'manager') {
-      return res.status(403).json({ message: 'Not authorized to update this booking' });
+      return res.status(403).json({ message: 'No autorizado para actualizar esta reserva' });
     }
-    
-    // If dates or resource changed, check availability and business hours
-    if ((startDate || endDate || resource) && (status !== 'cancelled')) {
-        const newStart = startDate || booking.startDate;
-        const newEnd = endDate || booking.endDate;
-        const newResource = resource || booking.resource;
-        
-        // Validate business hours for update too
-        if (!validateBusinessHours(newStart, newEnd)) {
-            return res.status(400).json({ message: 'Bookings are only allowed between 9:00 AM and 6:00 PM' });
-        }
 
-        // If changing dates/resource, verify availability excluding current booking
-        const isAvailable = await checkAvailability(newResource, newStart, newEnd, booking._id);
-        if (!isAvailable) {
-            return res.status(400).json({ message: 'Resource is not available for the updated dates' });
-        }
+    if ((startDate || endDate || resource) && (status !== 'cancelled')) {
+      const newStart = startDate || booking.startDate;
+      const newEnd = endDate || booking.endDate;
+      const newResource = resource || booking.resource;
+
+      if (!validateBusinessHours(newStart, newEnd)) {
+        return res.status(400).json({ message: 'Las reservas solo se permiten entre las 9:00 AM y las 6:00 PM' });
+      }
+
+      const isAvailable = await checkAvailability(newResource, newStart, newEnd, booking._id);
+      if (!isAvailable) {
+        return res.status(400).json({ message: 'El recurso no está disponible para las fechas actualizadas' });
+      }
     }
 
     booking.startDate = startDate || booking.startDate;
@@ -240,57 +200,50 @@ const updateBooking = async (req, res) => {
     const updatedBooking = await booking.save();
     res.json(updatedBooking);
   } catch (err) {
-    logger.error('Error in updateBooking:', err);
-    res.status(500).send('Server error');
+    logger.error('Error en updateBooking:', err);
+    res.status(500).send('Error del servidor');
   }
 };
 
-// @desc    Delete booking
-// @route   DELETE /api/bookings/:id
-// @access  Private
 const deleteBooking = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);
 
     if (!booking) {
-      return res.status(404).json({ message: 'Booking not found' });
+      return res.status(404).json({ message: 'Reserva no encontrada' });
     }
 
-    // Access control
     if (booking.user.toString() !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'manager') {
-      return res.status(403).json({ message: 'Not authorized to delete this booking' });
+      return res.status(403).json({ message: 'No autorizado para eliminar esta reserva' });
     }
 
     await booking.deleteOne();
-    res.json({ message: 'Booking removed' });
+    res.json({ message: 'Reserva eliminada' });
   } catch (err) {
-    logger.error('Error in deleteBooking:', err);
-    res.status(500).send('Server error');
+    logger.error('Error en deleteBooking:', err);
+    res.status(500).send('Error del servidor');
   }
 };
 
-// @desc    Get availability for a resource
-// @route   GET /api/bookings/availability/:resourceId
 const getBookingAvailability = async (req, res) => {
-    try {
-        const { resourceId } = req.params;
-        // Find all active bookings for this resource
-        const bookings = await Booking.find({
-            resource: resourceId,
-            status: { $ne: 'cancelled' }
-        }).select('startDate endDate');
-        
-        res.json(bookings);
-    } catch (err) {
-        logger.error('Error in getBookingAvailability:', err);
-        res.status(500).send('Server error');
-    }
+  try {
+    const { resourceId } = req.params;
+    const bookings = await Booking.find({
+      resource: resourceId,
+      status: { $ne: 'cancelled' }
+    }).select('startDate endDate');
+
+    res.json(bookings);
+  } catch (err) {
+    logger.error('Error en getBookingAvailability:', err);
+    res.status(500).send('Error del servidor');
+  }
 };
 
 module.exports = {
   createBooking,
-  getAllBookings, // Exported as getAllBookings to match routes
-  getBookings: getAllBookings, // Alias kept for compatibility if used elsewhere
+  getAllBookings,
+  getBookings: getAllBookings,
   getMyBookings,
   getBookingById,
   updateBooking,
