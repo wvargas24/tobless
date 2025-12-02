@@ -21,7 +21,8 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { DividerModule } from 'primeng/divider'; // Import Divider module
+import { DividerModule } from 'primeng/divider';
+import { SkeletonModule } from 'primeng/skeleton'; // Import Skeleton module
 
 @NgModule({
     declarations: [
@@ -46,7 +47,8 @@ import { DividerModule } from 'primeng/divider'; // Import Divider module
         DialogModule,
         DropdownModule,
         ConfirmDialogModule,
-        DividerModule // Add DividerModule
+        DividerModule,
+        SkeletonModule // Add Skeleton module
     ]
 })
 export class ProfileModule { }

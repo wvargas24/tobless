@@ -15,6 +15,7 @@ export class UserListComponent implements OnInit {
 
     customers: User[] = [];
     staff: User[] = [];
+    loading: boolean = true; // Add loading state
 
     userDialog: boolean = false;
     submitted: boolean = false;
@@ -48,8 +49,32 @@ export class UserListComponent implements OnInit {
     }
 
     loadAllUsers(): void {
-        this.userService.getUsers('customer').subscribe(data => this.customers = data);
-        this.userService.getUsers('staff').subscribe(data => this.staff = data);
+        this.loading = true;
+        // Use forkJoin or handle both calls, for simplicity loading flag will turn off after both
+        this.userService.getUsers('customer').subscribe({
+            next: (data) => {
+                this.customers = data;
+                this.checkLoadingComplete();
+            },
+            error: () => this.loading = false
+        });
+        
+        this.userService.getUsers('staff').subscribe({
+            next: (data) => {
+                this.staff = data;
+                this.checkLoadingComplete();
+            },
+            error: () => this.loading = false
+        });
+    }
+
+    private loadedCount = 0;
+    checkLoadingComplete(): void {
+        this.loadedCount++;
+        if (this.loadedCount >= 2) {
+            this.loading = false;
+            this.loadedCount = 0; // Reset for future reloads
+        }
     }
 
     loadMemberships(): void {
@@ -69,7 +94,6 @@ export class UserListComponent implements OnInit {
     }
 
     generateRandomPassword(): void {
-        // Generate a secure random password
         const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%';
         let password = 'ToBless';
         for (let i = 0; i < 6; i++) {
@@ -78,12 +102,11 @@ export class UserListComponent implements OnInit {
         this.user.newPassword = password;
         this.user.confirmPassword = password;
         
-        // Show message so admin can copy it
         this.messageService.add({ 
             severity: 'info', 
             summary: 'Contraseña Generada', 
             detail: `Contraseña temporal: ${password}`,
-            life: 10000 // Show for 10 seconds
+            life: 10000
         });
     }
 
@@ -104,7 +127,6 @@ export class UserListComponent implements OnInit {
     hideDialog(): void {
         this.userDialog = false;
         this.submitted = false;
-        // Reset password fields
         this.user.newPassword = '';
         this.user.confirmPassword = '';
     }
@@ -117,7 +139,6 @@ export class UserListComponent implements OnInit {
             return;
         }
 
-        // Validate passwords match if provided
         if (this.user.newPassword || this.user.confirmPassword) {
             if (this.user.newPassword !== this.user.confirmPassword) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Las contraseñas no coinciden.' });
@@ -125,15 +146,12 @@ export class UserListComponent implements OnInit {
             }
         }
 
-        // Prepare payload
         const payload: any = { ...this.user };
         
-        // If new password provided, send it as 'password' to backend
         if (this.user.newPassword && this.user.newPassword.trim().length > 0) {
             payload.password = this.user.newPassword;
         }
         
-        // Remove temp fields
         delete payload.newPassword;
         delete payload.confirmPassword;
 
