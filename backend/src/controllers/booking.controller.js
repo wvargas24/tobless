@@ -3,7 +3,7 @@ const Resource = require('../models/Resource');
 const User = require('../models/User');
 const logger = require('../config/logger');
 // Corrected import for date-fns-tz
-const { utcToZonedTime } = require('date-fns-tz');
+const { toZonedTime } = require('date-fns-tz');
 
 const checkAvailability = async (resourceId, startDate, endDate, excludeBookingId = null) => {
   const query = {
@@ -24,8 +24,8 @@ const checkAvailability = async (resourceId, startDate, endDate, excludeBookingI
 
 const validateBusinessHours = (startDate, endDate) => {
   const timeZone = 'America/Caracas';
-  const zonedStart = utcToZonedTime(new Date(startDate), timeZone);
-  const zonedEnd = utcToZonedTime(new Date(endDate), timeZone);
+  const zonedStart = toZonedTime(new Date(startDate), timeZone);
+  const zonedEnd = toZonedTime(new Date(endDate), timeZone);
 
   const startHour = zonedStart.getHours();
   const endHour = zonedEnd.getHours();
