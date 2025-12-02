@@ -2,7 +2,8 @@ const Booking = require('../models/Booking');
 const Resource = require('../models/Resource');
 const User = require('../models/User');
 const logger = require('../config/logger');
-const { utcToZonedTime } = require('date-fns-tz');
+// Corrected import for date-fns-tz
+const { utcToZonedTime } = require('date-fns-tz/dist');
 
 const checkAvailability = async (resourceId, startDate, endDate, excludeBookingId = null) => {
   const query = {
