@@ -1,76 +1,72 @@
-<div class="layout-topbar">
-    <div class="topbar-start">
-        <button #menubutton type="button" class="topbar-menubutton p-link p-trigger" (click)="onMenuButtonClick()">
-            <i class="pi pi-bars"></i>
-        </button>
+<div class="topbar-start">
+    <button #menubutton type="button" class="topbar-menubutton p-link p-trigger" (click)="onMenuButtonClick()">
+        <i class="pi pi-bars"></i>
+    </button>
 
-        <app-breadcrumb class="topbar-breadcrumb"></app-breadcrumb>
-    </div>
-    <div class="layout-topbar-menu-section">
-        <app-sidebar></app-sidebar>
-    </div>
-    <div class="topbar-end">
-        <ul class="topbar-menu  ">
-            <li class="hidden lg:block">
-                <div class="topbar-search" [ngClass]="{'topbar-search-active': searchActive}">
-                    <button pButton icon="pi pi-search" class="topbar-searchbutton p-button-text p-button-secondary text-color-secondary p-button-rounded flex-shrink-0" type="button" (click)="activateSearch()"></button>
-                    <div class="search-input-wrapper">
-                        <span class="p-input-icon-right">
-                            <input #searchinput type="text" pInputText placeholder="Search" (blur)="deactivateSearch()" (keydown.escape)="deactivateSearch()" />
-                            <i class="pi pi-search"></i>
-                        </span>
-                    </div>
+    <app-breadcrumb class="topbar-breadcrumb"></app-breadcrumb>
+</div>
+<div class="layout-topbar-menu-section">
+    <app-sidebar></app-sidebar>
+</div>
+<div class="topbar-end">
+    <ul class="topbar-menu  ">
+        <li class="hidden lg:block">
+            <div class="topbar-search" [ngClass]="{'topbar-search-active': searchActive}">
+                <button pButton icon="pi pi-search" class="topbar-searchbutton p-button-text p-button-secondary text-color-secondary p-button-rounded flex-shrink-0" type="button" (click)="activateSearch()"></button>
+                <div class="search-input-wrapper">
+                    <span class="p-input-icon-right">
+                        <input #searchinput type="text" pInputText placeholder="Search" (blur)="deactivateSearch()" (keydown.escape)="deactivateSearch()" />
+                        <i class="pi pi-search"></i>
+                    </span>
                 </div>
-            </li>
+            </div>
+        </li>
 
-            <li class="profile-item topbar-item ">
-                <button pButton type="button" icon="pi pi-bell" class="p-button-text p-button-secondary text-color-secondary p-button-rounded flex-shrink-0"></button>
-            </li>
+        <li class="profile-item topbar-item ">
+            <button pButton type="button" icon="pi pi-bell" class="p-button-text p-button-secondary text-color-secondary p-button-rounded flex-shrink-0"></button>
+        </li>
 
-            <li class="profile-item topbar-item ">
-                <button pButton type="button" icon="pi pi-comment" class="p-button-text p-button-secondary relative text-color-secondary p-button-rounded flex-shrink-0"></button>
-            </li>
+        <li class="profile-item topbar-item ">
+            <button pButton type="button" icon="pi pi-comment" class="p-button-text p-button-secondary relative text-color-secondary p-button-rounded flex-shrink-0"></button>
+        </li>
 
-            <li class="ml-3">
-                <button pButton type="button" icon="pi pi-cog" class="p-button-text p-button-secondary text-color-secondary p-button-rounded flex-shrink-0" (click)="onConfigButtonClick()"></button>
-            </li>
+        <li class="ml-3">
+            <button pButton type="button" icon="pi pi-cog" class="p-button-text p-button-secondary text-color-secondary p-button-rounded flex-shrink-0" (click)="onConfigButtonClick()"></button>
+        </li>
 
-            <li #profile class="profile-item topbar-item ">
-                <a *ngIf="user" pStyleClass="@next" enterFromClass="ng-hidden" enterActiveClass="px-scalein" leaveToClass="ng-hidden" leaveActiveClass="px-fadeout" [hideOnOutsideClick]="true" pRipple
-                   class="cursor-pointer">
-                    <p-avatar [label]="initialsUser" styleClass="mr-2" size="normal" shape="circle"></p-avatar>
-                </a>
+        <li #profile class="profile-item topbar-item ">
+            <a *ngIf="user" pStyleClass="@next" enterFromClass="ng-hidden" enterActiveClass="px-scalein" leaveToClass="ng-hidden" leaveActiveClass="px-fadeout" [hideOnOutsideClick]="true" pRipple class="cursor-pointer">
+                <p-avatar [label]="initialsUser" styleClass="mr-2" size="normal" shape="circle"></p-avatar>
+            </a>
 
-                <ul *ngIf="user" class="topbar-menu active-topbar-menu p-4 w-15rem z-5 ng-hidden border-round">
-                    <li role="menuitem" class="m-0 mb-3">
-                        <span class="font-bold block">{{ user.name }}</span>
-                        <span class="text-sm block">{{ user.email }}</span>
-                    </li>
-                    <li class="m-0">
-                        <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
-                    </li>
+            <ul *ngIf="user" class="topbar-menu active-topbar-menu p-4 w-15rem z-5 ng-hidden border-round">
+                <li role="menuitem" class="m-0 mb-3">
+                    <span class="font-bold block">{{ user.name }}</span>
+                    <span class="text-sm block">{{ user.email }}</span>
+                </li>
+                <li class="m-0">
+                    <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
+                </li>
 
-                    <li role="menuitem" class="m-0 mb-3">
-                        <a routerLink="/profile" class="flex align-items-center hover:text-primary-500 transition-duration-200">
-                            <i class="pi pi-fw pi-user mr-2"></i>
-                            <span>Profile</span>
-                        </a>
-                    </li>
-                    <li role="menuitem" class="m-0">
-                        <a (click)="logout()" class="flex align-items-center hover:text-primary-500 transition-duration-200 cursor-pointer">
-                            <i class="pi pi-fw pi-sign-out mr-2"></i>
-                            <span>Logout</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
+                <li role="menuitem" class="m-0 mb-3">
+                    <a routerLink="/profile" class="flex align-items-center hover:text-primary-500 transition-duration-200">
+                        <i class="pi pi-fw pi-user mr-2"></i>
+                        <span>Profile</span>
+                    </a>
+                </li>
+                <li role="menuitem" class="m-0">
+                    <a (click)="logout()" class="flex align-items-center hover:text-primary-500 transition-duration-200 cursor-pointer">
+                        <i class="pi pi-fw pi-sign-out mr-2"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
 
-            <li class="right-panel-button relative hidden lg:block">
-                <button pButton type="button" label="Agenda" style="width:auto; min-width: 6rem;" icon="pi pi-calendar-plus" 
-                        class="layout-rightmenu-button hidden md:block font-bold p-button-raised p-button-help" 
-                        (click)="onSidebarButtonClick()"></button>
-                <button pButton type="button" icon="pi pi-calendar-plus" styleClass="font-normal" class="layout-rightmenu-button block md:hidden p-button-help" (click)="onSidebarButtonClick()"></button>
-            </li>
-        </ul>
-    </div>
+        <li class="right-panel-button relative hidden lg:block">
+            <button pButton type="button" label="Agenda" style="width:auto; min-width: 6rem;" icon="pi pi-calendar-plus" class="layout-rightmenu-button hidden md:block font-bold p-button-raised p-button-help"
+                    (click)="onSidebarButtonClick()"></button>
+            <button pButton type="button" icon="pi pi-calendar-plus" styleClass="font-normal" class="layout-rightmenu-button block md:hidden p-button-help" (click)="onSidebarButtonClick()"></button>
+        </li>
+    </ul>
 </div>

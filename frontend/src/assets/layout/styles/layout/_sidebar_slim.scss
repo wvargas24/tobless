@@ -8,7 +8,8 @@
             }
 
             .sidebar-header {
-                padding:  1.7rem 0;
+                padding: 1.7rem 0;
+
                 .app-logo {
                     display: flex;
                     align-items: center;
@@ -16,6 +17,7 @@
 
                     .app-logo-normal {
                         display: none;
+
                         img {
                             height: 1.714rem;
                         }
@@ -23,6 +25,7 @@
 
                     .app-logo-small {
                         display: inline;
+
                         img {
                             height: 2.5rem;
                         }
@@ -31,9 +34,10 @@
             }
 
             .layout-sidebar {
-                width: 5.857rem;
+                width: 4rem;
                 overflow: visible;
                 z-index: 999;
+
                 .layout-menu-container {
                     overflow: auto;
 
@@ -44,17 +48,18 @@
             }
 
             .layout-content-wrapper {
-                margin-left: 5.857rem;
+                margin-left: 4rem;
             }
 
             .layout-menu {
-                padding: 0 1rem;
+                padding: 0;
+
                 .layout-root-menuitem {
-                    > .layout-menuitem-root-text {
+                    >.layout-menuitem-root-text {
                         display: none;
                     }
 
-                    > a {
+                    >a {
                         display: flex;
                         align-items: center;
                         justify-content: center;
@@ -75,7 +80,7 @@
 
                         .layout-menuitem-icon {
                             font-size: 1.5rem;
-                          
+                            color: rgba(255, 255, 255, 0.9);
                         }
 
                         .layout-menuitem-text {
@@ -83,17 +88,22 @@
                         }
 
                         &:hover {
-                            color: (--primary-color-text);
+                            color: var(--primary-color-text);
                             background-color: var(--primary-color);
+
+                            .layout-menuitem-icon {
+                                color: var(--primary-color-text);
+
+                            }
                         }
                     }
 
-                    > ul {
+                    >ul {
                         position: absolute;
-                        left: 5.857rem;
+                        left: 4rem;
                         top: 0;
                         min-width: 15rem;
-                        background: var(--surface-ground);
+                        background: var(--menu-popup-bg, var(--primary-900));
                         border-radius: var(--border-radius);
                         box-shadow: var(--sidebar-shadow);
                         padding: 0.5rem;
@@ -103,11 +113,11 @@
 
                         a {
                             padding-right: 0.5rem;
-                            color: var(--text-color);
+                            color: rgba(255, 255, 255, 0.9);
                             border-radius: var(--border-radius);
 
                             .layout-menuitem-icon {
-                                color: var(--text-color);
+                                color: rgba(255, 255, 255, 0.9);
                             }
 
                             &:hover {

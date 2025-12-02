@@ -15,7 +15,7 @@ export class AppComponent implements OnInit {
 
         const config: AppConfig = {
             ripple: true,                      //toggles ripple on and off
-            menuMode: 'slim-plus',                 //layout mode of the menu, valid values are "static", "overlay", "slim", "horizontal", "drawer" and "reveal"
+            menuMode: 'slim',                      //layout mode of the menu, valid values are "static", "overlay", "slim", "horizontal", "drawer" and "reveal"
             colorScheme: 'light',               //color scheme of the template, valid values are "light" and "dark"
             theme: 'green',                    //default component theme for PrimeNG
             scale: 14                           //size of the body font size to scale the whole application
