@@ -2,6 +2,7 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const logger = require('../config/logger');
+const sendEmail = require('../config/mailer');
 
 const generateToken = (user) => {
   const payload = {
@@ -38,6 +39,25 @@ const registerUser = async (req, res) => {
     await user.save();
 
     if (user) {
+      const emailHtml = `
+        <div style="font-family: Arial, sans-serif; color: #333;">
+          <h2 style="color: #10B981;">¡Bienvenido a ToBless Coworking! 🚀</h2>
+          <p>Hola <strong>${user.name}</strong>,</p>
+          <p>Tu cuenta ha sido creada exitosamente. Estamos felices de tenerte con nosotros.</p>
+          <p>Tus credenciales de acceso son:</p>
+          <ul>
+            <li><strong>Usuario:</strong> ${user.username}</li>
+            <li><strong>Email:</strong> ${user.email}</li>
+          </ul>
+          <p>Puedes ingresar ahora mismo para completar tu perfil y reservar tu primer espacio.</p>
+          <a href="https://tobless.netlify.app/#/auth/login" style="background-color: #10B981; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Iniciar Sesión</a>
+          <p style="margin-top: 30px; font-size: 12px; color: #666;">Si tienes alguna duda, contacta al administrador.</p>
+        </div>
+      `;
+
+      // Enviamos el correo (sin await para no bloquear la respuesta HTTP)
+      sendEmail(user.email, 'Bienvenido a ToBless Coworking', emailHtml);
+
       res.status(201).json({
         token: generateToken(user),
       });

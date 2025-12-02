@@ -2,6 +2,7 @@ const User = require('../models/User');
 const logger = require('../config/logger');
 const { ROLES } = require('../config/permissions');
 const Membership = require('../models/Membership');
+const sendEmail = require('../config/mailer');
 
 // @desc    Admin creates a new user with a specific role and optional membership
 // @route   POST /api/admin/users
@@ -54,9 +55,25 @@ const createUser = async (req, res, next) => {
         });
 
         if (user) {
+            const emailHtml = `
+                <div style="font-family: Arial, sans-serif; color: #333;">
+                    <h2 style="color: #10B981;">¡Bienvenido a ToBless Coworking! 🚀</h2>
+                    <p>Hola <strong>${user.name}</strong>,</p>
+                    <p>Tu cuenta ha sido creada exitosamente. Estamos felices de tenerte con nosotros.</p>
+                    <p>Tus credenciales de acceso son:</p>
+                    <ul>
+                        <li><strong>Usuario:</strong> ${user.username}</li>
+                        <li><strong>Email:</strong> ${user.email}</li>
+                    </ul>
+                    <p>Puedes ingresar ahora mismo para completar tu perfil y reservar tu primer espacio.</p>
+                    <a href="https://tobless.netlify.app/#/auth/login" style="background-color: #10B981; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Iniciar Sesión</a>
+                    <p style="margin-top: 30px; font-size: 12px; color: #666;">Si tienes alguna duda, contacta al administrador.</p>
+                </div>
+            `;
+            sendEmail(user.email, 'Bienvenido a ToBless Coworking', emailHtml);
             // Poblamos la membresía para devolver el objeto completo
             const populatedUser = await User.findById(user._id).select('-password').populate('membership', 'name');
-            
+
             res.status(201).json(populatedUser);
         } else {
             res.status(400);
