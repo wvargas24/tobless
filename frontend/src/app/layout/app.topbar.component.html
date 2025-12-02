@@ -9,30 +9,36 @@
     <app-sidebar></app-sidebar>
 </div>
 <div class="topbar-end">
-    <ul class="topbar-menu  ">
-        <li class="hidden lg:block">
-            <div class="topbar-search" [ngClass]="{'topbar-search-active': searchActive}">
-                <button pButton icon="pi pi-search" class="topbar-searchbutton p-button-text p-button-secondary text-color-secondary p-button-rounded flex-shrink-0" type="button" (click)="activateSearch()"></button>
-                <div class="search-input-wrapper">
-                    <span class="p-input-icon-right">
-                        <input #searchinput type="text" pInputText placeholder="Search" (blur)="deactivateSearch()" (keydown.escape)="deactivateSearch()" />
-                        <i class="pi pi-search"></i>
-                    </span>
+        <ul class="topbar-menu  ">
+            <!-- SEARCH HIDDEN
+            <li class="hidden lg:block">
+                <div class="topbar-search" [ngClass]="{'topbar-search-active': searchActive}">
+                    <button pButton icon="pi pi-search" class="topbar-searchbutton p-button-text p-button-secondary text-color-secondary p-button-rounded flex-shrink-0" type="button" (click)="activateSearch()"></button>
+                    <div class="search-input-wrapper">
+                        <span class="p-input-icon-right">
+                            <input #searchinput type="text" pInputText placeholder="Search" (blur)="deactivateSearch()" (keydown.escape)="deactivateSearch()" />
+                            <i class="pi pi-search"></i>
+                        </span>
+                    </div>
                 </div>
-            </div>
-        </li>
+            </li>
+            -->
 
-        <li class="profile-item topbar-item ">
-            <button pButton type="button" icon="pi pi-bell" class="p-button-text p-button-secondary text-color-secondary p-button-rounded flex-shrink-0"></button>
-        </li>
+            <li class="profile-item topbar-item ">
+                <button pButton type="button" icon="pi pi-bell" class="p-button-text p-button-secondary text-color-secondary p-button-rounded flex-shrink-0"></button>
+            </li>
 
-        <li class="profile-item topbar-item ">
-            <button pButton type="button" icon="pi pi-comment" class="p-button-text p-button-secondary relative text-color-secondary p-button-rounded flex-shrink-0"></button>
-        </li>
+            <!-- COMMENT HIDDEN 
+            <li class="profile-item topbar-item ">
+                <button pButton type="button" icon="pi pi-comment" class="p-button-text p-button-secondary relative text-color-secondary p-button-rounded flex-shrink-0"></button>
+            </li>
+            -->
 
-        <li class="ml-3">
-            <button pButton type="button" icon="pi pi-cog" class="p-button-text p-button-secondary text-color-secondary p-button-rounded flex-shrink-0" (click)="onConfigButtonClick()"></button>
-        </li>
+            <!-- SETTINGS HIDDEN 
+            <li class="ml-3">
+                <button pButton type="button" icon="pi pi-cog" class="p-button-text p-button-secondary text-color-secondary p-button-rounded flex-shrink-0" (click)="onConfigButtonClick()"></button>
+            </li>
+            -->
 
         <li #profile class="profile-item topbar-item ">
             <a *ngIf="user" pStyleClass="@next" enterFromClass="ng-hidden" enterActiveClass="px-scalein" leaveToClass="ng-hidden" leaveActiveClass="px-fadeout" [hideOnOutsideClick]="true" pRipple class="cursor-pointer">
