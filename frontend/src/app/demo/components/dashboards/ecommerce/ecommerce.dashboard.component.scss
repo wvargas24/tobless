@@ -31,13 +31,12 @@
 /* Estilo para el indicador de reserva en el calendario */
 :host ::ng-deep .booking-indicator {
     position: absolute;
-    bottom: 5px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 0px;
+    right: 5px;
+    transform: translateX(10px);
     width: 5px;
     height: 5px;
     background-color: #EF4444;
-    /* Color rojo de Tailwind */
     border-radius: 50%;
 }
 
