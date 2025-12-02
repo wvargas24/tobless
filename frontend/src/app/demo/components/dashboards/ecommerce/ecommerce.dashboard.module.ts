@@ -17,7 +17,9 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { AvatarModule } from 'primeng/avatar';
 import { TimelineModule } from 'primeng/timeline';
 import { BadgeModule } from 'primeng/badge';
-import { ProgressSpinnerModule } from 'primeng/progressspinner'; // Importar módulo del spinner
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { SkeletonModule } from 'primeng/skeleton'; // Import Skeleton module
+import { TagModule } from 'primeng/tag'; // Import Tag module for p-tag
 
 @NgModule({
 	imports: [
@@ -38,7 +40,9 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner'; // Importar mó
 		AvatarModule,
 		TimelineModule,
 		BadgeModule,
-        ProgressSpinnerModule // Agregar a los imports
+        ProgressSpinnerModule,
+        SkeletonModule, // Add Skeleton module
+        TagModule // Add Tag module
 	],
 	declarations: [EcommerceDashboardComponent]
 })
