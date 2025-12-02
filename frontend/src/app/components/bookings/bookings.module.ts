@@ -8,6 +8,7 @@ import { BookingCalendarComponent } from './components/booking-calendar/booking-
 import { BookingWizardComponent } from './components/booking-wizard/booking-wizard.component';
 import { StepResourceSelectionComponent } from './components/step-resource-selection/step-resource-selection.component';
 import { StepDateTimeSelectionComponent } from './components/step-date-time-selection/step-date-time-selection.component';
+import { StepUserSelectionComponent } from './components/step-user-selection/step-user-selection.component';
 
 // --- MÓDULOS DE PRIMENG Y FULLCALENDAR ---
 import { FullCalendarModule } from '@fullcalendar/angular';
@@ -31,6 +32,7 @@ import { PanelModule } from 'primeng/panel';
         BookingWizardComponent,
         StepResourceSelectionComponent,
         StepDateTimeSelectionComponent,
+        StepUserSelectionComponent
     ],
     imports: [
         CommonModule,

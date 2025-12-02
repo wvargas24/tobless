@@ -2,11 +2,16 @@ $breakpoint: 992px !default;
 $scale: 14px !default;
 
 .layout-light {
+    --menu-bg: #3A483A;
     --sidebar-shadow: 0px 4px 50px #f7fcd9;
     --sidebar-border: 1px solid transparent;
     --card-shadow: 0px 4px 30px rgba(255, 254, 221, 0.54);
     --body-bg: linear-gradient(180deg, #f8f6f3 0%, #E6DAC4 100%);
     --body-image: url("/assets/layout/images/effect-onlight.png");
-    --root-menu-item-hover-bg: rgba(68, 72, 109, 0.07);
+    --root-menu-item-hover-bg: rgba(255, 255, 255, 0.1);
     --exception-pages-image: url('/assets/layout/images/pages/exception-onlight.png');
+
+    /* Custom overrides for topbar icons and text to be white */
+    --topbar-item-text-color: rgba(255, 255, 255, 0.9);
+    --topbar-button-hover-bg: rgba(255, 255, 255, 0.15);
 }

@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ConfirmationService, MessageService, SelectItem } from 'primeng/api';
 import { User } from 'src/app/auth/models/user.model';
 import { UserService } from '../../services/user.service';
-import { Membership, MembershipService } from 'src/app/components/memberships/services/membership.service'; // 1. Importar
-import { Router } from '@angular/router'; // 1. Importar Router
+import { Membership, MembershipService } from 'src/app/components/memberships/services/membership.service';
+import { Router } from '@angular/router';
 import { Table } from 'primeng/table';
 
 @Component({
@@ -15,12 +15,12 @@ export class UserListComponent implements OnInit {
 
     customers: User[] = [];
     staff: User[] = [];
+    loading: boolean = true; // Add loading state
 
     userDialog: boolean = false;
     submitted: boolean = false;
-    user: Partial<User> = {};
+    user: Partial<User> & { newPassword?: string; confirmPassword?: string } = {};
 
-    // Opciones para los dropdowns del formulario de edición
     roles: SelectItem[] = [
         { label: 'Admin', value: 'admin' },
         { label: 'Manager', value: 'manager' },
@@ -49,10 +49,32 @@ export class UserListComponent implements OnInit {
     }
 
     loadAllUsers(): void {
-        // Obtenemos la lista de clientes
-        this.userService.getUsers('customer').subscribe(data => this.customers = data);
-        // Obtenemos la lista del personal
-        this.userService.getUsers('staff').subscribe(data => this.staff = data);
+        this.loading = true;
+        // Use forkJoin or handle both calls, for simplicity loading flag will turn off after both
+        this.userService.getUsers('customer').subscribe({
+            next: (data) => {
+                this.customers = data;
+                this.checkLoadingComplete();
+            },
+            error: () => this.loading = false
+        });
+        
+        this.userService.getUsers('staff').subscribe({
+            next: (data) => {
+                this.staff = data;
+                this.checkLoadingComplete();
+            },
+            error: () => this.loading = false
+        });
+    }
+
+    private loadedCount = 0;
+    checkLoadingComplete(): void {
+        this.loadedCount++;
+        if (this.loadedCount >= 2) {
+            this.loading = false;
+            this.loadedCount = 0; // Reset for future reloads
+        }
     }
 
     loadMemberships(): void {
@@ -62,8 +84,30 @@ export class UserListComponent implements OnInit {
     }
 
     editUser(user: User): void {
-        this.user = { ...user, membership: (user.membership as any)?._id };
+        this.user = { 
+            ...user, 
+            membership: (user.membership as any)?._id,
+            newPassword: '',
+            confirmPassword: ''
+        };
         this.userDialog = true;
+    }
+
+    generateRandomPassword(): void {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%';
+        let password = 'ToBless';
+        for (let i = 0; i < 6; i++) {
+            password += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        this.user.newPassword = password;
+        this.user.confirmPassword = password;
+        
+        this.messageService.add({ 
+            severity: 'info', 
+            summary: 'Contraseña Generada', 
+            detail: `Contraseña temporal: ${password}`,
+            life: 10000
+        });
     }
 
     deactivateUser(user: User): void {
@@ -83,27 +127,44 @@ export class UserListComponent implements OnInit {
     hideDialog(): void {
         this.userDialog = false;
         this.submitted = false;
+        this.user.newPassword = '';
+        this.user.confirmPassword = '';
     }
 
     saveUser(): void {
         this.submitted = true;
-        console.log('Guardando usuario:', this.user);
+        
         if (!this.user.name?.trim() || !this.user._id) {
-            console.warn('Nombre o ID del usuario no proporcionados');
+            this.messageService.add({ severity: 'warn', summary: 'Validación', detail: 'El nombre es obligatorio.' });
             return;
         }
 
-        this.userService.updateUser(this.user._id, this.user).subscribe({
+        if (this.user.newPassword || this.user.confirmPassword) {
+            if (this.user.newPassword !== this.user.confirmPassword) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Las contraseñas no coinciden.' });
+                return;
+            }
+        }
+
+        const payload: any = { ...this.user };
+        
+        if (this.user.newPassword && this.user.newPassword.trim().length > 0) {
+            payload.password = this.user.newPassword;
+        }
+        
+        delete payload.newPassword;
+        delete payload.confirmPassword;
+
+        this.userService.updateUser(this.user._id, payload).subscribe({
             next: () => {
-                this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Usuario actualizado' });
+                this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Usuario actualizado correctamente' });
                 this.loadAllUsers();
+                this.hideDialog();
             },
             error: (err) => {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.message || 'No se pudo actualizar' });
             }
         });
-
-        this.userDialog = false;
     }
 
     onGlobalFilter(table: Table, event: Event) {

@@ -7,12 +7,13 @@
         list-style: none;
         gap: 1rem;
         flex-wrap: wrap;
-        color: var(--text-color-secondary);
+        color: var(--topbar-item-text-color);
 
         li {
             font-weight: 600;
         }
     }
+
     .breadcrumb-menu {
         margin: 0;
         padding: 0 1.15rem 0 0.85rem;
@@ -24,6 +25,7 @@
 
         li {
             margin-left: 1.5rem;
+
             .breadcrumb-search {
                 display: flex;
                 align-items: center;
@@ -74,9 +76,11 @@
                         opacity: 1;
                         visibility: visible;
                         border-radius: var(--border-radius);
+
                         i {
                             display: block;
                         }
+
                         .p-input-icon-right {
                             input {
                                 border-radius: var(--border-radius);

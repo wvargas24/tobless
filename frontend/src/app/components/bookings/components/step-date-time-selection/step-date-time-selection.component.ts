@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ChangeDetectorRef } from '@angular/core';
-import { CalendarOptions, DateSelectArg } from '@fullcalendar/core'; // Importamos DateSelectArg
+import { CalendarOptions, DateSelectArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import esLocale from '@fullcalendar/core/locales/es'; // Import Spanish locale directly for FullCalendar
 import { AvailabilitySlot, BookingService } from '../../services/booking.service';
 import { Resource } from 'src/app/components/resources/services/resource.service';
 
@@ -18,12 +19,8 @@ export class StepDateTimeSelectionComponent implements OnInit, OnChanges {
 
     calendarOptions!: CalendarOptions;
 
-    // Ya no necesitamos 'selectedDate'. startTime y endTime contendrán la fecha completa.
     startTime: Date | null = null;
     endTime: Date | null = null;
-
-    minTime!: Date;
-    maxTime!: Date;
 
     constructor(
         private bookingService: BookingService,
@@ -31,10 +28,6 @@ export class StepDateTimeSelectionComponent implements OnInit, OnChanges {
     ) { }
 
     ngOnInit(): void {
-        this.minTime = new Date();
-        this.minTime.setHours(8, 0, 0, 0);
-        this.maxTime = new Date();
-        this.maxTime.setHours(20, 0, 0, 0);
         this.initCalendar();
     }
 
@@ -47,17 +40,28 @@ export class StepDateTimeSelectionComponent implements OnInit, OnChanges {
     initCalendar(): void {
         this.calendarOptions = {
             plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
-            initialView: 'timeGridWeek', // La vista de semana es mejor para seleccionar horas
+            initialView: 'timeGridWeek',
             headerToolbar: {
-                left: 'prev,next today',
+                left: 'prev,next today', // Navigation buttons enabled
                 center: 'title',
                 right: 'dayGridMonth,timeGridWeek'
             },
-            locale: 'es',
+            locale: esLocale, // Use imported locale object
             allDaySlot: false,
-            selectable: true, // Habilitamos la selección de rangos
-            selectMirror: true, // Muestra un "placeholder" mientras arrastras
-            select: this.handleDateSelect.bind(this), // <-- USAMOS 'select' EN LUGAR DE 'dateClick'
+            selectable: true,
+            selectMirror: true,
+            slotMinTime: '09:00:00', // Business hours start
+            slotMaxTime: '18:00:00', // Business hours end
+            businessHours: { // Visual highlighting
+                daysOfWeek: [ 1, 2, 3, 4, 5 ], // Mon-Fri
+                startTime: '09:00',
+                endTime: '18:00',
+            },
+            selectConstraint: 'businessHours', // Restrict selection to business hours
+            select: this.handleDateSelect.bind(this),
+            validRange: { // Optional: Prevent selecting dates in the past
+                start: new Date() 
+            }
         };
     }
 
@@ -71,28 +75,26 @@ export class StepDateTimeSelectionComponent implements OnInit, OnChanges {
                 backgroundColor: '#64748B',
                 borderColor: '#64748B',
                 editable: false,
+                display: 'background' // Show as background event to clearly indicate unavailability
             }));
-            this.calendarOptions = { ...this.calendarOptions, events };
+            
+            // Merge new events with existing options
+            this.calendarOptions = { 
+                ...this.calendarOptions, 
+                events: events 
+            };
         });
     }
 
-    // REEMPLAZAMOS handleDateClick con handleDateSelect
     handleDateSelect(selectInfo: DateSelectArg): void {
-        // El evento 'select' ya nos da la fecha/hora de inicio y fin
         this.startTime = selectInfo.start;
         this.endTime = selectInfo.end;
 
-        // Validamos y emitimos inmediatamente
         this.onTimeChange();
         this.cdr.detectChanges();
-
-        // Limpiamos la selección visual del calendario
-        const calendarApi = selectInfo.view.calendar;
-        // calendarApi.unselect();
     }
 
     onTimeChange(): void {
-        // Este método ahora sirve para validar y emitir
         if (this.startTime && this.endTime && this.endTime > this.startTime) {
             this.dateTimeSelected.emit({ startTime: this.startTime, endTime: this.endTime });
             this.stepValid.emit(true);

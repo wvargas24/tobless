@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ProfileRoutingModule } from './profile-routing.module';
 import { MyProfileComponent } from './components/my-profile/my-profile.component';
 import { UserListComponent } from './components/user-list/user-list.component';
-import { UserCreateComponent } from './components/user-create/user-create.component'; // <-- 1. AÑADIR IMPORTACIÓN
+import { UserCreateComponent } from './components/user-create/user-create.component';
 
 // Importaciones de PrimeNG
 import { CardModule } from 'primeng/card';
@@ -21,6 +21,8 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DividerModule } from 'primeng/divider';
+import { SkeletonModule } from 'primeng/skeleton'; // Import Skeleton module
 
 @NgModule({
     declarations: [
@@ -45,6 +47,8 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
         DialogModule,
         DropdownModule,
         ConfirmDialogModule,
+        DividerModule,
+        SkeletonModule // Add Skeleton module
     ]
 })
 export class ProfileModule { }

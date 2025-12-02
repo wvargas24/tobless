@@ -2,6 +2,7 @@ $breakpoint: 992px !default;
 $scale: 14px !default;
 
 .layout-dark {
+    --menu-bg: #3A483A;
     --sidebar-shadow: none;
     --sidebar-border: 1px solid var(--surface-border);
     --card-shadow: none;

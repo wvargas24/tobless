@@ -31,6 +31,7 @@ export class AuthService {
                     const user: User = {
                         _id: decodedToken.sub,
                         name: decodedToken.name,
+                        username: decodedToken.username,
                         email: decodedToken.email,
                         role: decodedToken.role
                     };
@@ -44,13 +45,14 @@ export class AuthService {
         }
     }
 
-    login(email: string, password: string): Observable<AuthResponse> {
-        return this.http.post<AuthResponse>(`${this.API_URL}/login`, { email, password }).pipe(
+    login(username: string, password: string): Observable<AuthResponse> {
+        return this.http.post<AuthResponse>(`${this.API_URL}/login`, { username, password }).pipe(
             tap(response => {
                 const decodedToken: any = jwtDecode(response.token);
                 const user: User = {
                     _id: decodedToken.sub,
                     name: decodedToken.name,
+                    username: decodedToken.username,
                     email: decodedToken.email,
                     role: decodedToken.role
                 };

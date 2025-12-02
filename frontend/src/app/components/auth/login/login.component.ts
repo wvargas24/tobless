@@ -9,23 +9,23 @@ import { AuthService } from 'src/app/auth/services/auth.service';
 })
 export class LoginComponent {
 
-    email: string = '';
+    username: string = '';
     password: string = '';
 
     constructor(
         public layoutService: LayoutService,
         private router: Router,
         private messageService: MessageService,
-        private authService: AuthService // Inyectamos el servicio
+        private authService: AuthService
     ) { }
 
     onLogin() {
-        if (!this.email || !this.password) {
-            this.messageService.add({ key: 'tst', severity: 'warn', summary: 'Campos requeridos', detail: 'Por favor, ingrese email y contraseña.' });
+        if (!this.username || !this.password) {
+            this.messageService.add({ key: 'tst', severity: 'warn', summary: 'Campos requeridos', detail: 'Por favor, ingrese usuario y contraseña.' });
             return;
         }
 
-        this.authService.login(this.email, this.password).subscribe({
+        this.authService.login(this.username, this.password).subscribe({
             next: () => {
                 this.router.navigate(['/dashboard']);
             },

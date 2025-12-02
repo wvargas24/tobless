@@ -3,6 +3,7 @@
 <div class="card">
     <p-toolbar styleClass="mb-4">
         <ng-template pTemplate="left">
+            <!-- Este botón ahora redirige a /bookings/new gracias al cambio en openNewBookingDialog() -->
             <button pButton pRipple label="Agregar Reserva" icon="pi pi-plus" class="p-button-success" (click)="openNewBookingDialog()"></button>
         </ng-template>
     </p-toolbar>
@@ -10,31 +11,7 @@
     <full-calendar [options]="calendarOptions"></full-calendar>
 </div>
 
-<p-dialog [(visible)]="bookingDialog" [style]="{width: '500px'}" header="Confirmar Reserva" [modal]="true" class="p-fluid">
-    <ng-template pTemplate="content">
-        <div class="field">
-            <label for="resource">Recurso a Reservar</label>
-            <p-dropdown id="resource" [options]="resources" [(ngModel)]="newBooking.resource" placeholder="Selecciona el recurso" optionLabel="name" optionValue="_id" [showClear]="true">
-            </p-dropdown>
-        </div>
-        <div class="formgrid grid">
-            <div class="field col">
-                <label for="startTime">Inicio</label>
-                <p-calendar id="startTime" [(ngModel)]="newBooking.startDate" [showTime]="true" hourFormat="12"></p-calendar>
-            </div>
-            <div class="field col">
-                <label for="endTime">Fin</label>
-                <p-calendar id="endTime" [(ngModel)]="newBooking.endDate" [showTime]="true" hourFormat="12"></p-calendar>
-            </div>
-        </div>
-        <!-- Removed Notes field as it is not yet supported by backend model or API -->
-    </ng-template>
-
-    <ng-template pTemplate="footer">
-        <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
-        <button pButton pRipple label="Confirmar Reserva" icon="pi pi-check" class="p-button-text" (click)="saveBooking()"></button>
-    </ng-template>
-</p-dialog>
+<!-- El p-dialog de creación simple ha sido eliminado para forzar el uso del Wizard -->
 
 <p-dialog [(visible)]="viewBookingDialog" [style]="{width: '500px'}" header="Detalles de la Reserva" [modal]="false" (onHide)="selectedBooking = null">
     <ng-template pTemplate="content" *ngIf="selectedBooking">
@@ -43,13 +20,6 @@
                 <label>Recurso</label>
                 <p><strong>{{ selectedBooking.resource.name }}</strong></p>
             </div>
-            <!-- Removed resource type display if not populated properly or causes issues, can be added back if resource.type is populated object -->
-            <!--
-            <div class="field">
-                <label>Tipo de Recurso</label>
-                <p><strong>{{ selectedBooking.resource.type }}</strong></p>
-            </div>
-            -->
             <div class="field">
                 <label>Reservado por</label>
                 <p><strong>{{ selectedBooking.user.name }}</strong></p>
@@ -64,7 +34,6 @@
                     <p><strong>{{ selectedBooking.endDate | date:'medium' }}</strong></p>
                 </div>
             </div>
-            <!-- Removed notes display -->
             <div class="field">
                 <label>Estado</label>
                 <p><p-tag [value]="selectedBooking.status" [severity]="getColorForStatus(selectedBooking.status)"></p-tag></p>
@@ -78,4 +47,3 @@
                 (click)="cancelBooking()"></button>
     </ng-template>
 </p-dialog>
-

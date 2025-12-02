@@ -1,0 +1,47 @@
+/* Estilos para las insignias de estado de las reservas */
+:host ::ng-deep .customer-badge {
+    border-radius: 2px;
+    padding: .25em .5rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: .3px;
+
+    &.status-confirmed {
+        background: #C8E6C9;
+        color: #256029;
+    }
+
+    &.status-pending {
+        background: #FFD54F;
+        color: #78350F;
+    }
+
+    &.status-cancelled {
+        background: #FFCDD2;
+        color: #B71C1C;
+    }
+
+    &.status-completed {
+        background: #D1C4E9;
+        color: #4527A0;
+    }
+}
+
+/* Estilo para el indicador de reserva en el calendario */
+:host ::ng-deep .booking-indicator {
+    position: absolute;
+    top: 0px;
+    right: 5px;
+    transform: translateX(10px);
+    width: 5px;
+    height: 5px;
+    background-color: #EF4444;
+    border-radius: 50%;
+}
+
+/* Ajuste para que el día seleccionado en el calendario no oculte el punto */
+:host ::ng-deep .p-datepicker .p-datepicker-calendar td a.p-state-active {
+    position: relative;
+    overflow: visible;
+}
