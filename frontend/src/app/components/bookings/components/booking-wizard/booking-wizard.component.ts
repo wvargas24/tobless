@@ -4,9 +4,10 @@ import { Resource } from 'src/app/components/resources/services/resource.service
 import { ResourceType } from 'src/app/components/resourcetypes/services/resource-type.service';
 import { BookingService } from '../../services/booking.service';
 import { Router } from '@angular/router';
-import { AuthService } from 'src/app/auth/services/auth.service'; // Importar AuthService
+import { AuthService } from 'src/app/auth/services/auth.service';
 import { User } from 'src/app/auth/models/user.model';
 import { Subscription } from 'rxjs';
+import confetti from 'canvas-confetti'; // Import confetti
 
 @Component({
     selector: 'app-booking-wizard',
@@ -19,10 +20,10 @@ export class BookingWizardComponent implements OnInit, OnDestroy {
     steps: MenuItem[] = [];
     isStep2Valid: boolean = false;
     submitting: boolean = false;
-    isAdminOrManager: boolean = false; // Flag para saber si mostrar el paso de usuario
+    isAdminOrManager: boolean = false;
 
     bookingState: {
-        user?: User | null; // Usuario seleccionado
+        user?: User | null;
         resource?: Resource | null;
         startTime?: Date | null;
         endTime?: Date | null;
@@ -35,11 +36,10 @@ export class BookingWizardComponent implements OnInit, OnDestroy {
         private bookingService: BookingService,
         private messageService: MessageService,
         private router: Router,
-        private authService: AuthService // Inyectar
+        private authService: AuthService
     ) { }
 
     ngOnInit(): void {
-        // Suscribirse para asegurar que tenemos el usuario cargado
         this.userSubscription = this.authService.currentUser$.subscribe(user => {
             console.log('BookingWizard: Usuario actual recibido:', user);
             
@@ -64,7 +64,6 @@ export class BookingWizardComponent implements OnInit, OnDestroy {
     initSteps() {
         this.steps = [];
         
-        // Agregar paso de usuario solo si es admin/manager
         if (this.isAdminOrManager) {
             this.steps.push({ label: 'Seleccionar Usuario' });
         }
@@ -78,7 +77,6 @@ export class BookingWizardComponent implements OnInit, OnDestroy {
         console.log('BookingWizard: Pasos inicializados:', this.steps);
     }
 
-    // Nuevo método para manejar la selección de usuario
     onUserSelected(user: User | null): void {
         this.bookingState.user = user;
     }
@@ -110,13 +108,15 @@ export class BookingWizardComponent implements OnInit, OnDestroy {
             endDate: this.bookingState.endTime,
         };
 
-        // Si se seleccionó un usuario específico, lo enviamos
         if (this.isAdminOrManager && this.bookingState.user) {
             payload.userId = this.bookingState.user._id;
         }
 
         this.bookingService.createBooking(payload).subscribe({
             next: () => {
+                // CONFETTI CELEBRATION! 🎉
+                this.triggerConfetti();
+                
                 this.messageService.add({
                     severity: 'success',
                     summary: '¡Reserva Confirmada!',
@@ -130,6 +130,31 @@ export class BookingWizardComponent implements OnInit, OnDestroy {
                 this.submitting = false;
             }
         });
+    }
+
+    triggerConfetti(): void {
+        // Trigger confetti from both sides
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
+        
+        // Second burst for extra celebration
+        setTimeout(() => {
+            confetti({
+                particleCount: 50,
+                angle: 60,
+                spread: 55,
+                origin: { x: 0 }
+            });
+            confetti({
+                particleCount: 50,
+                angle: 120,
+                spread: 55,
+                origin: { x: 1 }
+            });
+        }, 200);
     }
 
     getResourceTypeName(): string {
