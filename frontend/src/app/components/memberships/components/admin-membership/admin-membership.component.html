@@ -1,0 +1,80 @@
+<p-toast></p-toast>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+
+<div class="card">
+    <p-table #dt [value]="memberships" [rows]="10" [paginator]="true" responsiveLayout="scroll" [globalFilterFields]="['name','price','duration']">
+
+        <ng-template pTemplate="caption">
+            <div class="flex flex-wrap gap-2 align-items-center justify-content-between">
+                <span class="p-input-icon-left">
+                    <i class="pi pi-search"></i>
+                    <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Buscar plan..." />
+                </span>
+                <button pButton pRipple label="Nuevo Plan" icon="pi pi-plus" class="p-button-outlined w-full sm:w-auto flex-order-0 sm:flex-order-1" (click)="openNew()"></button>
+            </div>
+        </ng-template>
+
+        <ng-template pTemplate="header">
+            <tr>
+                <th pSortableColumn="name">Nombre <p-sortIcon field="name"></p-sortIcon></th>
+                <th pSortableColumn="price">Precio <p-sortIcon field="price"></p-sortIcon></th>
+                <th pSortableColumn="duration">Duración (días) <p-sortIcon field="duration"></p-sortIcon></th>
+                <th>Acciones</th>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-membership>
+            <tr>
+                <td>{{membership.name}}</td>
+                <td>{{membership.price | currency:'USD'}}</td>
+                <td>{{membership.duration}}</td>
+                <td>
+                    <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="editMembership(membership)"></button>
+                    <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteMembership(membership)"></button>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-dialog [(visible)]="membershipDialog" [style]="{width: '450px'}" header="Detalles de la Membresía" [modal]="true" class="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="field">
+            <label for="name">Nombre</label>
+            <input type="text" pInputText id="name" [(ngModel)]="membership.name" required autofocus />
+            <small class="p-error" *ngIf="submitted && !membership.name">El nombre es obligatorio.</small>
+        </div>
+        <div class="field">
+            <label for="description">Descripción</label>
+            <textarea id="description" pInputTextarea [(ngModel)]="membership.description" rows="3" cols="20"></textarea>
+        </div>
+        <div class="field">
+            <label for="allowedResourceTypes">Tipos de Recursos Permitidos</label>
+            <p-multiSelect id="allowedResourceTypes" [options]="availableResourceTypes" [(ngModel)]="membership.allowedResourceTypes" placeholder="Selecciona los tipos permitidos" optionLabel="label" optionValue="value"
+                           display="chip">
+            </p-multiSelect>
+        </div>
+        <div class="field">
+            <label for="amenities">Amenidades Incluidas</label>
+            <p-chips id="amenities" [(ngModel)]="membership.amenities" separator="," placeholder="Escribe una amenidad y presiona Enter"></p-chips>
+            <small>Escribe una amenidad y presiona Enter para añadirla a la lista.</small>
+        </div>
+        <div class="formgrid grid">
+            <div class="field col">
+                <label for="price">Precio</label>
+                <p-inputNumber id="price" [(ngModel)]="membership.price" mode="currency" currency="USD" locale="en-US"></p-inputNumber>
+                <small class="p-error" *ngIf="submitted && !membership.price">El precio es obligatorio.</small>
+            </div>
+            <div class="field col">
+                <label for="duration">Duración (días)</label>
+                <p-inputNumber id="duration" [(ngModel)]="membership.duration"></p-inputNumber>
+                <small class="p-error" *ngIf="submitted && !membership.duration">La duración es obligatoria.</small>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+        <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-text" (click)="saveMembership()"></button>
+    </ng-template>
+</p-dialog>

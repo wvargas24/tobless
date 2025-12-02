@@ -6,8 +6,12 @@
     width: 21rem;
     display: flex;
     flex-direction: column;
-    border-radius: 0px 40px 40px 0px;
-   
+
+
+    background: var(--menu-bg);
+    border-right: none;
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 3px 5px, rgba(0, 0, 0, 0.05) 0px 0px 2px, rgba(0, 0, 0, 0.08) 0px 1px 4px;
+
     .sidebar-header {
         padding: 1.7rem 1.57rem .5rem 2.42rem;
         display: flex;
@@ -16,18 +20,22 @@
 
         .app-logo {
             width: 100%;
+
             .app-logo-normal {
                 display: inline;
+
                 img {
                     height: 1.714rem;
                     border: 0 none;
                 }
             }
+
             .app-logo-small {
                 img {
                     height: 2.5rem;
                     border: 0 none;
                 }
+
                 display: none;
             }
         }
@@ -44,32 +52,37 @@
         padding: 0 1.5rem;
         list-style-type: none;
 
-        > li {
+        >li {
             margin-bottom: 2.25rem;
+
             &:first-child {
                 margin-top: 2rem;
             }
         }
+
         li {
             border-radius: 8px;
+
             a {
                 border-left: 8px solid transparent;
             }
         }
 
         .layout-root-menuitem {
-            > div {
+            >div {
                 padding-left: 1.5rem;
                 margin-bottom: 0.5rem;
                 font-size: 12px;
 
-                > .layout-menuitem-text {
+                >.layout-menuitem-text {
                     font-size: 0.857rem;
                     font-weight: 600;
                     text-transform: uppercase;
+                    color: var(--menu-text-color, var(--text-color));
                 }
             }
-            > a {
+
+            >a {
                 display: none;
             }
         }
@@ -78,7 +91,7 @@
             user-select: none;
 
             &.active-menuitem {
-                > .layout-submenu-toggler {
+                >.layout-submenu-toggler {
                     transform: rotate(-180deg);
                 }
             }
@@ -86,9 +99,11 @@
 
         li.active-menuitem {
             background-color: var(--root-menu-item-hover-bg);
-            > a {
+
+            >a {
                 border-left-color: var(--primary-color);
                 background-color: var(--root-menu-item-hover-bg);
+
                 .layout-submenu-toggler {
                     transform: rotate(-180deg);
                 }
@@ -105,7 +120,7 @@
                 align-items: center;
                 position: relative;
                 outline: 0 none;
-                color: var(--text-color);
+                color: var(--menu-text-color, var(--text-color));
                 cursor: pointer;
                 padding: 0.5rem 1rem;
                 border-radius: 8px;
@@ -113,12 +128,14 @@
 
                 .layout-menuitem-icon {
                     margin-right: 0.5rem;
+                    color: var(--menu-icon-color, var(--text-color));
                 }
 
                 .layout-submenu-toggler {
                     font-size: 75%;
                     margin-left: auto;
                     transition: transform var(--transition-duration);
+                    color: var(--menu-icon-color, var(--text-color));
                 }
 
                 &.active-route {

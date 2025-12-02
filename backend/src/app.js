@@ -5,6 +5,13 @@ const cors = require('cors'); // Asegúrate de tener cors instalado
 const authRoutes = require('./routes/auth.routes');
 const membershipRoutes = require('./routes/membership.routes');
 const bookingRoutes = require('./routes/booking.routes');
+const resourceRoutes = require('./routes/resource.routes');
+const resourceTypeRoutes = require('./routes/resourceType.routes');
+const dashboardRoutes = require('./routes/dashboard.routes'); // Import dashboard routes
+// Rutas adicionales que existían en la rama backend
+const userRoutes = require('./routes/user.routes'); // Descomentar si existen los archivos
+const staffRoutes = require('./routes/staff.routes'); // Descomentar si existen los archivos
+const adminRoutes = require('./routes/admin.routes'); // Descomentar si existen los archivos
 
 // Importar middleware de error
 const { errorHandler } = require('./middlewares/errorMiddleware');
@@ -24,8 +31,16 @@ app.get('/', (req, res) => res.send('API Running'));
 app.use('/api/auth', authRoutes);
 app.use('/api/memberships', membershipRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/resources', resourceRoutes);
+app.use('/api/resourcetypes', resourceTypeRoutes);
+app.use('/api/dashboard', dashboardRoutes); // Use dashboard routes
 
-// Middleware de manejo de errores (colocar al final después de las rutas)
+// Rutas adicionales de la rama backend (descomentar si se confirman los archivos)
+app.use('/api/users', userRoutes);
+app.use('/api/staff', staffRoutes);
+app.use('/api/admin', adminRoutes);
+
+// Middleware de manejo de errores
 app.use(errorHandler);
 
 module.exports = app; // Exportar la aplicación Express

@@ -1,0 +1,6 @@
+:host ::ng-deep .selected-card .p-card {
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transform: scale(1.02);
+    transition: all 0.2s ease-in-out;
+}

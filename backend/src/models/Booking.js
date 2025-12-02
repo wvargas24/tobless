@@ -6,9 +6,14 @@ const bookingSchema = mongoose.Schema({
     required: true,
     ref: 'User',
   },
-  membership: {
+  resource: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
+    ref: 'Resource',
+  },
+  membership: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: false, // Made optional as not all bookings might require a membership
     ref: 'Membership',
   },
   startDate: {
@@ -21,12 +26,15 @@ const bookingSchema = mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['active', 'cancelled', 'completed'], // Definimos estados permitidos
-    default: 'active',
+    enum: ['pending', 'confirmed', 'cancelled', 'completed'],
+    default: 'pending',
   },
 }, {
   timestamps: true,
 });
+
+// Index for efficient queries and potential overlap checks (though handled in controller)
+bookingSchema.index({ resource: 1, startDate: 1, endDate: 1 });
 
 const Booking = mongoose.model('Booking', bookingSchema);
 

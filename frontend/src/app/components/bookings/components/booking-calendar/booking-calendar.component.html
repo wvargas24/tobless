@@ -1,0 +1,49 @@
+<p-toast></p-toast>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+<div class="card">
+    <p-toolbar styleClass="mb-4">
+        <ng-template pTemplate="left">
+            <!-- Este botón ahora redirige a /bookings/new gracias al cambio en openNewBookingDialog() -->
+            <button pButton pRipple label="Agregar Reserva" icon="pi pi-plus" class="p-button-success" (click)="openNewBookingDialog()"></button>
+        </ng-template>
+    </p-toolbar>
+    <h3>Calendario de Reservas</h3>
+    <full-calendar [options]="calendarOptions"></full-calendar>
+</div>
+
+<!-- El p-dialog de creación simple ha sido eliminado para forzar el uso del Wizard -->
+
+<p-dialog [(visible)]="viewBookingDialog" [style]="{width: '500px'}" header="Detalles de la Reserva" [modal]="false" (onHide)="selectedBooking = null">
+    <ng-template pTemplate="content" *ngIf="selectedBooking">
+        <div class="p-fluid">
+            <div class="field">
+                <label>Recurso</label>
+                <p><strong>{{ selectedBooking.resource.name }}</strong></p>
+            </div>
+            <div class="field">
+                <label>Reservado por</label>
+                <p><strong>{{ selectedBooking.user.name }}</strong></p>
+            </div>
+            <div class="formgrid grid">
+                <div class="field col">
+                    <label>Inicio</label>
+                    <p><strong>{{ selectedBooking.startDate | date:'medium' }}</strong></p>
+                </div>
+                <div class="field col">
+                    <label>Fin</label>
+                    <p><strong>{{ selectedBooking.endDate | date:'medium' }}</strong></p>
+                </div>
+            </div>
+            <div class="field">
+                <label>Estado</label>
+                <p><p-tag [value]="selectedBooking.status" [severity]="getColorForStatus(selectedBooking.status)"></p-tag></p>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cerrar" icon="pi pi-times" class="p-button-text" (click)="viewBookingDialog = false"></button>
+        <button pButton pRipple label="Cancelar Reserva" icon="pi pi-trash" class="p-button-danger" *ngIf="selectedBooking && currentUser?._id === selectedBooking.user._id && selectedBooking.status !== 'cancelled'"
+                (click)="cancelBooking()"></button>
+    </ng-template>
+</p-dialog>

@@ -1,0 +1,158 @@
+<p-toast></p-toast>
+<div class="card booking-wizard-card">
+    <!-- Encabezado del Wizard -->
+    <div class="text-center mb-5">
+        <h2 class="text-3xl font-bold m-0 text-900">Nueva Reserva</h2>
+        <p class="text-lg text-500 mt-2">Sigue los pasos para agendar tu espacio ideal</p>
+    </div>
+
+    <p-stepper [linear]="true">
+        
+        <!-- PASO 0: SELECCIÓN DE USUARIO (Solo Admin/Manager) -->
+        <p-stepperPanel *ngIf="isAdminOrManager">
+            <ng-template pTemplate="header" let-value="value">
+                <div class="flex flex-column align-items-center" [ngClass]="{'text-primary': value === 0, 'text-500': value !== 0}">
+                    <span class="border-circle w-3rem h-3rem flex align-items-center justify-content-center border-2 mb-2 transition-colors transition-duration-300"
+                          [ngClass]="{'border-primary bg-primary text-white': value === 0, 'border-300 surface-ground': value !== 0}">
+                        <i class="pi pi-user text-xl"></i>
+                    </span>
+                    <span class="font-medium">Usuario</span>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="content" let-nextCallback="nextCallback" let-index="index">
+                <app-step-user-selection (userSelected)="onUserSelected($event)"></app-step-user-selection>
+                <div class="flex pt-4 justify-content-end">
+                    <p-button label="Siguiente" icon="pi pi-arrow-right" iconPos="right" (click)="nextCallback.emit()" />
+                </div>
+            </ng-template>
+        </p-stepperPanel>
+
+        <!-- PASO 1: SELECCIÓN DE RECURSO -->
+        <p-stepperPanel>
+            <ng-template pTemplate="header" let-value="value">
+                <div class="flex flex-column align-items-center" [ngClass]="{'text-orange-500': value === (isAdminOrManager ? 1 : 0), 'text-500': value !== (isAdminOrManager ? 1 : 0)}">
+                    <span class="border-circle w-3rem h-3rem flex align-items-center justify-content-center border-2 mb-2 transition-colors transition-duration-300"
+                          [ngClass]="{'border-orange-500 bg-orange-500 text-white': value === (isAdminOrManager ? 1 : 0), 'border-300 surface-ground': value !== (isAdminOrManager ? 1 : 0)}">
+                        <i class="pi pi-box text-xl"></i>
+                    </span>
+                    <span class="font-medium">Espacio</span>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="content" let-prevCallback="prevCallback" let-nextCallback="nextCallback" let-index="index">
+                <app-step-resource-selection (resourceSelected)="onResourceSelected($event)"></app-step-resource-selection>
+
+                <div class="flex pt-4 justify-content-between">
+                    <!-- Botón Atrás solo si hay paso previo (usuario) -->
+                    <p-button *ngIf="isAdminOrManager" label="Atrás" icon="pi pi-arrow-left" (click)="prevCallback.emit()" class="mr-auto p-button-secondary p-button-text"></p-button>
+                    <!-- Spacer si no hay botón atrás -->
+                    <div *ngIf="!isAdminOrManager"></div> 
+                    
+                    <p-button label="Siguiente" icon="pi pi-arrow-right" iconPos="right" (click)="nextCallback.emit()" [disabled]="!bookingState.resource" />
+                </div>
+            </ng-template>
+        </p-stepperPanel>
+
+        <!-- PASO 2: FECHA Y HORA -->
+        <p-stepperPanel>
+            <ng-template pTemplate="header" let-value="value">
+                <div class="flex flex-column align-items-center" [ngClass]="{'text-purple-500': value === (isAdminOrManager ? 2 : 1), 'text-500': value !== (isAdminOrManager ? 2 : 1)}">
+                    <span class="border-circle w-3rem h-3rem flex align-items-center justify-content-center border-2 mb-2 transition-colors transition-duration-300"
+                          [ngClass]="{'border-purple-500 bg-purple-500 text-white': value === (isAdminOrManager ? 2 : 1), 'border-300 surface-ground': value !== (isAdminOrManager ? 2 : 1)}">
+                        <i class="pi pi-calendar text-xl"></i>
+                    </span>
+                    <span class="font-medium">Fecha</span>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="content" let-prevCallback="prevCallback" let-nextCallback="nextCallback">
+
+                <app-step-date-time-selection *ngIf="bookingState.resource" [resource]="bookingState.resource" (dateTimeSelected)="onDateTimeSelected($event)" (stepValid)="onStep2ValidityChange($event)">
+                </app-step-date-time-selection>
+
+                <div class="flex pt-4 justify-content-between">
+                    <p-button label="Atrás" icon="pi pi-arrow-left" (click)="prevCallback.emit()" class="p-button-secondary p-button-text" />
+                    <p-button label="Siguiente" icon="pi pi-arrow-right" iconPos="right" (click)="nextCallback.emit()" [disabled]="!isStep2Valid" />
+                </div>
+            </ng-template>
+        </p-stepperPanel>
+
+        <!-- PASO 3: CONFIRMACIÓN -->
+        <p-stepperPanel>
+            <ng-template pTemplate="header" let-value="value">
+                <div class="flex flex-column align-items-center" [ngClass]="{'text-green-500': value === (isAdminOrManager ? 3 : 2), 'text-500': value !== (isAdminOrManager ? 3 : 2)}">
+                    <span class="border-circle w-3rem h-3rem flex align-items-center justify-content-center border-2 mb-2 transition-colors transition-duration-300"
+                          [ngClass]="{'border-green-500 bg-green-500 text-white': value === (isAdminOrManager ? 3 : 2), 'border-300 surface-ground': value !== (isAdminOrManager ? 3 : 2)}">
+                        <i class="pi pi-check-circle text-xl"></i>
+                    </span>
+                    <span class="font-medium">Confirmar</span>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="content" let-prevCallback="prevCallback">
+                <div class="text-center mt-4">
+                    <h3 class="text-2xl font-bold">Resumen Final</h3>
+                    <p class="text-600">Por favor revisa los detalles antes de confirmar.</p>
+                </div>
+
+                <p-panel styleClass="mt-4 border-round-xl overflow-hidden shadow-1">
+                    <div class="p-fluid grid" *ngIf="bookingState.resource && bookingState.startTime">
+                        
+                        <!-- Mostrar Usuario si se seleccionó -->
+                        <div class="col-12" *ngIf="bookingState.user">
+                            <div class="field bg-blue-50 p-3 border-round-lg border-1 border-blue-100 flex align-items-center">
+                                <div class="border-circle bg-blue-500 text-white w-3rem h-3rem flex align-items-center justify-content-center mr-3">
+                                    <i class="pi pi-user text-xl"></i>
+                                </div>
+                                <div>
+                                    <label class="font-semibold text-blue-600 block text-sm">Reserva para:</label>
+                                    <span class="font-bold text-900 text-lg">{{ bookingState.user.name }}</span>
+                                    <span class="text-500 font-normal text-sm ml-2">({{ bookingState.user.email }})</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 md:col-6">
+                            <div class="field mb-4">
+                                <label class="font-semibold text-600"><i class="pi pi-box mr-2 text-primary"></i>Recurso</label>
+                                <div class="text-900 text-xl font-medium mt-1">{{ bookingState.resource.name }}</div>
+                            </div>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <div class="field mb-4">
+                                <label class="font-semibold text-600"><i class="pi pi-tag mr-2 text-primary"></i>Tipo</label>
+                                <div class="text-900 text-xl font-medium mt-1">{{ getResourceTypeName() }}</div>
+                            </div>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <div class="field mb-4">
+                                <label class="font-semibold text-600"><i class="pi pi-calendar mr-2 text-primary"></i>Fecha Inicio</label>
+                                <div class="text-900 text-xl font-medium mt-1">
+                                    {{ bookingState.startTime | date:'fullDate':'':'es' }} 
+                                    <span class="text-primary font-bold">{{ bookingState.startTime | date:'shortTime' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <div class="field mb-4">
+                                <label class="font-semibold text-600"><i class="pi pi-clock mr-2 text-primary"></i>Fecha Fin</label>
+                                <div class="text-900 text-xl font-medium mt-1">
+                                    {{ bookingState.endTime | date:'fullDate':'':'es' }} 
+                                    <span class="text-primary font-bold">{{ bookingState.endTime | date:'shortTime' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="field">
+                                <label for="notes-confirm" class="font-semibold text-600"><i class="pi pi-align-left mr-2 text-primary"></i>Notas Adicionales</label>
+                                <textarea id="notes-confirm" pInputTextarea [(ngModel)]="bookingState.notes" rows="3" class="mt-1" placeholder="Opcional..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </p-panel>
+
+                <div class="flex pt-5 justify-content-between">
+                    <p-button label="Atrás" icon="pi pi-arrow-left" (click)="prevCallback.emit()" [disabled]="submitting" styleClass="p-button-secondary p-button-text"></p-button>
+                    <p-button label="Confirmar Reserva" icon="pi pi-check" (click)="confirmBooking()" [loading]="submitting" styleClass="p-button-success p-button-lg shadow-2"></p-button>
+                </div>
+            </ng-template>
+        </p-stepperPanel>
+    </p-stepper>
+</div>

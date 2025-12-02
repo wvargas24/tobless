@@ -1,6 +1,8 @@
 <div class="layout-container" [ngClass]="containerClass">
     <div class="layout-content-wrapper">
-        <app-topbar></app-topbar>
+        <div class="grid">
+            <app-topbar class="layout-topbar col-12"></app-topbar>
+        </div>
         <app-breadcrumb class="content-breadcrumb"></app-breadcrumb>
         <div class="layout-content">
             <router-outlet></router-outlet>
@@ -9,5 +11,4 @@
     </div>
     <app-profilemenu></app-profilemenu>
     <app-config></app-config>
- 
 </div>

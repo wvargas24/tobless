@@ -12,6 +12,8 @@ import { AuthResponse, User } from '../models/user.model';
 })
 export class AuthService {
     private API_URL = `${environment.API_URL}/auth`;
+    private usersApiUrl = `${environment.API_URL}/users`;
+
     private currentUserSubject = new BehaviorSubject<User | null>(null);
     public currentUser$ = this.currentUserSubject.asObservable();
 
@@ -27,8 +29,9 @@ export class AuthService {
                 const currentTime = Date.now() / 1000;
                 if (decodedToken.exp > currentTime) {
                     const user: User = {
-                        id: decodedToken.sub,
+                        _id: decodedToken.sub,
                         name: decodedToken.name,
+                        username: decodedToken.username,
                         email: decodedToken.email,
                         role: decodedToken.role
                     };
@@ -42,13 +45,14 @@ export class AuthService {
         }
     }
 
-    login(email: string, password: string): Observable<AuthResponse> {
-        return this.http.post<AuthResponse>(`${this.API_URL}/login`, { email, password }).pipe(
+    login(username: string, password: string): Observable<AuthResponse> {
+        return this.http.post<AuthResponse>(`${this.API_URL}/login`, { username, password }).pipe(
             tap(response => {
                 const decodedToken: any = jwtDecode(response.token);
                 const user: User = {
-                    id: decodedToken.sub,
+                    _id: decodedToken.sub,
                     name: decodedToken.name,
+                    username: decodedToken.username,
                     email: decodedToken.email,
                     role: decodedToken.role
                 };
@@ -63,6 +67,26 @@ export class AuthService {
         localStorage.removeItem('token');
         this.currentUserSubject.next(null);
         this.router.navigate(['/auth/login']);
+    }
+
+    getMyProfile(): Observable<User> {
+        return this.http.get<User>(`${this.usersApiUrl}/me`);
+    }
+
+    updateMyProfile(profileData: Partial<User>): Observable<User> {
+        return this.http.put<User>(`${this.usersApiUrl}/me`, profileData).pipe(
+            tap(updatedUser => {
+                // ¡MUY IMPORTANTE!
+                // Después de actualizar, actualizamos también el estado local en nuestra aplicación.
+                // Esto hará que el nombre en el topbar, por ejemplo, se actualice al instante.
+                const currentUser = this.currentUserSubject.value;
+                if (currentUser) {
+                    // Creamos un nuevo objeto de usuario fusionando el antiguo con el actualizado
+                    const refreshedUser = { ...currentUser, ...updatedUser };
+                    this.currentUserSubject.next(refreshedUser);
+                }
+            })
+        );
     }
 
     public get currentUserValue(): User | null {

@@ -1,0 +1,171 @@
+<p-toast></p-toast>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+
+<div class="card">
+    <h4>Gestión de Usuarios</h4>
+
+    <p-tabView>
+        <p-tabPanel header="Clientes">
+            
+            <!-- Skeleton while loading -->
+            <div *ngIf="loading" class="pt-4">
+                <p-skeleton width="100%" height="3rem" styleClass="mb-3"></p-skeleton>
+                <p-skeleton width="100%" height="2rem" styleClass="mb-2" *ngFor="let i of [1,2,3,4,5]"></p-skeleton>
+            </div>
+
+            <!-- Actual table -->
+            <p-table *ngIf="!loading" #dtCustomers [value]="customers" [rows]="10" [paginator]="true" responsiveLayout="scroll" [globalFilterFields]="['name','email','membership.name']">
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-wrap gap-2 align-items-center justify-content-between">
+                        <span class="p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" (input)="onGlobalFilter(dtCustomers, $event)" placeholder="Buscar cliente..." />
+                        </span>
+                        <button pButton label="Crear Usuario" icon="pi pi-user-plus" class="p-button-outlined w-full sm:w-auto flex-order-0 sm:flex-order-1" (click)="navigateToCreateUser()"></button>
+                    </div>
+                </ng-template>
+
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="name">Nombre <p-sortIcon field="name"></p-sortIcon></th>
+                        <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
+                        <th pSortableColumn="membership.name">Membresía <p-sortIcon field="membership.name"></p-sortIcon></th>
+                        <th pSortableColumn="isActive">Estado <p-sortIcon field="isActive"></p-sortIcon></th>
+                        <th>Acciones</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-customer>
+                    <tr>
+                        <td>{{customer.name}}</td>
+                        <td>{{customer.email}}</td>
+                        <td><p-tag [value]="customer.membership?.name || 'Sin membresía'" severity="info"></p-tag></td>
+                        <td><p-tag [value]="customer.isActive ? 'Activo' : 'Inactivo'" [severity]="customer.isActive ? 'success' : 'danger'"></p-tag></td>
+                        <td>
+                            <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="editUser(customer)"></button>
+                            <button pButton pRipple icon="pi pi-power-off" class="p-button-rounded p-button-warning" (click)="deactivateUser(customer)" *ngIf="customer.isActive"></button>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </p-tabPanel>
+
+        <p-tabPanel header="Personal">
+            
+            <!-- Skeleton while loading -->
+            <div *ngIf="loading" class="pt-4">
+                <p-skeleton width="100%" height="3rem" styleClass="mb-3"></p-skeleton>
+                <p-skeleton width="100%" height="2rem" styleClass="mb-2" *ngFor="let i of [1,2,3,4,5]"></p-skeleton>
+            </div>
+
+            <!-- Actual table -->
+            <p-table *ngIf="!loading" #dtStaff [value]="staff" [rows]="10" [paginator]="true" responsiveLayout="scroll" [globalFilterFields]="['name','email','role']">
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-wrap gap-2 align-items-center justify-content-between">
+                        <span class="p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" (input)="onGlobalFilter(dtStaff, $event)" placeholder="Buscar personal..." />
+                        </span>
+                        <button pButton label="Crear Usuario" icon="pi pi-user-plus" class="p-button-outlined w-full sm:w-auto flex-order-0 sm:flex-order-1" (click)="navigateToCreateUser()"></button>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="name">Nombre <p-sortIcon field="name"></p-sortIcon></th>
+                        <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
+                        <th pSortableColumn="role">Rol <p-sortIcon field="role"></p-sortIcon></th>
+                        <th pSortableColumn="isActive">Estado <p-sortIcon field="isActive"></p-sortIcon></th>
+                        <th>Acciones</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-employee>
+                    <tr>
+                        <td>{{employee.name}}</td>
+                        <td>{{employee.email}}</td>
+                        <td><p-tag [value]="employee.role" severity="info"></p-tag></td>
+                        <td><p-tag [value]="employee.isActive ? 'Activo' : 'Inactivo'" [severity]="employee.isActive ? 'success' : 'danger'"></p-tag></td>
+                        <td>
+                            <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="editUser(employee)"></button>
+                            <button pButton pRipple icon="pi pi-power-off" class="p-button-rounded p-button-warning" (click)="deactivateUser(employee)" *ngIf="employee.isActive"></button>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </p-tabPanel>
+    </p-tabView>
+</div>
+
+<!-- Diálogo de Edición de Usuario -->
+<p-dialog [(visible)]="userDialog" [style]="{width: '550px'}" header="Editar Usuario" [modal]="true" class="p-fluid">
+    <ng-template pTemplate="content">
+
+        <!-- Nombre -->
+        <div class="field">
+            <label for="name"><i class="pi pi-user mr-2 text-primary"></i>Nombre</label>
+            <input type="text" pInputText id="name" [(ngModel)]="user.name" required autofocus />
+            <small class="p-error" *ngIf="submitted && !user.name">El nombre es obligatorio.</small>
+        </div>
+
+        <!-- Username -->
+        <div class="field">
+            <label for="username"><i class="pi pi-at mr-2 text-primary"></i>Nombre de Usuario</label>
+            <input type="text" pInputText id="username" [(ngModel)]="user.username" required />
+        </div>
+
+        <!-- Email -->
+        <div class="field">
+            <label for="email"><i class="pi pi-envelope mr-2 text-primary"></i>Email</label>
+            <input type="email" pInputText id="email" [(ngModel)]="user.email" required />
+        </div>
+
+        <!-- Rol -->
+        <div class="field">
+            <label for="role"><i class="pi pi-id-card mr-2 text-primary"></i>Rol</label>
+            <p-dropdown id="role" [options]="roles" [(ngModel)]="user.role" placeholder="Selecciona un rol" appendTo="body"></p-dropdown>
+        </div>
+
+        <!-- Membresía -->
+        <div class="field">
+            <label for="membership"><i class="pi pi-star mr-2 text-primary"></i>Membresía</label>
+            <p-dropdown id="membership" [options]="memberships" [(ngModel)]="user.membership" placeholder="Sin membresía" [showClear]="true" appendTo="body"></p-dropdown>
+        </div>
+
+        <!-- Estado -->
+        <div class="field">
+            <label for="status"><i class="pi pi-power-off mr-2 text-primary"></i>Estado</label>
+            <p-dropdown id="status" [options]="statuses" [(ngModel)]="user.isActive" placeholder="Selecciona estado" appendTo="body"></p-dropdown>
+        </div>
+
+        <!-- SECCIÓN DE RESETEO DE CONTRASEÑA -->
+        <p-divider></p-divider>
+        <div class="field">
+            <label class="font-semibold text-900"><i class="pi pi-shield mr-2 text-primary"></i>Restablecer Contraseña</label>
+            <p class="text-500 text-sm mb-3">Genera una contraseña temporal o personalízala manualmente.</p>
+            
+            <button pButton type="button" label="Generar Contraseña Aleatoria" icon="pi pi-refresh" 
+                    class="p-button-help p-button-sm mb-3 w-full" (click)="generateRandomPassword()"></button>
+
+            <div class="formgrid grid">
+                <div class="col-12 md:col-6">
+                    <label for="newPassword"><i class="pi pi-lock mr-2 text-primary"></i>Nueva Contraseña</label>
+                    <input type="text" pInputText id="newPassword" [(ngModel)]="user.newPassword" placeholder="Dejar vacío para no cambiar" />
+                </div>
+                <div class="col-12 md:col-6">
+                    <label for="confirmPassword"><i class="pi pi-lock mr-2 text-primary"></i>Confirmar Contraseña</label>
+                    <input type="text" pInputText id="confirmPassword" [(ngModel)]="user.confirmPassword" placeholder="Confirmar" />
+                </div>
+            </div>
+            <small class="text-red-500" *ngIf="user.newPassword && user.confirmPassword && user.newPassword !== user.confirmPassword">
+                ✗ Las contraseñas no coinciden
+            </small>
+            <small class="text-green-500" *ngIf="user.newPassword && user.confirmPassword && user.newPassword === user.confirmPassword">
+                ✓ Las contraseñas coinciden
+            </small>
+        </div>
+
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+        <button pButton pRipple label="Actualizar Usuario" icon="pi pi-check" class="p-button-primary" (click)="saveUser()"></button>
+    </ng-template>
+</p-dialog>

@@ -1,0 +1,86 @@
+<p-toast></p-toast>
+<div class="grid">
+    <div class="col-12">
+        <div class="card">
+            <h4>Mi Perfil</h4>
+            <p>Gestiona tu información personal y de seguridad.</p>
+
+            <p-tabView>
+                <p-tabPanel header="Información Personal">
+                    <div class="grid p-fluid mt-4">
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label for="name"><i class="pi pi-user mr-2 text-primary"></i>Nombre Completo</label>
+                                <input pInputText id="name" type="text" [(ngModel)]="user.name" />
+                            </div>
+                        </div>
+                        
+                        <!-- Username (NUEVO - Solo Lectura) -->
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label for="username"><i class="pi pi-at mr-2 text-primary"></i>Nombre de Usuario</label>
+                                <input pInputText id="username" type="text" [(ngModel)]="user.username" [disabled]="true" />
+                                <small class="text-500">El nombre de usuario no puede ser modificado.</small>
+                            </div>
+                        </div>
+
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label for="email"><i class="pi pi-envelope mr-2 text-primary"></i>Email</label>
+                                <input pInputText id="email" type="email" [(ngModel)]="user.email" />
+                            </div>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label for="phone"><i class="pi pi-phone mr-2 text-primary"></i>Teléfono</label>
+                                <input pInputText id="phone" type="text" [(ngModel)]="user.phone" />
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="field">
+                                <label for="bio"><i class="pi pi-align-left mr-2 text-primary"></i>Biografía</label>
+                                <textarea pInputTextarea id="bio" [rows]="5" [(ngModel)]="user.bio"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </p-tabPanel>
+
+                <p-tabPanel header="Seguridad">
+                    <div class="grid p-fluid mt-4">
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label for="password"><i class="pi pi-lock mr-2 text-primary"></i>Nueva Contraseña</label>
+                                <p class="text-color-secondary">Deja en blanco para no cambiarla.</p>
+                                <input pInputText id="password" type="password" [(ngModel)]="user.newPassword" name="newPassword" />
+                            </div>
+                        </div>
+                    </div>
+                </p-tabPanel>
+
+                <p-tabPanel header="Mi Membresía">
+                    <div class="grid p-fluid mt-4" *ngIf="user.membership; else noMembership">
+                        <div class="col-12 md:col-6">
+                            <h5><i class="pi pi-star mr-2 text-primary"></i>Plan Actual</h5>
+                            <p class="text-xl font-bold">{{ user.membership }}</p>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <h5><i class="pi pi-check-circle mr-2 text-primary"></i>Estado</h5>
+                            <p><p-tag [value]="user.membershipStatus || 'N/A'" [severity]="user.membershipStatus === 'active' ? 'success' : 'danger'"></p-tag></p>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <h5><i class="pi pi-calendar mr-2 text-primary"></i>Válida hasta</h5>
+                            <p class="text-lg">{{ user.membershipEndDate | date:'longDate' }}</p>
+                        </div>
+                    </div>
+                    <ng-template #noMembership>
+                        <p class="mt-4 text-500">Actualmente no tienes ninguna membresía activa. Contacta al administrador.</p>
+                    </ng-template>
+                </p-tabPanel>
+            </p-tabView>
+
+            <div class="text-right mt-4">
+                <button pButton label="Guardar Cambios" icon="pi pi-check" class="p-button-primary" (click)="saveProfile()"></button>
+            </div>
+        </div>
+    </div>
+</div>
