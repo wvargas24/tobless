@@ -18,32 +18,34 @@ import { AvatarModule } from 'primeng/avatar';
 import { TimelineModule } from 'primeng/timeline';
 import { BadgeModule } from 'primeng/badge';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { SkeletonModule } from 'primeng/skeleton'; // Import Skeleton module
-import { TagModule } from 'primeng/tag'; // Import Tag module for p-tag
+import { SkeletonModule } from 'primeng/skeleton';
+import { TagModule } from 'primeng/tag';
+import { CalendarModule } from 'primeng/calendar'; // <-- AÑADIDO
 
 @NgModule({
-	imports: [
-		CommonModule,
-		EcommerceDashboardRoutigModule,
-		ButtonModule,
-		RippleModule,
-		DropdownModule,
-		FormsModule,
-		TableModule,
-		InputTextModule,
-		InputTextareaModule,
-		ChartModule,
-		RatingModule,
-		KnobModule,
-		CarouselModule,
-		ProgressBarModule,
-		AvatarModule,
-		TimelineModule,
-		BadgeModule,
+    imports: [
+        CommonModule,
+        FormsModule, // <-- AÑADIDO
+        EcommerceDashboardRoutigModule,
+        ButtonModule,
+        RippleModule,
+        DropdownModule,
+        TableModule,
+        InputTextModule,
+        InputTextareaModule,
+        ChartModule,
+        RatingModule,
+        KnobModule,
+        CarouselModule,
+        ProgressBarModule,
+        AvatarModule,
+        TimelineModule,
+        BadgeModule,
         ProgressSpinnerModule,
-        SkeletonModule, // Add Skeleton module
-        TagModule // Add Tag module
-	],
-	declarations: [EcommerceDashboardComponent]
+        SkeletonModule,
+        TagModule,
+        CalendarModule // <-- AÑADIDO
+    ],
+    declarations: [EcommerceDashboardComponent]
 })
 export class EcommerceDashboardModule { }
