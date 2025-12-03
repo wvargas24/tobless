@@ -2,7 +2,7 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const logger = require('../config/logger');
-const sendEmail = require('../config/mailer');
+const { sendEmail } = require('../services/email.service');
 
 const generateToken = (user) => {
   const payload = {
@@ -39,6 +39,12 @@ const registerUser = async (req, res) => {
     await user.save();
 
     if (user) {
+      // La respuesta se envía inmediatamente al usuario.
+      res.status(201).json({
+        token: generateToken(user),
+      });
+
+      // El envío de correo se ejecuta en segundo plano.
       const emailHtml = `
         <div style="font-family: Arial, sans-serif; color: #333;">
           <h2 style="color: #10B981;">¡Bienvenido a ToBless Coworking! 🚀</h2>
@@ -55,12 +61,14 @@ const registerUser = async (req, res) => {
         </div>
       `;
 
-      // Enviamos el correo (sin await para no bloquear la respuesta HTTP)
-      sendEmail(user.email, 'Bienvenido a ToBless Coworking', emailHtml);
+      // Se invoca el envío de correo, pero no se espera (await).
+      // Se adjunta un .catch() para registrar cualquier error que ocurra durante el envío,
+      // sin afectar el flujo principal que ya completó la respuesta al usuario.
+      sendEmail(user.email, 'Bienvenido a ToBless Coworking', emailHtml)
+        .catch(error => {
+          logger.error(`Fallo al enviar correo de bienvenida a ${user.email}:`, error);
+        });
 
-      res.status(201).json({
-        token: generateToken(user),
-      });
     } else {
       res.status(400).json({ message: 'Invalid user data' });
     }
