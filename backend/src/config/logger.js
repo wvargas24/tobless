@@ -1,6 +1,14 @@
 const winston = require('winston');
-// Environment variables are assumed to be loaded in server.js
+const path = require('path');
+const fs = require('fs');
 
+// Ensure log directory exists
+const logDir = 'logs';
+if (!fs.existsSync(logDir)) {
+  fs.mkdirSync(logDir);
+}
+
+// Environment variables are assumed to be loaded in server.js
 const levels = {
   error: 0,
   warn: 1,
@@ -17,7 +25,8 @@ const level = () => {
   return isDevelopment ? 'debug' : 'info';
 };
 
-const format = winston.format.combine(
+// Console output format
+const consoleFormat = winston.format.combine(
   winston.format.timestamp({
     format: 'YYYY-MM-DD HH:mm:ss'
   }),
@@ -29,14 +38,33 @@ const format = winston.format.combine(
   ),
 );
 
+// File output format
+const fileFormat = winston.format.combine(
+  winston.format.timestamp(),
+  winston.format.json()
+);
+
 const transports = [
-  new winston.transports.Console(),
+  // Console transport remains unchanged
+  new winston.transports.Console({
+    format: consoleFormat
+  }),
+  // File transport for all logs
+  new winston.transports.File({
+    filename: path.join(logDir, 'all.log'),
+    format: fileFormat,
+  }),
+  // File transport for error logs
+  new winston.transports.File({
+    level: 'error',
+    filename: path.join(logDir, 'error.log'),
+    format: fileFormat,
+  }),
 ];
 
 const logger = winston.createLogger({
   level: level(),
   levels,
-  format,
   transports,
 });
 

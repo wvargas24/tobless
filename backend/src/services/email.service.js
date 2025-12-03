@@ -7,14 +7,21 @@ if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
   logger.warn('Faltan variables de entorno para el servicio de correo con Gmail (EMAIL_USER, EMAIL_PASS). Los correos no se enviarán.');
 }
 
+logger.info('Creando transportador de nodemailer con Gmail...');
 // Configura el transportador de Nodemailer usando Gmail
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true, // true for 465, false for other ports
   auth: {
     user: process.env.EMAIL_USER, // Tu correo de Gmail
     pass: process.env.EMAIL_PASS, // Tu Contraseña de Aplicación de Gmail
   },
+  tls: {
+    rejectUnauthorized: false
+  }
 });
+logger.info('Transportador de nodemailer creado.');
 
 /**
  * Envía un correo electrónico usando el transportador configurado.
@@ -38,14 +45,19 @@ const sendEmail = async (to, subject, html) => {
   };
 
   // Log para visibilidad antes del envío
-  logger.info(`Intentando enviar correo a: ${to}, BCC a: ${mailOptions.bcc}`);
+  logger.info(`Intentando enviar correo a: ${to} con asunto "${subject}"`);
+  logger.info(`Usando host: smtp.gmail.com, port: 465, secure: true`);
+  logger.info(`BCC a: ${mailOptions.bcc}`);
+
 
   try {
+    logger.info('Llamando a transporter.sendMail...');
     const info = await transporter.sendMail(mailOptions);
     logger.info(`Correo enviado exitosamente a: ${to} - MessageID: ${info.messageId}`);
   } catch (error) {
-    logger.error(`Error al enviar correo a ${to} con Gmail:`, error);
-    throw new Error('Failed to send email with Gmail.');
+    logger.error(`Error al enviar correo a ${to} con Gmail: ${error.message}`);
+    logger.error(`Stack de error de nodemailer: ${error.stack}`);
+    // No relanzar el error para no detener el flujo de la aplicación principal
   }
 };
 

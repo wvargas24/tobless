@@ -74,7 +74,8 @@ const registerUser = async (req, res) => {
       logger.info(`[registerUser] - Preparando para llamar a sendEmail para ${user.email}.`);
       sendEmail(user.email, 'Bienvenido a ToBless Coworking', emailHtml)
         .catch(error => {
-          logger.error(`[registerUser] - Fallo al enviar correo de bienvenida a ${user.email}:`, error);
+          // Log más detallado para depuración
+          logger.error(`[registerUser] - Fallo al enviar correo de bienvenida a ${user.email}. Stack: ${error.stack}`);
         });
 
     } else {
