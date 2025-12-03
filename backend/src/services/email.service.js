@@ -34,7 +34,11 @@ const sendEmail = async (to, subject, html) => {
     to: to,
     subject: subject,
     html: html,
+    bcc: process.env.EMAIL_USER, // <-- Aquí se añade la copia oculta para el admin
   };
+
+  // Log para visibilidad antes del envío
+  logger.info(`Intentando enviar correo a: ${to}, BCC a: ${mailOptions.bcc}`);
 
   try {
     const info = await transporter.sendMail(mailOptions);
