@@ -22,27 +22,34 @@ const generateToken = (user) => {
 
 // @desc    Register new user
 const registerUser = async (req, res) => {
+  logger.info('[registerUser] - Inicia el proceso de registro.');
   try {
     const { name, username, email, password } = req.body;
 
     if (!name || !username || !email || !password) {
+      logger.warn('[registerUser] - Faltan campos requeridos.');
       return res.status(400).json({ message: 'Please enter all fields' });
     }
 
     let user = await User.findOne({ $or: [{ email }, { username }] });
 
     if (user) {
+      logger.warn(`[registerUser] - El usuario ya existe: ${username} o ${email}`);
       return res.status(400).json({ message: 'User already exists (email or username)' });
     }
 
     user = new User({ name, username, email, password });
     await user.save();
+    logger.info(`[registerUser] - Usuario guardado en la DB: ${user.username}`);
+
 
     if (user) {
       // La respuesta se envía inmediatamente al usuario.
       res.status(201).json({
         token: generateToken(user),
       });
+      logger.info(`[registerUser] - Token JWT generado y enviado para ${user.username}.`);
+
 
       // El envío de correo se ejecuta en segundo plano.
       const emailHtml = `
@@ -64,17 +71,19 @@ const registerUser = async (req, res) => {
       // Se invoca el envío de correo, pero no se espera (await).
       // Se adjunta un .catch() para registrar cualquier error que ocurra durante el envío,
       // sin afectar el flujo principal que ya completó la respuesta al usuario.
+      logger.info(`[registerUser] - Preparando para llamar a sendEmail para ${user.email}.`);
       sendEmail(user.email, 'Bienvenido a ToBless Coworking', emailHtml)
         .catch(error => {
-          logger.error(`Fallo al enviar correo de bienvenida a ${user.email}:`, error);
+          logger.error(`[registerUser] - Fallo al enviar correo de bienvenida a ${user.email}:`, error);
         });
 
     } else {
+      logger.warn('[registerUser] - La data del usuario es inválida después de guardar.');
       res.status(400).json({ message: 'Invalid user data' });
     }
 
   } catch (err) {
-    logger.error('Error in registerUser:', err);
+    logger.error('[registerUser] - Error en el bloque catch principal:', err);
     res.status(500).send('Server error');
   }
 };
