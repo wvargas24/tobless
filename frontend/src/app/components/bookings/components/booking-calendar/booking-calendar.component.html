@@ -1,13 +1,11 @@
 <p-toast></p-toast>
 <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
 <div class="card">
-    <p-toolbar styleClass="mb-4">
-        <ng-template pTemplate="left">
-            <!-- Este botón ahora redirige a /bookings/new gracias al cambio en openNewBookingDialog() -->
-            <button pButton pRipple label="Agregar Reserva" icon="pi pi-plus" class="p-button-success" (click)="openNewBookingDialog()"></button>
-        </ng-template>
-    </p-toolbar>
-    <h3>Calendario de Reservas</h3>
+    <div class="card-header mb-4">
+        <h3>Calendario de Reservas</h3>
+        <button pButton pRipple label="Agregar Reserva" icon="pi pi-plus" class="p-button-primary" (click)="openNewBookingDialog()"></button>
+    </div>
+
     <full-calendar [options]="calendarOptions"></full-calendar>
 </div>
 

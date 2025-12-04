@@ -72,26 +72,26 @@ export class StepDateTimeSelectionComponent implements OnInit, OnChanges {
         this.bookingService.getBookingsForResource(this.resource._id).subscribe({
             next: (slots) => {
                 console.log('Slots ocupados recibidos:', slots);
-                const events = slots.map((slot: AvailabilitySlot) => ({
-                    title: 'Ocupado',
-                    start: slot.startTime,
-                    end: slot.endTime,
+            const events = slots.map((slot: AvailabilitySlot) => ({
+                title: 'Ocupado',
+                start: slot.startTime,
+                end: slot.endTime,
                     backgroundColor: '#ef4444',
                     borderColor: '#dc2626',
                     textColor: '#ffffff',
-                    editable: false,
+                editable: false,
                     display: 'background', // Show as background event to clearly indicate unavailability
                     classNames: ['booking-occupied']
-                }));
+            }));
                 
                 console.log('Eventos del calendario generados:', events);
-                
-                // Merge new events with existing options
-                this.calendarOptions = { 
-                    ...this.calendarOptions, 
+            
+            // Merge new events with existing options
+            this.calendarOptions = { 
+                ...this.calendarOptions, 
                     events: events,
                     selectOverlap: false // Evitar que se puedan seleccionar horarios ocupados
-                };
+            };
             },
             error: (err) => {
                 console.error('Error cargando disponibilidad:', err);
