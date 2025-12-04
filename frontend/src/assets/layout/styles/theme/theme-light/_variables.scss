@@ -481,13 +481,13 @@ $paginatorElementPadding: 0 !default;
 //table
 $tableHeaderBorder: 1px solid $shade300 !default;
 $tableHeaderBorderWidth: 1px 0 1px 0 !default;
-$tableHeaderBg: var(--surface-section) !default;
+$tableHeaderBg: transparent !default;
 $tableHeaderTextColor: $shade500 !default;
 $tableHeaderFontWeight: 500 !default;
 $tableHeaderPadding: 0.571rem 0.571rem !default;
 
 $tableHeaderCellPadding: 0.571rem 0.571rem !default;
-$tableHeaderCellBg: var(--surface-section) !default;
+$tableHeaderCellBg: transparent !default;
 $tableHeaderCellTextColor: $shade500 !default;
 $tableHeaderCellFontWeight: 500 !default;
 $tableHeaderCellBorder: 1px solid $shade300 !default;
@@ -502,9 +502,9 @@ $tableHeaderCellHighlightHoverBg: $shade200 !default;
 $tableHeaderCellHighlightTextHoverColor: $shade500 !default;
 $tableSortableColumnBadgeSize: 1.143rem !default;
 
-$tableBodyRowBg: var(--surface-section) !default;
+$tableBodyRowBg: transparent !default;
 $tableBodyRowTextColor: $shade700 !default;
-$tableBodyRowEvenBg: var(--surface-section) !default;
+$tableBodyRowEvenBg: transparent !default;
 $tableBodyRowHoverBg: $shade100 !default;
 $tableBodyRowTextHoverColor: $shade700 !default;
 $tableBodyCellBorder: 1px solid $shade300 !default;
@@ -512,7 +512,7 @@ $tableBodyCellBorderWidth: 0 0 0 0 !default;
 $tableBodyCellPadding: 0.429rem 0.571rem !default;
 
 $tableFooterCellPadding: 0.571rem 0.571rem !default;
-$tableFooterCellBg: var(--surface-section) !default;
+$tableFooterCellBg: transparent !default;
 $tableFooterCellTextColor: $shade500 !default;
 $tableFooterCellFontWeight: 500 !default;
 $tableFooterCellBorder: 1px solid $shade300 !default;
