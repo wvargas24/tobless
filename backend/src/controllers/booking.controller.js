@@ -102,21 +102,18 @@ const getAllBookings = async (req, res) => {
   try {
     let query = {};
 
+    // Si se está filtrando por recurso, devolver TODAS las reservas de ese recurso
+    // (necesario para que los usuarios vean qué horarios están ocupados)
     if (req.query.resource) {
       query.resource = req.query.resource;
-    }
-
-    if (req.user.role !== 'admin' && req.user.role !== 'manager') {
-      query.user = req.user._id;
-    }
-
-    if (req.user.role === 'admin' || req.user.role === 'manager') {
-      if (req.query.resource) {
-        query.resource = req.query.resource;
-        delete query.user;
-      } else {
-        delete query.user;
+      // No filtrar por usuario cuando se consulta disponibilidad de un recurso
+    } else {
+      // Si NO se especifica recurso, aplicar filtros por rol
+      if (req.user.role !== 'admin' && req.user.role !== 'manager') {
+        // Usuarios regulares solo ven sus propias reservas
+        query.user = req.user._id;
       }
+      // Admin/Manager ven todas las reservas (query vacío = todas)
     }
 
     const bookings = await Booking.find(query)

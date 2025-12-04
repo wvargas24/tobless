@@ -47,10 +47,18 @@ router.route('/availability/:resourceId')
 
 // Ruta para crear una nueva reserva
 router.route('/')
-  // Obtener TODAS las reservas (protegido para el personal)
+  // Obtener reservas - permite consultar por recurso sin permisos especiales para ver disponibilidad
   .get(
     protect,
-    checkPermission(PERMISSIONS.BOOKINGS_VIEW_ALL),
+    // Solo requerir permiso VIEW_ALL si NO se está consultando por recurso específico
+    (req, res, next) => {
+      if (req.query.resource) {
+        // Consulta de disponibilidad - permitir a todos los usuarios autenticados
+        return next();
+      }
+      // Consulta general - requiere permisos
+      return checkPermission(PERMISSIONS.BOOKINGS_VIEW_ALL)(req, res, next);
+    },
     getAllBookings
   )
   .post(
