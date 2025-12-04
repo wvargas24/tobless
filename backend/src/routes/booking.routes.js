@@ -47,18 +47,10 @@ router.route('/availability/:resourceId')
 
 // Ruta para crear una nueva reserva
 router.route('/')
-  // Obtener reservas - permite consultar por recurso sin permisos especiales para ver disponibilidad
+  // Obtener reservas - todos los usuarios autenticados pueden ver sus propias reservas
+  // El controlador se encarga de filtrar por usuario si no es admin/manager
   .get(
     protect,
-    // Solo requerir permiso VIEW_ALL si NO se está consultando por recurso específico
-    (req, res, next) => {
-      if (req.query.resource) {
-        // Consulta de disponibilidad - permitir a todos los usuarios autenticados
-        return next();
-      }
-      // Consulta general - requiere permisos
-      return checkPermission(PERMISSIONS.BOOKINGS_VIEW_ALL)(req, res, next);
-    },
     getAllBookings
   )
   .post(
