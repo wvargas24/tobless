@@ -14,4 +14,8 @@ $scale: 14px !default;
     /* Custom overrides for topbar icons and text to be white */
     --topbar-item-text-color: rgba(255, 255, 255, 0.9);
     --topbar-button-hover-bg: rgba(255, 255, 255, 0.15);
+    
+    /* Custom overrides for topbar dropdown menu */
+    --menu-text-color: rgba(255, 255, 255, 0.95);
+    --menu-popup-bg: #3A483A;
 }

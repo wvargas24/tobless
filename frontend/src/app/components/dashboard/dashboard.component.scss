@@ -1,3 +1,12 @@
+/* Estilos para los widgets de estadísticas - altura uniforme */
+.surface-card {
+    height: 100%;
+    min-height: 130px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
 /* Estilos para las insignias de estado de las reservas */
 :host ::ng-deep .customer-badge {
     border-radius: 2px;

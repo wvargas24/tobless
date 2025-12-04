@@ -110,16 +110,22 @@
                     bottom: -10.6rem;
                     right: 0;
                     display: none;
-                    color: var(--text-color);
-                    background: var(--menu-popup-bg, var(--surface-ground));
+                    color: var(--menu-text-color, var(--text-color));
+                    background: var(--menu-popup-bg, var(--primary-500));
                     box-shadow: var(--box-shadow);
 
                     &.active-topbar-menu {
                         display: block;
                     }
 
-                    a {
-                        color: var(--menu-text-color, var(--text-color));
+                    li {
+                        a {
+                            color: var(--menu-text-color, var(--text-color));
+
+                            &:hover {
+                                color: rgba(255, 255, 255, 0.7) !important;
+                            }
+                        }
                     }
 
 
