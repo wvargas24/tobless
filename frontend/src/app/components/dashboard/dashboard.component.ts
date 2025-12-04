@@ -104,5 +104,37 @@ export class DashboardComponent implements OnInit {
     getEventTargetValue(event: Event): string {
         return (event.target as HTMLInputElement).value;
     }
+
+    // Métodos para estadísticas de usuarios regulares
+    getUpcomingBookingsCount(): number {
+        const now = new Date();
+        return this.allBookings.filter(b => {
+            const bookingDate = new Date(b.startDate);
+            return bookingDate > now && b.status !== 'cancelled';
+        }).length;
+    }
+
+    getThisMonthBookingsCount(): number {
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+        
+        return this.allBookings.filter(b => {
+            const bookingDate = new Date(b.startDate);
+            return bookingDate.getMonth() === currentMonth && 
+                   bookingDate.getFullYear() === currentYear &&
+                   b.status !== 'cancelled';
+        }).length;
+    }
+
+    getMembershipStatus(): string {
+        if (this.stats?.membershipStatus) {
+            const status = this.stats.membershipStatus.status;
+            return status === 'active' ? 'Activa' : 
+                   status === 'expired' ? 'Expirada' : 
+                   status === 'pending' ? 'Pendiente' : 'Inactiva';
+        }
+        return 'Sin membresía';
+    }
 }
 

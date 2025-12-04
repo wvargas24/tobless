@@ -5,9 +5,9 @@
         <div class="card">
             <div class="flex justify-content-between align-items-center mb-4">
                 <div>
-                    <!-- CORREGIDO: Usar 'name' en lugar de 'firstName' -->
                     <h5 class="m-0">¡Hola, {{currentUser?.name}}!</h5>
-                    <span class="text-500">Aquí tienes un resumen de la actividad de hoy.</span>
+                    <span class="text-500" *ngIf="isAdminOrManager()">Aquí tienes un resumen de la actividad del sistema.</span>
+                    <span class="text-500" *ngIf="!isAdminOrManager()">Aquí tienes un resumen de tu actividad.</span>
                 </div>
             </div>
 
@@ -22,15 +22,14 @@
                 </div>
             </div>
 
-            <!-- Contenido de Estadísticas -->
-            <div *ngIf="!loading && stats" class="grid">
-                <!-- CORREGIDO: Tarjeta ajustada a 'totalUsers' del backend -->
+            <!-- Contenido de Estadísticas para Admin/Manager -->
+            <div *ngIf="!loading && stats && isAdminOrManager()" class="grid">
                 <div class="col-12 md:col-6 lg:col-3">
                     <div class="surface-card shadow-2 p-3 border-round">
                         <div class="flex justify-content-between mb-3">
                             <div>
                                 <span class="block text-500 font-medium mb-3">Usuarios Totales</span>
-                                <div class="text-900 font-medium text-xl">{{stats.totalUsers}}</div>
+                                <div class="text-900 font-medium text-3xl">{{stats.totalUsers}}</div>
                             </div>
                             <div class="flex align-items-center justify-content-center bg-blue-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
                                 <i class="pi pi-users text-blue-500 text-xl"></i>
@@ -40,29 +39,26 @@
                         <span class="text-500"> desde el mes pasado</span>
                     </div>
                 </div>
-                <!-- CORREGIDO: Tarjeta ajustada a 'todayBookingsCount' del backend -->
                 <div class="col-12 md:col-6 lg:col-3">
                     <div class="surface-card shadow-2 p-3 border-round">
                         <div class="flex justify-content-between mb-3">
                             <div>
                                 <span class="block text-500 font-medium mb-3">Reservas de Hoy</span>
-                                <div class="text-900 font-medium text-xl">{{stats.todayBookingsCount}}</div>
+                                <div class="text-900 font-medium text-3xl">{{stats.todayBookingsCount}}</div>
                             </div>
                             <div class="flex align-items-center justify-content-center bg-orange-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
                                 <i class="pi pi-calendar text-orange-500 text-xl"></i>
                             </div>
                         </div>
-                        <!-- Usamos el optional chaining por si todayBookingsList no viene -->
                         <span class="text-500">{{ stats.todayBookingsList?.length || 0 }} reservas en la lista</span>
                     </div>
                 </div>
-                <!-- CORREGIDO: Tarjeta ajustada a 'activeBookings' del backend -->
                 <div class="col-12 md:col-6 lg:col-3">
                     <div class="surface-card shadow-2 p-3 border-round">
                         <div class="flex justify-content-between mb-3">
                             <div>
                                 <span class="block text-500 font-medium mb-3">Reservas Activas</span>
-                                <div class="text-900 font-medium text-xl">{{stats.activeBookings}}</div>
+                                <div class="text-900 font-medium text-3xl">{{stats.activeBookings}}</div>
                             </div>
                             <div class="flex align-items-center justify-content-center bg-cyan-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
                                 <i class="pi pi-clock text-cyan-500 text-xl"></i>
@@ -72,13 +68,12 @@
                         <span class="text-500"> total en histórico</span>
                     </div>
                 </div>
-                <!-- CORREGIDO: Tarjeta ajustada a 'occupiedResourcesCount' del backend -->
                 <div class="col-12 md:col-6 lg:col-3">
                     <div class="surface-card shadow-2 p-3 border-round">
                         <div class="flex justify-content-between mb-3">
                             <div>
                                 <span class="block text-500 font-medium mb-3">Recursos Ocupados</span>
-                                <div class="text-900 font-medium text-xl">{{stats.occupiedResourcesCount}}</div>
+                                <div class="text-900 font-medium text-3xl">{{stats.occupiedResourcesCount}}</div>
                             </div>
                             <div class="flex align-items-center justify-content-center bg-purple-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
                                 <i class="pi pi-building text-purple-500 text-xl"></i>
@@ -86,6 +81,71 @@
                         </div>
                         <span class="text-green-500 font-medium">Ahora mismo</span>
                         <span class="text-500"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenido de Estadísticas para Usuarios Regulares -->
+            <div *ngIf="!loading && stats && !isAdminOrManager()" class="grid">
+                <!-- Mis Reservas Totales -->
+                <div class="col-12 md:col-6 lg:col-3">
+                    <div class="surface-card shadow-2 p-3 border-round">
+                        <div class="flex justify-content-between mb-3">
+                            <div>
+                                <span class="block text-500 font-medium mb-3">Mis Reservas</span>
+                                <div class="text-900 font-medium text-3xl">{{allBookings.length}}</div>
+                            </div>
+                            <div class="flex align-items-center justify-content-center bg-blue-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
+                                <i class="pi pi-calendar-plus text-blue-500 text-xl"></i>
+                            </div>
+                        </div>
+                        <span class="text-500">Total de reservas realizadas</span>
+                    </div>
+                </div>
+                <!-- Próximas Reservas -->
+                <div class="col-12 md:col-6 lg:col-3">
+                    <div class="surface-card shadow-2 p-3 border-round">
+                        <div class="flex justify-content-between mb-3">
+                            <div>
+                                <span class="block text-500 font-medium mb-3">Próximas Reservas</span>
+                                <div class="text-900 font-medium text-3xl">{{getUpcomingBookingsCount()}}</div>
+                            </div>
+                            <div class="flex align-items-center justify-content-center bg-green-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
+                                <i class="pi pi-clock text-green-500 text-xl"></i>
+                            </div>
+                        </div>
+                        <span class="text-500">Reservas futuras confirmadas</span>
+                    </div>
+                </div>
+                <!-- Estado de Membresía -->
+                <div class="col-12 md:col-6 lg:col-3">
+                    <div class="surface-card shadow-2 p-3 border-round">
+                        <div class="flex justify-content-between mb-3">
+                            <div>
+                                <span class="block text-500 font-medium mb-3">Membresía</span>
+                                <div class="text-900 font-medium text-xl">{{getMembershipStatus()}}</div>
+                            </div>
+                            <div class="flex align-items-center justify-content-center bg-purple-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
+                                <i class="pi pi-star text-purple-500 text-xl"></i>
+                            </div>
+                        </div>
+                        <span class="text-500" *ngIf="stats.membershipStatus?.endDate">Vence: {{stats.membershipStatus?.endDate | date: 'dd/MM/yyyy'}}</span>
+                        <span class="text-500" *ngIf="!stats.membershipStatus?.endDate">Sin membresía activa</span>
+                    </div>
+                </div>
+                <!-- Reservas este Mes -->
+                <div class="col-12 md:col-6 lg:col-3">
+                    <div class="surface-card shadow-2 p-3 border-round">
+                        <div class="flex justify-content-between mb-3">
+                            <div>
+                                <span class="block text-500 font-medium mb-3">Este Mes</span>
+                                <div class="text-900 font-medium text-3xl">{{getThisMonthBookingsCount()}}</div>
+                            </div>
+                            <div class="flex align-items-center justify-content-center bg-orange-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
+                                <i class="pi pi-calendar text-orange-500 text-xl"></i>
+                            </div>
+                        </div>
+                        <span class="text-500">Reservas realizadas este mes</span>
                     </div>
                 </div>
             </div>
