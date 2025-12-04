@@ -1,0 +1,264 @@
+<div class="grid" *ngIf="!loading">
+
+    <!-- Sección de Estadísticas y Bienvenida -->
+    <div class="col-12">
+        <div class="card">
+            <div class="flex justify-content-between align-items-center mb-4">
+                <div>
+                    <!-- CORREGIDO: Usar 'name' en lugar de 'firstName' -->
+                    <h5 class="m-0">¡Hola, {{currentUser?.name}}!</h5>
+                    <span class="text-500">Aquí tienes un resumen de la actividad de hoy.</span>
+                </div>
+            </div>
+
+            <!-- Skeletons para la carga -->
+            <div *ngIf="loading || !stats" class="grid">
+                <div *ngFor="let i of [0,1,2,3]" class="col-12 md:col-6 lg:col-3">
+                    <div class="surface-card shadow-2 p-3 border-round">
+                        <p-skeleton width="50%" height="1.5rem" styleClass="mb-2"></p-skeleton>
+                        <p-skeleton width="25%" height="2.5rem" styleClass="mb-2"></p-skeleton>
+                        <p-skeleton width="75%" height="1rem"></p-skeleton>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenido de Estadísticas -->
+            <div *ngIf="!loading && stats" class="grid">
+                <!-- CORREGIDO: Tarjeta ajustada a 'totalUsers' del backend -->
+                <div class="col-12 md:col-6 lg:col-3">
+                    <div class="surface-card shadow-2 p-3 border-round">
+                        <div class="flex justify-content-between mb-3">
+                            <div>
+                                <span class="block text-500 font-medium mb-3">Usuarios Totales</span>
+                                <div class="text-900 font-medium text-xl">{{stats.totalUsers}}</div>
+                            </div>
+                            <div class="flex align-items-center justify-content-center bg-blue-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
+                                <i class="pi pi-users text-blue-500 text-xl"></i>
+                            </div>
+                        </div>
+                        <span class="text-green-500 font-medium">+5%</span>
+                        <span class="text-500"> desde el mes pasado</span>
+                    </div>
+                </div>
+                <!-- CORREGIDO: Tarjeta ajustada a 'todayBookingsCount' del backend -->
+                <div class="col-12 md:col-6 lg:col-3">
+                    <div class="surface-card shadow-2 p-3 border-round">
+                        <div class="flex justify-content-between mb-3">
+                            <div>
+                                <span class="block text-500 font-medium mb-3">Reservas de Hoy</span>
+                                <div class="text-900 font-medium text-xl">{{stats.todayBookingsCount}}</div>
+                            </div>
+                            <div class="flex align-items-center justify-content-center bg-orange-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
+                                <i class="pi pi-calendar text-orange-500 text-xl"></i>
+                            </div>
+                        </div>
+                        <!-- Usamos el optional chaining por si todayBookingsList no viene -->
+                        <span class="text-500">{{ stats.todayBookingsList?.length || 0 }} reservas en la lista</span>
+                    </div>
+                </div>
+                <!-- CORREGIDO: Tarjeta ajustada a 'activeBookings' del backend -->
+                <div class="col-12 md:col-6 lg:col-3">
+                    <div class="surface-card shadow-2 p-3 border-round">
+                        <div class="flex justify-content-between mb-3">
+                            <div>
+                                <span class="block text-500 font-medium mb-3">Reservas Activas</span>
+                                <div class="text-900 font-medium text-xl">{{stats.activeBookings}}</div>
+                            </div>
+                            <div class="flex align-items-center justify-content-center bg-cyan-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
+                                <i class="pi pi-clock text-cyan-500 text-xl"></i>
+                            </div>
+                        </div>
+                        <span class="text-green-500 font-medium">{{allBookings.length}}</span>
+                        <span class="text-500"> total en histórico</span>
+                    </div>
+                </div>
+                <!-- CORREGIDO: Tarjeta ajustada a 'occupiedResourcesCount' del backend -->
+                <div class="col-12 md:col-6 lg:col-3">
+                    <div class="surface-card shadow-2 p-3 border-round">
+                        <div class="flex justify-content-between mb-3">
+                            <div>
+                                <span class="block text-500 font-medium mb-3">Recursos Ocupados</span>
+                                <div class="text-900 font-medium text-xl">{{stats.occupiedResourcesCount}}</div>
+                            </div>
+                            <div class="flex align-items-center justify-content-center bg-purple-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
+                                <i class="pi pi-building text-purple-500 text-xl"></i>
+                            </div>
+                        </div>
+                        <span class="text-green-500 font-medium">Ahora mismo</span>
+                        <span class="text-500"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nueva sección combinada para Admin/Manager -->
+    <div class="col-12" *ngIf="isAdminOrManager()">
+        <div class="grid">
+
+            <!-- Columna Izquierda: Tabla de Reservas -->
+            <div class="col-12 lg:col-8">
+                <div class="card">
+                    <div class="flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h5 class="m-0">Reservas</h5>
+                            <span class="text-500" *ngIf="selectedDate">Mostrando reservas para el {{ selectedDate | date: 'dd/MM/yyyy' }}</span>
+                            <span class="text-500" *ngIf="!selectedDate">Mostrando todas las reservas</span>
+                        </div>
+                        <button pButton type="button" label="Limpiar Filtro" icon="pi pi-filter-slash" class="p-button-outlined" (click)="clearFilter()" *ngIf="selectedDate"></button>
+                    </div>
+
+                    <p-table #dt [value]="displayBookings" [rows]="5" [paginator]="true" [globalFilterFields]="['resource.name', 'user.name', 'startDate', 'status']" responsiveLayout="scroll">
+                        <ng-template pTemplate="caption">
+                            <div class="flex justify-content-end">
+                                <span class="p-input-icon-left">
+                                    <i class="pi pi-search"></i>
+                                    <!-- CORREGIDO: Usar helper para el evento input -->
+                                    <input pInputText type="text" (input)="dt.filterGlobal(getEventTargetValue($event), 'contains')" placeholder="Buscar..." />
+                                </span>
+                            </div>
+                        </ng-template>
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th pSortableColumn="resource.name">Recurso <p-sortIcon field="resource.name"></p-sortIcon></th>
+                                <th pSortableColumn="user.name">Usuario <p-sortIcon field="user.name"></p-sortIcon></th>
+                                <th pSortableColumn="startDate">Fecha <p-sortIcon field="startDate"></p-sortIcon></th>
+                                <th pSortableColumn="status">Estado <p-sortIcon field="status"></p-sortIcon></th>
+                                <th>Acciones</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-booking>
+                            <tr>
+                                <td>{{booking.resource.name}}</td>
+                                <!-- CORREGIDO: Usar user.name -->
+                                <td>{{booking.user.name}}</td>
+                                <td>{{booking.startDate | date: 'dd/MM/yy, h:mm a'}}</td>
+                                <td>
+                                    <span [class]="'customer-badge status-' + booking.status.toLowerCase()">{{booking.status}}</span>
+                                </td>
+                                <td>
+                                    <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"></button>
+                                    <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning"></button>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="5">No se encontraron reservas.</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Calendario -->
+            <div class="col-12 lg:col-4">
+                <div class="card">
+                    <h5>Calendario de Reservas</h5>
+                    <!-- CORREGIDO: El tipo del evento es correcto ahora, onSelect emite Date -->
+                    <p-calendar [(ngModel)]="selectedDate" (onSelect)="onDateSelect($event)" [inline]="true" [showWeek]="false">
+                        <ng-template pTemplate="date" let-date>
+                            <div style="position: relative">
+                                <span>{{date.day}}</span>
+                                <span *ngIf="isBooked(date)" class="booking-indicator"></span>
+                            </div>
+                        </ng-template>
+                    </p-calendar>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Vista para el Usuario Normal (tus reservas) -->
+    <div class="col-12" *ngIf="!isAdminOrManager()">
+        <div class="grid">
+
+            <!-- Columna Izquierda: Tabla de Reservas -->
+            <div class="col-12 lg:col-8">
+                <div class="card">
+                    <div class="flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h5 class="m-0">Tus Reservas</h5>
+                            <span class="text-500" *ngIf="selectedDate">Mostrando reservas para el {{ selectedDate | date: 'dd/MM/yyyy' }}</span>
+                            <span class="text-500" *ngIf="!selectedDate">Mostrando todas tus reservas</span>
+                        </div>
+                        <button pButton type="button" label="Limpiar Filtro" icon="pi pi-filter-slash" class="p-button-outlined" (click)="clearFilter()" *ngIf="selectedDate"></button>
+                    </div>
+
+                    <p-table #dt [value]="displayBookings" [rows]="5" [paginator]="true" [globalFilterFields]="['resource.name', 'startDate', 'status']" responsiveLayout="scroll">
+                        <ng-template pTemplate="caption">
+                            <div class="flex justify-content-end">
+                                <span class="p-input-icon-left">
+                                    <i class="pi pi-search"></i>
+                                    <input pInputText type="text" (input)="dt.filterGlobal(getEventTargetValue($event), 'contains')" placeholder="Buscar..." />
+                                </span>
+                            </div>
+                        </ng-template>
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th pSortableColumn="resource.name">Recurso <p-sortIcon field="resource.name"></p-sortIcon></th>
+                                <th pSortableColumn="startDate">Fecha <p-sortIcon field="startDate"></p-sortIcon></th>
+                                <th pSortableColumn="status">Estado <p-sortIcon field="status"></p-sortIcon></th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-booking>
+                            <tr>
+                                <td>{{booking.resource.name}}</td>
+                                <td>{{booking.startDate | date: 'dd/MM/yy, h:mm a'}}</td>
+                                <td>
+                                    <span [class]="'customer-badge status-' + booking.status.toLowerCase()">{{booking.status}}</span>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="3">No tienes reservas próximas.</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Calendario -->
+            <div class="col-12 lg:col-4">
+                <div class="card">
+                    <h5>Calendario de Reservas</h5>
+                    <p-calendar [(ngModel)]="selectedDate" (onSelect)="onDateSelect($event)" [inline]="true" [showWeek]="false">
+                        <ng-template pTemplate="date" let-date>
+                            <div style="position: relative">
+                                <span>{{date.day}}</span>
+                                <span *ngIf="isBooked(date)" class="booking-indicator"></span>
+                            </div>
+                        </ng-template>
+                    </p-calendar>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- SKELETON GENERAL -->
+<div class="grid" *ngIf="loading">
+    <div class="col-12">
+        <div class="card">
+            <p-skeleton width="10rem" height="2rem" styleClass="mb-4"></p-skeleton>
+            <div class="grid">
+                <div class="col-12 md:col-3" *ngFor="let i of [0,1,2,3]">
+                    <p-skeleton height="6rem"></p-skeleton>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 lg:col-8">
+        <div class="card">
+            <p-skeleton height="20rem"></p-skeleton>
+        </div>
+    </div>
+    <div class="col-12 lg:col-4">
+        <div class="card">
+            <p-skeleton height="20rem"></p-skeleton>
+        </div>
+    </div>
+</div>

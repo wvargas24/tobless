@@ -22,7 +22,7 @@ const routes: Routes = [
             {
                 path: 'dashboard',
                 data: { breadcrumb: 'Dashboard', expectedRoles: ['admin', 'manager', 'user'] },
-                loadChildren: () => import('./demo/components/dashboards/dashboards.module').then(m => m.DashboardsModule),
+                loadChildren: () => import('./components/dashboard/dashboard.module').then(m => m.DashboardModule),
                 canActivate: [AuthGuard]
             },
             {

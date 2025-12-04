@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { LayoutService } from './service/app.layout.service';
-import { DashboardService, DashboardStats } from '../demo/components/dashboards/service/dashboard.service';
+import { DashboardService, DashboardStats } from '../components/dashboard/services/dashboard.service';
 import { AuthService } from '../auth/services/auth.service';
 import { User } from '../auth/models/user.model';
 import { Subscription } from 'rxjs';
