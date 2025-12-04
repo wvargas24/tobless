@@ -56,7 +56,7 @@ export class AppMenuComponent implements OnInit, OnDestroy {
 
         const publicMembershipsMenu = {
             label: 'Planes y Precios',
-            icon: 'pi pi-fw pi-eye',
+            icon: 'pi pi-fw pi-id-card',
             routerLink: ['/memberships'],
             // Este enlace es para que un cliente vea los planes, no para gestionarlos.
             visible: user.role === 'user'
