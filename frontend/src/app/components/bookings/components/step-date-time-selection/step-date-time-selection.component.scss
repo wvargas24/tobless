@@ -1,5 +1,6 @@
 // Estilos para el calendario de disponibilidad
 :host ::ng-deep {
+
     // Mejorar la visualización de eventos ocupados
     .fc-timegrid-event.booking-occupied {
         opacity: 0.85;
@@ -55,9 +56,9 @@
     // Día actual
     .fc-day-today {
         background-color: #fef3c7 !important;
+
         .fc-timegrid-col-frame {
             background-color: transparent;
         }
     }
 }
-

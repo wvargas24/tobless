@@ -1,11 +1,10 @@
 <div class="card">
     <h5>Seleccionar Usuario (Opcional)</h5>
     <p class="text-secondary">Si estás realizando esta reserva para otra persona, selecciónala aquí. Si es para ti, puedes omitir este paso.</p>
-    
+
     <div class="field p-fluid">
         <label for="user">Buscar Usuario</label>
-        <p-dropdown [options]="users" [(ngModel)]="selectedUser" optionLabel="name" [filter]="true" filterBy="name,email" 
-                    [showClear]="true" placeholder="Selecciona un usuario" (onChange)="onUserSelect()">
+        <p-dropdown [options]="users" [(ngModel)]="selectedUser" optionLabel="name" [filter]="true" filterBy="name,email" [showClear]="true" placeholder="Selecciona un usuario" (onChange)="onUserSelect()">
             <ng-template let-user pTemplate="item">
                 <div class="flex align-items-center">
                     <i class="pi pi-user mr-2"></i>
@@ -18,4 +17,3 @@
         </p-dropdown>
     </div>
 </div>
-
