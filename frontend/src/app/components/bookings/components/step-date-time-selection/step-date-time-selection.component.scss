@@ -1,0 +1,63 @@
+// Estilos para el calendario de disponibilidad
+:host ::ng-deep {
+    // Mejorar la visualización de eventos ocupados
+    .fc-timegrid-event.booking-occupied {
+        opacity: 0.85;
+        font-weight: 600;
+    }
+
+    // Estilo para horarios ocupados (background)
+    .fc-bg-event.booking-occupied {
+        opacity: 0.3;
+    }
+
+    // Mejorar el área de selección
+    .fc-highlight {
+        background: #f0f9ff !important;
+        border: 2px solid #3b82f6 !important;
+        opacity: 0.8;
+    }
+
+    // Mejorar la visualización de horarios hábiles
+    .fc-non-business {
+        background-color: #f3f4f6;
+    }
+
+    // Tooltip para eventos ocupados
+    .fc-event-title {
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+
+    // Mejorar el contraste del calendario
+    .fc-timegrid-slot {
+        border-color: #e5e7eb;
+    }
+
+    .fc-timegrid-axis {
+        font-weight: 500;
+        color: #6b7280;
+    }
+
+    // Header del calendario
+    .fc-toolbar-title {
+        font-size: 1.5rem !important;
+        font-weight: 700 !important;
+        color: #111827;
+    }
+
+    // Botones del calendario
+    .fc-button {
+        text-transform: capitalize !important;
+        font-weight: 500 !important;
+    }
+
+    // Día actual
+    .fc-day-today {
+        background-color: #fef3c7 !important;
+        .fc-timegrid-col-frame {
+            background-color: transparent;
+        }
+    }
+}
+

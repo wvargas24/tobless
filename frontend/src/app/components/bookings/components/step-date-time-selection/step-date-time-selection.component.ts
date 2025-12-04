@@ -10,6 +10,7 @@ import { Resource } from 'src/app/components/resources/services/resource.service
 @Component({
     selector: 'app-step-date-time-selection',
     templateUrl: './step-date-time-selection.component.html',
+    styleUrls: ['./step-date-time-selection.component.scss']
 })
 export class StepDateTimeSelectionComponent implements OnInit, OnChanges {
 
@@ -67,22 +68,34 @@ export class StepDateTimeSelectionComponent implements OnInit, OnChanges {
 
     loadBookingsForResource(): void {
         if (!this.resource) return;
-        this.bookingService.getBookingsForResource(this.resource._id).subscribe(slots => {
-            const events = slots.map((slot: AvailabilitySlot) => ({
-                title: 'Ocupado',
-                start: slot.startTime,
-                end: slot.endTime,
-                backgroundColor: '#64748B',
-                borderColor: '#64748B',
-                editable: false,
-                display: 'background' // Show as background event to clearly indicate unavailability
-            }));
-            
-            // Merge new events with existing options
-            this.calendarOptions = { 
-                ...this.calendarOptions, 
-                events: events 
-            };
+        console.log('Cargando reservas para recurso:', this.resource._id);
+        this.bookingService.getBookingsForResource(this.resource._id).subscribe({
+            next: (slots) => {
+                console.log('Slots ocupados recibidos:', slots);
+                const events = slots.map((slot: AvailabilitySlot) => ({
+                    title: 'Ocupado',
+                    start: slot.startTime,
+                    end: slot.endTime,
+                    backgroundColor: '#ef4444',
+                    borderColor: '#dc2626',
+                    textColor: '#ffffff',
+                    editable: false,
+                    display: 'background', // Show as background event to clearly indicate unavailability
+                    classNames: ['booking-occupied']
+                }));
+                
+                console.log('Eventos del calendario generados:', events);
+                
+                // Merge new events with existing options
+                this.calendarOptions = { 
+                    ...this.calendarOptions, 
+                    events: events,
+                    selectOverlap: false // Evitar que se puedan seleccionar horarios ocupados
+                };
+            },
+            error: (err) => {
+                console.error('Error cargando disponibilidad:', err);
+            }
         });
     }
 

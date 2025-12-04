@@ -4,6 +4,22 @@
         <p class="text-600">Haz clic y arrastra en el calendario para seleccionar tu horario.</p>
     </div>
 
+    <!-- Leyenda de colores -->
+    <div class="flex justify-content-center gap-4 mb-4">
+        <div class="flex align-items-center">
+            <div class="w-1rem h-1rem border-round mr-2" style="background-color: #ef4444;"></div>
+            <span class="text-sm">Ocupado</span>
+        </div>
+        <div class="flex align-items-center">
+            <div class="w-1rem h-1rem border-round mr-2" style="background-color: #f0f9ff; border: 2px solid #3b82f6;"></div>
+            <span class="text-sm">Tu selección</span>
+        </div>
+        <div class="flex align-items-center">
+            <div class="w-1rem h-1rem border-round mr-2" style="background-color: #f7fee7;"></div>
+            <span class="text-sm">Horario hábil (9 AM - 6 PM)</span>
+        </div>
+    </div>
+
     <div class="grid">
         <div class="col-12 md:col-8">
             <full-calendar [options]="calendarOptions"></full-calendar>
