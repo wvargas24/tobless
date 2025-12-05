@@ -5,7 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { MembershipsRoutingModule } from './memberships-routing.module';
 import { MembershipListComponent } from './components/membership-list/membership-list.component';
 import { OnboardingComponent } from './components/onboarding/onboarding.component';
-import { AdminMembershipComponent } from './components/admin-membership/admin-membership.component'; // <-- 1. Importar
+import { AdminMembershipComponent } from './components/admin-membership/admin-membership.component';
+import { MyMembershipComponent } from './components/my-membership/my-membership.component';
 
 // Importaciones de PrimeNG
 import { CardModule } from 'primeng/card';
@@ -23,12 +24,17 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { ChipsModule } from 'primeng/chips';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { TagModule } from 'primeng/tag';
+import { DividerModule } from 'primeng/divider';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { SkeletonModule } from 'primeng/skeleton';
 
 @NgModule({
     declarations: [
         MembershipListComponent,
         OnboardingComponent,
-        AdminMembershipComponent // <-- 1. Declarar
+        AdminMembershipComponent,
+        MyMembershipComponent
     ],
     imports: [
         CommonModule,
@@ -49,7 +55,11 @@ import { MultiSelectModule } from 'primeng/multiselect';
         ConfirmDialogModule,
         InputTextareaModule,
         ChipsModule,
-        MultiSelectModule
+        MultiSelectModule,
+        TagModule,
+        DividerModule,
+        ProgressBarModule,
+        SkeletonModule
     ]
 })
 export class MembershipsModule { }

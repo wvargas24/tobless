@@ -1,0 +1,15 @@
+// Estilos personalizados para Mi Membresía
+.surface-ground {
+    background-color: var(--surface-ground);
+}
+
+// Gradiente para barras ilimitadas
+.bg-gradient-to-r {
+    background: linear-gradient(to right, var(--green-200), var(--green-400));
+}
+
+// Asegurar que las tarjetas tengan altura consistente
+.card {
+    height: 100%;
+}
+

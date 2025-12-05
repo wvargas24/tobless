@@ -73,5 +73,13 @@ export class MembershipService {
         return this.http.post<any>(`${this.staffApiUrl}/onboard-user`, data);
     }
 
+    /**
+     * Obtiene la membresía del usuario actual con estadísticas de uso
+     * @returns Un Observable que emite los datos de la membresía con uso de horas
+     */
+    getMyMembership(): Observable<any> {
+        return this.http.get<any>(`${this.membershipsApiUrl}/my-membership`);
+    }
+
     // Aquí añadiremos más métodos en el futuro (ej. getMembershipById, updateMembership, etc.)
 }

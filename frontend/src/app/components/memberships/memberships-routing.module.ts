@@ -3,19 +3,31 @@ import { RouterModule, Routes } from '@angular/router';
 import { MembershipListComponent } from './components/membership-list/membership-list.component';
 import { AuthGuard } from '../../auth/guards/auth.guard';
 import { AdminMembershipComponent } from './components/admin-membership/admin-membership.component';
+import { MyMembershipComponent } from './components/my-membership/my-membership.component';
 
 const routes: Routes = [
     // Ruta pública para ver los planes
     { path: '', component: MembershipListComponent },
 
-    // --- NUEVA RUTA SOLO PARA ADMIN ---
+    // --- RUTA PARA VER MI MEMBRESÍA (USUARIOS) ---
+    {
+        path: 'my-membership',
+        component: MyMembershipComponent,
+        canActivate: [AuthGuard],
+        data: {
+            breadcrumb: 'Mi Membresía',
+            expectedRoles: ['user', 'admin', 'manager'] // Cualquier usuario autenticado
+        }
+    },
+
+    // --- RUTA SOLO PARA ADMIN ---
     {
         path: 'admin',
         component: AdminMembershipComponent,
         canActivate: [AuthGuard],
         data: {
-            breadcrumb: 'Administrar Planes', // Opcional, para el breadcrumb
-            expectedRoles: ['admin'] // Solo el admin puede acceder
+            breadcrumb: 'Administrar Planes',
+            expectedRoles: ['admin']
         }
     }
 ];

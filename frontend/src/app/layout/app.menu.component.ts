@@ -54,6 +54,13 @@ export class AppMenuComponent implements OnInit, OnDestroy {
             visible: true // Visible para todos los usuarios logueados
         };
 
+        const myMembershipMenu = {
+            label: 'Mi Membresía',
+            icon: 'pi pi-fw pi-credit-card',
+            routerLink: ['/memberships/my-membership'],
+            visible: user.role === 'user'
+        };
+
         const publicMembershipsMenu = {
             label: 'Planes y Precios',
             icon: 'pi pi-fw pi-id-card',
@@ -122,6 +129,7 @@ export class AppMenuComponent implements OnInit, OnDestroy {
         return [
             dashboardMenu,
             bookingsMenu,
+            myMembershipMenu,
             publicMembershipsMenu,
             membershipsManagementMenu,
             resourcesManagementMenu,

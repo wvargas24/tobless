@@ -1,0 +1,157 @@
+<div class="grid">
+    <!-- Loading State -->
+    <div class="col-12" *ngIf="loading">
+        <div class="card">
+            <p-skeleton width="100%" height="150px" styleClass="mb-3"></p-skeleton>
+            <p-skeleton width="100%" height="200px" styleClass="mb-3"></p-skeleton>
+            <p-skeleton width="100%" height="200px"></p-skeleton>
+        </div>
+    </div>
+
+    <!-- No Membership State -->
+    <div class="col-12" *ngIf="!loading && !hasMembership">
+        <div class="card text-center p-6">
+            <i class="pi pi-star-fill text-6xl text-500 mb-4"></i>
+            <h3 class="text-2xl font-bold mb-3">No tienes una membresía activa</h3>
+            <p class="text-600 mb-4">Adquiere un plan para acceder a todos nuestros espacios y beneficios.</p>
+            <button pButton label="Ver Planes Disponibles" icon="pi pi-arrow-right" class="p-button-lg" routerLink="/memberships"></button>
+        </div>
+    </div>
+
+    <!-- Membership Card -->
+    <div class="col-12" *ngIf="!loading && hasMembership && membershipData">
+        <div class="card">
+            <div class="flex flex-column md:flex-row justify-content-between align-items-start md:align-items-center mb-4">
+                <div class="flex align-items-center mb-3 md:mb-0">
+                    <div class="flex align-items-center justify-content-center bg-primary-100 border-round mr-3" style="width: 3.5rem; height: 3.5rem;">
+                        <i class="pi pi-credit-card text-primary text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-3xl font-bold m-0">{{membershipData.membership.name}}</h2>
+                        <p class="text-600 m-0 mt-1">{{membershipData.membership.description}}</p>
+                    </div>
+                </div>
+                <p-tag [value]="getStatusLabel(membershipData.status)" [severity]="getStatusSeverity(membershipData.status)" styleClass="text-lg font-bold"></p-tag>
+            </div>
+
+            <div class="grid mb-4">
+                <div class="col-12 md:col-4">
+                    <div class="surface-ground border-round p-3">
+                        <div class="text-500 font-medium mb-2">💰 Precio</div>
+                        <div class="text-900 font-bold text-2xl">${{membershipData.membership.price}}<span class="text-sm font-normal text-500">/mes</span></div>
+                    </div>
+                </div>
+                <div class="col-12 md:col-4">
+                    <div class="surface-ground border-round p-3">
+                        <div class="text-500 font-medium mb-2">📅 Fecha de Vencimiento</div>
+                        <div class="text-900 font-bold text-xl">{{membershipData.endDate | date: 'dd/MM/yyyy'}}</div>
+                        <div class="text-500 text-sm mt-1" *ngIf="getDaysRemaining() !== null">
+                            <span *ngIf="getDaysRemaining()! > 0">{{getDaysRemaining()}} días restantes</span>
+                            <span *ngIf="getDaysRemaining()! <= 0" class="text-red-500">Vencida</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 md:col-4">
+                    <div class="surface-ground border-round p-3">
+                        <div class="text-500 font-medium mb-2">🔄 Renovación</div>
+                        <div class="text-900 font-bold text-xl">{{membershipData.membership.duration}} días</div>
+                        <div class="text-500 text-sm mt-1">Ciclo de facturación</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Usage Statistics -->
+    <div class="col-12" *ngIf="!loading && hasMembership && membershipData">
+        <div class="card">
+            <h3 class="text-2xl font-bold mb-4">📊 Uso de Horas - {{getCurrentMonth()}}</h3>
+            <p class="text-600 mb-4">Monitorea el uso de tus horas disponibles por cada tipo de espacio.</p>
+
+            <div *ngIf="membershipData.usage.length === 0" class="text-center p-5">
+                <i class="pi pi-info-circle text-4xl text-500 mb-3"></i>
+                <p class="text-600">Este plan no tiene límites de horas configurados.</p>
+            </div>
+
+            <div *ngFor="let item of membershipData.usage" class="mb-4">
+                <div class="flex justify-content-between align-items-center mb-2">
+                    <div class="flex align-items-center">
+                        <i class="pi pi-building text-xl mr-2" [ngClass]="getUsageIconColor(item.percentage)"></i>
+                        <span class="font-bold text-lg">{{item.resourceType.name}}</span>
+                    </div>
+                    <div class="flex align-items-center">
+                        <i class="pi mr-2" [ngClass]="[getUsageIcon(item.percentage), getUsageIconColor(item.percentage)]"></i>
+                        <span class="font-bold text-lg">
+                            <span [class]="getUsageIconColor(item.percentage)">{{item.used}}</span>
+                            <span class="text-500"> / </span>
+                            <span>{{item.isUnlimited ? '∞' : item.limit}}</span>
+                            <span class="text-500 text-sm ml-1">horas</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="w-full bg-gray-200 border-round" style="height: 1rem;" *ngIf="!item.isUnlimited">
+                    <div 
+                        [ngClass]="getProgressBarClass(item.percentage)" 
+                        class="border-round flex align-items-center justify-content-end pr-2 transition-all transition-duration-300"
+                        [style.width.%]="item.percentage"
+                        style="height: 100%;">
+                        <span class="text-white text-xs font-bold" *ngIf="item.percentage > 15">{{item.percentage}}%</span>
+                    </div>
+                </div>
+                <div class="w-full bg-gradient-to-r from-green-200 to-green-400 border-round flex align-items-center px-3" style="height: 1rem;" *ngIf="item.isUnlimited">
+                    <span class="text-white text-xs font-bold">✨ Ilimitado</span>
+                </div>
+
+                <!-- Available Hours Message -->
+                <div class="flex justify-content-between mt-2">
+                    <span class="text-sm text-500">
+                        <span *ngIf="!item.isUnlimited && isNumber(item.available)">
+                            <span *ngIf="item.available > 0" class="text-green-600">✅ {{item.available}} horas disponibles</span>
+                            <span *ngIf="item.available <= 0" class="text-red-600">⚠️ Sin horas disponibles</span>
+                        </span>
+                        <span *ngIf="item.isUnlimited" class="text-green-600">✨ Uso ilimitado</span>
+                    </span>
+                    <span class="text-sm font-medium" [ngClass]="getUsageIconColor(item.percentage)">
+                        <span *ngIf="item.percentage >= 90 && !item.isUnlimited">¡Casi agotado!</span>
+                        <span *ngIf="item.percentage >= 70 && item.percentage < 90 && !item.isUnlimited">Uso moderado</span>
+                        <span *ngIf="item.percentage < 70 && !item.isUnlimited">Buen estado</span>
+                    </span>
+                </div>
+
+                <p-divider *ngIf="membershipData.usage.indexOf(item) < membershipData.usage.length - 1"></p-divider>
+            </div>
+        </div>
+    </div>
+
+    <!-- Benefits Section -->
+    <div class="col-12" *ngIf="!loading && hasMembership && membershipData">
+        <div class="card">
+            <h3 class="text-2xl font-bold mb-4">✨ Beneficios Incluidos</h3>
+            <div class="grid">
+                <div class="col-12 md:col-6" *ngFor="let amenity of membershipData.membership.amenities">
+                    <div class="flex align-items-center p-2">
+                        <i class="pi pi-check-circle text-green-500 text-xl mr-3"></i>
+                        <span class="text-lg">{{amenity}}</span>
+                    </div>
+                </div>
+                <div class="col-12" *ngIf="membershipData.membership.amenities.length === 0">
+                    <p class="text-500">No hay beneficios específicos configurados para este plan.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="col-12" *ngIf="!loading && hasMembership && membershipData">
+        <div class="card">
+            <div class="flex gap-3 justify-content-center flex-wrap">
+                <button pButton label="Hacer una Reserva" icon="pi pi-calendar-plus" class="p-button-primary p-button-lg" routerLink="/bookings/new"></button>
+                <button pButton label="Ver Todas Mis Reservas" icon="pi pi-list" class="p-button-outlined p-button-lg" routerLink="/bookings"></button>
+                <button pButton label="Explorar Planes" icon="pi pi-search" class="p-button-outlined p-button-lg" routerLink="/memberships"></button>
+            </div>
+        </div>
+    </div>
+</div>
+
