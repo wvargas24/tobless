@@ -32,7 +32,7 @@ const getBookableResources = async (req, res) => {
 // @access  Private/Admin
 const createResource = async (req, res) => {
   try {
-    const { name, type, capacity, description, amenities, isActive } = req.body;
+    const { name, type, capacity, description, amenities, isActive, imageUrl } = req.body;
 
     if (!name || !type) {
       return res.status(400).json({ message: 'Please add name and type' });
@@ -44,7 +44,8 @@ const createResource = async (req, res) => {
       capacity,
       description,
       amenities,
-      isActive
+      isActive,
+      imageUrl
     });
 
     const populatedResource = await Resource.findById(resource._id).populate('type', 'name');

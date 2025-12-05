@@ -11,6 +11,11 @@ const resourceSchema = mongoose.Schema({
         ref: 'ResourceType',                  // Apunta a nuestro nuevo modelo
         required: [true, 'El tipo de recurso es obligatorio.'],
     },
+    imageUrl: {
+        type: String,
+        trim: true,
+        default: '',
+    },
     capacity: {
         type: Number,
         required: true,
