@@ -7,6 +7,7 @@ const {
   getMembershipById,
   updateMembership,
   deleteMembership,
+  getMyMembership,
 } = require('../controllers/membership.controller');
 
 const { protect } = require('../middlewares/authMiddleware');
@@ -39,6 +40,10 @@ const validate = (req, res, next) => {
   });
 };
 
+
+// Ruta para obtener la membresía del usuario actual con estadísticas de uso
+router.route('/my-membership')
+  .get(protect, getMyMembership); // Accesible para cualquier usuario autenticado
 
 router.route('/')
   .post(protect, authorizeRoles('admin'), membershipValidationRules(), validate, createMembership) // Protected and admin-only

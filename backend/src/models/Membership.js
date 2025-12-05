@@ -21,7 +21,21 @@ const membershipSchema = mongoose.Schema({
     type: [String],
     default: []
   },
-  allowedResourceTypes: [{ // Es un array de referencias
+  // Sistema de límites de horas por tipo de recurso
+  resourceLimits: [{
+    resourceType: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'ResourceType',
+      required: true
+    },
+    monthlyHourLimit: {
+      type: Number,
+      required: true,
+      default: 0  // 0 = sin límite (ilimitado)
+    }
+  }],
+  // DEPRECATED: Mantenemos para compatibilidad pero usaremos resourceLimits
+  allowedResourceTypes: [{ 
     type: mongoose.Schema.Types.ObjectId,
     ref: 'ResourceType',
   }],

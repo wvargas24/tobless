@@ -4,6 +4,7 @@ const User = require('../models/User');
 const logger = require('../config/logger');
 // Corrected import for date-fns-tz
 const { toZonedTime } = require('date-fns-tz');
+const { calculateHoursUsedThisMonth } = require('../utils/bookingCalculations');
 
 const checkAvailability = async (resourceId, startDate, endDate, excludeBookingId = null) => {
   const query = {
@@ -67,9 +68,65 @@ const createBooking = async (req, res) => {
       return res.status(400).json({ message: 'Las reservas solo se permiten entre las 9:00 AM y las 6:00 PM' });
     }
 
-    const resourceExists = await Resource.findById(resource);
+    const resourceExists = await Resource.findById(resource).populate('type');
     if (!resourceExists) {
       return res.status(404).json({ message: 'Recurso no encontrado' });
+    }
+
+    // Validar límites de horas de membresía
+    const userWithMembership = await User.findById(bookingUser).populate({
+      path: 'membership',
+      populate: { path: 'resourceLimits.resourceType' }
+    });
+
+    if (userWithMembership.membership && userWithMembership.membershipStatus === 'active') {
+      const membership = userWithMembership.membership;
+      
+      // Buscar el límite para este tipo de recurso
+      const resourceLimit = membership.resourceLimits?.find(
+        limit => limit.resourceType._id.toString() === resourceExists.type._id.toString()
+      );
+
+      // Si el plan no incluye este tipo de recurso
+      if (!resourceLimit) {
+        return res.status(403).json({ 
+          message: `Tu plan "${membership.name}" no incluye acceso a ${resourceExists.type.name}`,
+          resourceTypeName: resourceExists.type.name,
+          membershipName: membership.name
+        });
+      }
+
+      // Si hay límite de horas (no es ilimitado)
+      if (resourceLimit.monthlyHourLimit > 0) {
+        // Calcular horas de esta reserva
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const requestedHours = (end - start) / (1000 * 60 * 60);
+
+        // Calcular horas ya usadas este mes
+        const hoursUsed = await calculateHoursUsedThisMonth(
+          bookingUser,
+          resourceExists.type._id
+        );
+
+        const hoursAvailable = resourceLimit.monthlyHourLimit - hoursUsed;
+        const hoursAfterBooking = hoursUsed + requestedHours;
+
+        // Si excede el límite
+        if (hoursAfterBooking > resourceLimit.monthlyHourLimit) {
+          return res.status(403).json({ 
+            message: `Has alcanzado el límite de horas para ${resourceExists.type.name}`,
+            resourceTypeName: resourceExists.type.name,
+            limit: resourceLimit.monthlyHourLimit,
+            used: Math.round(hoursUsed * 100) / 100,
+            requested: Math.round(requestedHours * 100) / 100,
+            available: Math.round(hoursAvailable * 100) / 100,
+            suggestion: hoursAvailable > 0 ? 
+              `Puedes reservar hasta ${Math.round(hoursAvailable * 100) / 100} horas` : 
+              'No tienes horas disponibles este mes'
+          });
+        }
+      }
     }
 
     const isAvailable = await checkAvailability(resource, startDate, endDate);

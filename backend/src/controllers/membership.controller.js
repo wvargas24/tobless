@@ -1,5 +1,7 @@
 const Membership = require('../models/Membership'); // Importar el modelo de membresía
+const User = require('../models/User');
 const logger = require('../config/logger'); // Importar el logger
+const { calculateAllResourceUsage } = require('../utils/bookingCalculations');
 
 
 // @desc    Create new membership
@@ -112,10 +114,56 @@ const deleteMembership = async (req, res) => {
   }
 };
 
+// @desc    Get current user's membership with usage statistics
+// @route   GET /api/memberships/my-membership
+// @access  Private
+const getMyMembership = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).populate({
+      path: 'membership',
+      populate: { path: 'resourceLimits.resourceType' }
+    });
+
+    if (!user.membership) {
+      return res.status(404).json({ 
+        message: 'No tienes una membresía asignada',
+        hasMembership: false
+      });
+    }
+
+    // Calcular uso de horas por cada tipo de recurso
+    const usage = await calculateAllResourceUsage(req.user._id, user.membership);
+
+    // Preparar respuesta
+    const response = {
+      membership: {
+        _id: user.membership._id,
+        name: user.membership.name,
+        description: user.membership.description,
+        price: user.membership.price,
+        duration: user.membership.duration,
+        amenities: user.membership.amenities,
+        resourceLimits: user.membership.resourceLimits
+      },
+      status: user.membershipStatus,
+      startDate: user.membershipStartDate,
+      endDate: user.membershipEndDate,
+      usage: usage,
+      hasMembership: true
+    };
+
+    res.json(response);
+  } catch (err) {
+    logger.error('Error in getMyMembership:', err);
+    res.status(500).send('Server error');
+  }
+};
+
 module.exports = {
   createMembership,
   getMemberships,
   getMembershipById,
   updateMembership,
   deleteMembership,
+  getMyMembership,
 };
