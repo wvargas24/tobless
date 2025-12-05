@@ -81,7 +81,7 @@ const createBooking = async (req, res) => {
 
     if (userWithMembership.membership && userWithMembership.membershipStatus === 'active') {
       const membership = userWithMembership.membership;
-      
+
       // Buscar el límite para este tipo de recurso
       const resourceLimit = membership.resourceLimits?.find(
         limit => limit.resourceType._id.toString() === resourceExists.type._id.toString()
@@ -89,7 +89,7 @@ const createBooking = async (req, res) => {
 
       // Si el plan no incluye este tipo de recurso
       if (!resourceLimit) {
-        return res.status(403).json({ 
+        return res.status(403).json({
           message: `Tu plan "${membership.name}" no incluye acceso a ${resourceExists.type.name}`,
           resourceTypeName: resourceExists.type.name,
           membershipName: membership.name
@@ -114,15 +114,15 @@ const createBooking = async (req, res) => {
 
         // Si excede el límite
         if (hoursAfterBooking > resourceLimit.monthlyHourLimit) {
-          return res.status(403).json({ 
+          return res.status(403).json({
             message: `Has alcanzado el límite de horas para ${resourceExists.type.name}`,
             resourceTypeName: resourceExists.type.name,
             limit: resourceLimit.monthlyHourLimit,
             used: Math.round(hoursUsed * 100) / 100,
             requested: Math.round(requestedHours * 100) / 100,
             available: Math.round(hoursAvailable * 100) / 100,
-            suggestion: hoursAvailable > 0 ? 
-              `Puedes reservar hasta ${Math.round(hoursAvailable * 100) / 100} horas` : 
+            suggestion: hoursAvailable > 0 ?
+              `Puedes reservar hasta ${Math.round(hoursAvailable * 100) / 100} horas` :
               'No tienes horas disponibles este mes'
           });
         }
